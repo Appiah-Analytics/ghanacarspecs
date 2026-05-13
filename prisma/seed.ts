@@ -25,7 +25,7 @@ async function main() {
             eventType: EventType.IMPORT,
             eventDate: new Date("2019-03-15"),
             mileage: 45000,
-            sourceSystem: "Tema Port — Importer Alpha",
+            sourceSystem: "Tema Port - Importer Alpha",
             rawPayload: { note: "Cleared customs" },
           },
           {

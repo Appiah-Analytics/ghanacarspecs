@@ -46,7 +46,7 @@ export function LookupForm() {
           : `Request failed (${res.status})`;
       setError(errMsg);
     } catch {
-      setError("Network error — try again.");
+      setError("Network error - try again.");
     } finally {
       setLoading(false);
     }
@@ -66,18 +66,20 @@ export function LookupForm() {
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? "Searching…" : "Look up"}
+          {loading ? "Searching..." : "Look up"}
         </button>
       </form>
       {message ? (
-        <p className="alert" role="status">
-          {message}
-        </p>
+        <div className="alert alert-not-found" role="status">
+          <p className="alert-title">No record found</p>
+          <p className="alert-body">{message}</p>
+        </div>
       ) : null}
       {error ? (
-        <p className="alert error" role="alert">
-          {error}
-        </p>
+        <div className="alert error" role="alert">
+          <p className="alert-title">Something went wrong</p>
+          <p className="alert-body">{error}</p>
+        </div>
       ) : null}
     </>
   );

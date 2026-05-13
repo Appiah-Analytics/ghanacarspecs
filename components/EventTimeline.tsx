@@ -1,24 +1,42 @@
 import type { VehicleEvent } from "@prisma/client";
 
-function formatDate(d: Date): string {
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+function formatEventDate(d: Date): string {
+  return d.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatEventType(type: string): string {
+  return type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export function EventTimeline({ events }: { events: VehicleEvent[] }) {
   if (events.length === 0) {
-    return <p style={{ color: "var(--muted)", margin: 0 }}>No events recorded.</p>;
+    return <p className="timeline-empty">No events recorded for this vehicle.</p>;
   }
 
   return (
-    <ol className="timeline">
+    <ol className="timeline-cards">
       {events.map((e) => (
-        <li key={e.id}>
-          <div className="meta">
-            <span className="type">{e.eventType.replace(/_/g, " ")}</span>
-            <span>{formatDate(e.eventDate)}</span>
-            {e.mileage != null ? <span>{e.mileage.toLocaleString()} km</span> : null}
+        <li key={e.id} className="timeline-card">
+          <div className="timeline-card-top">
+            <span className="event-type-badge">{formatEventType(e.eventType)}</span>
+            <time className="event-date" dateTime={e.eventDate.toISOString()}>
+              {formatEventDate(e.eventDate)}
+            </time>
           </div>
-          {e.sourceSystem ? <div style={{ fontSize: "0.95rem" }}>{e.sourceSystem}</div> : null}
+          <dl className="event-fields">
+            <div className="event-field">
+              <dt>Mileage</dt>
+              <dd>{e.mileage != null ? `${e.mileage.toLocaleString()} km` : "Not recorded"}</dd>
+            </div>
+            <div className="event-field">
+              <dt>Source</dt>
+              <dd>{e.sourceSystem ?? "Unknown"}</dd>
+            </div>
+          </dl>
         </li>
       ))}
     </ol>
