@@ -1,0 +1,6 @@
+{
+  "name": "ghanacarspecs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GhanaCarSpecs — vehicle history and specs platform (monorepo root)."
+}
