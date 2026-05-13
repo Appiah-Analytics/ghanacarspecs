@@ -2,15 +2,15 @@
 
 ## Phase 1
 
-- [ ] Setup Next.js
+- [x] Setup Next.js
 
-- [ ] Setup Prisma
+- [x] Setup Prisma
 
-- [ ] Create lookup API
+- [x] Create lookup API
 
-- [ ] Seed database
+- [x] Seed database
 
-- [ ] Vehicle report page
+- [x] Vehicle report page
 
 ## Phase 2
 

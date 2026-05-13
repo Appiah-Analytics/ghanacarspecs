@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum EventType {
+  IMPORT
+  REGISTRATION
+  SERVICE
+  ACCIDENT
+  INSURANCE_CLAIM
+  MILEAGE_UPDATE
+  THEFT
+  OTHER
+}
+
+model Vehicle {
+  id               String          @id @default(cuid())
+  vin              String          @unique
+  plateNumber      String?
+  make             String
+  model            String
+  year             Int
+  trim             String?
+  engineType       String?
+  engineSize       String?
+  fuelType         String?
+  countryOfOrigin  String?
+  importDate       DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  events           VehicleEvent[]
+
+  @@map("vehicles")
+}
+
+model VehicleEvent {
+  id           String    @id @default(cuid())
+  vehicleId    String
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  eventType    EventType
+  eventDate    DateTime
+  mileage      Int?
+  sourceSystem String?
+  rawPayload   Json?
+  createdAt    DateTime  @default(now())
+
+  @@index([vehicleId])
+  @@map("vehicle_events")
+}
