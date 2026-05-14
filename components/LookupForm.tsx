@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { EXTERNAL_LOOKUP_STORAGE_KEY } from "@/lib/lookup-storage";
 
 export function LookupForm() {
   const router = useRouter();
@@ -24,7 +25,13 @@ export function LookupForm() {
       const data: unknown = await res.json();
 
       if (res.ok && data && typeof data === "object" && "found" in data && (data as { found: boolean }).found) {
-        const id = (data as { vehicle?: { id?: string } }).vehicle?.id;
+        const d = data as { recordSource?: string; vehicle?: { id?: string } };
+        if (d.recordSource === "external") {
+          sessionStorage.setItem(EXTERNAL_LOOKUP_STORAGE_KEY, JSON.stringify(data));
+          router.push("/decoded");
+          return;
+        }
+        const id = d.vehicle?.id;
         if (id) {
           router.push(`/vehicles/${id}`);
           return;
@@ -37,6 +44,19 @@ export function LookupForm() {
             ? String((data as { message?: string }).message)
             : "No record found for that VIN or plate.";
         setMessage(msg);
+        return;
+      }
+
+      if (res.status === 502) {
+        const base =
+          data && typeof data === "object" && "message" in data
+            ? String((data as { message?: string }).message)
+            : "External VIN decode failed.";
+        const detail =
+          data && typeof data === "object" && "detail" in data
+            ? String((data as { detail?: string }).detail)
+            : "";
+        setError(detail ? `${base} (${detail})` : base);
         return;
       }
 

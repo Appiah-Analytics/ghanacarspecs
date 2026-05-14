@@ -1,5 +1,6 @@
 import type { VehicleWithEvents } from "@/lib/lookup";
 import { EventTimeline } from "@/components/EventTimeline";
+import { SourceBanner } from "@/components/SourceBanner";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -16,6 +17,7 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
 
   return (
     <article className="report">
+      <SourceBanner variant="local" />
       <header className="report-header">
         <h2 className="report-title">
           {vehicle.year} {vehicle.make} {vehicle.model}

@@ -14,6 +14,8 @@
 
 ## Phase 2
 
+- [x] External VIN decode fallback (NHTSA vPIC when not in local DB)
+
 - [ ] CSV ingestion
 
 - [ ] Risk flags

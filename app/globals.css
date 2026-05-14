@@ -152,6 +152,52 @@ main.page {
   line-height: 1.55;
 }
 
+.report-sub-sep {
+  margin: 0 0.35rem;
+}
+
+.source-banner {
+  margin: 0 0 1.25rem;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 0.92rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.source-banner-label {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.source-banner-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.source-banner-local {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.source-banner-local .source-banner-label {
+  color: #047857;
+}
+
+.source-banner-external {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
+}
+
+.source-banner-external .source-banner-label {
+  color: #1d4ed8;
+}
+
 .mono {
   font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
   font-size: 0.92em;
