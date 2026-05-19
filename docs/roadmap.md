@@ -14,13 +14,19 @@
 
 ## Phase 2
 
-- [ ] CSV ingestion
+- [x] External VIN decode fallback (NHTSA vPIC when not in local DB)
 
-- [ ] Risk flags
+- [x] CSV ingestion
 
-- [ ] Admin upload
+- [x] Risk flags
 
-## Phase 3
+- [x] Admin upload
+
+## Phase 5
+
+- [x] Chassis number support (schema, lookup, CSV, report UI)
+
+## Phase 3 (infrastructure)
 
 - [ ] Azure deployment
 

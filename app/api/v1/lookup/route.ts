@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { lookupByVinOrPlate } from "@/lib/lookup";
+import { resolveLookupWithExternalVin } from "@/lib/lookup";
+import { RECORD_SOURCE_LABEL } from "@/lib/record-source";
+import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -19,38 +21,72 @@ export async function POST(request: Request) {
   }
 
   try {
-    const vehicle = await lookupByVinOrPlate(vinOrPlate);
-    if (!vehicle) {
+    const resolved = await resolveLookupWithExternalVin(vinOrPlate);
+
+    if (resolved.result === "not_found") {
       return NextResponse.json(
-        { found: false, message: "No record found for that VIN or plate." },
+        { found: false, message: "No record found for that VIN, plate, or chassis number." },
         { status: 404 },
       );
     }
 
+    if (resolved.result === "external_failed") {
+      return NextResponse.json(
+        {
+          found: false,
+          message: "No local GhanaCarSpecs record. External VIN decode did not return usable data.",
+          detail: resolved.reason,
+        },
+        { status: 502 },
+      );
+    }
+
+    if (resolved.result === "local") {
+      const vehicle = resolved.vehicle;
+      return NextResponse.json({
+        found: true,
+        recordSource: "local",
+        recordSourceLabel: RECORD_SOURCE_LABEL.local,
+        vehicle: {
+          id: vehicle.id,
+          vin: vehicle.vin,
+          chassisNumber: vehicle.chassisNumber,
+          plateNumber: vehicle.plateNumber,
+          make: vehicle.make,
+          model: vehicle.model,
+          year: vehicle.year,
+          trim: vehicle.trim,
+          engineType: vehicle.engineType,
+          engineSize: vehicle.engineSize,
+          fuelType: vehicle.fuelType,
+          countryOfOrigin: vehicle.countryOfOrigin,
+          importDate: vehicle.importDate?.toISOString() ?? null,
+        },
+        events: vehicle.events.map((e) => ({
+          id: e.id,
+          eventType: e.eventType,
+          eventDate: e.eventDate.toISOString(),
+          mileage: e.mileage,
+          sourceSystem: e.sourceSystem,
+          rawPayload: e.rawPayload,
+        })),
+        intelligence: analyzeVehicleIntelligence({
+          year: vehicle.year,
+          countryOfOrigin: vehicle.countryOfOrigin,
+          importDate: vehicle.importDate,
+          events: vehicle.events,
+        }),
+      });
+    }
+
     return NextResponse.json({
       found: true,
-      vehicle: {
-        id: vehicle.id,
-        vin: vehicle.vin,
-        plateNumber: vehicle.plateNumber,
-        make: vehicle.make,
-        model: vehicle.model,
-        year: vehicle.year,
-        trim: vehicle.trim,
-        engineType: vehicle.engineType,
-        engineSize: vehicle.engineSize,
-        fuelType: vehicle.fuelType,
-        countryOfOrigin: vehicle.countryOfOrigin,
-        importDate: vehicle.importDate?.toISOString() ?? null,
-      },
-      events: vehicle.events.map((e) => ({
-        id: e.id,
-        eventType: e.eventType,
-        eventDate: e.eventDate.toISOString(),
-        mileage: e.mileage,
-        sourceSystem: e.sourceSystem,
-        rawPayload: e.rawPayload,
-      })),
+      recordSource: "external",
+      recordSourceLabel: RECORD_SOURCE_LABEL.external,
+      dataProvider: resolved.provider,
+      vin: resolved.vin,
+      decoded: resolved.specs,
+      events: [],
     });
   } catch (e) {
     console.error(e);
