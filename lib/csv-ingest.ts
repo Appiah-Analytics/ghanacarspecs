@@ -2,7 +2,7 @@ import { EventType, type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 const REQUIRED_COLUMNS = ["vin", "make", "model", "year", "eventType", "eventDate"] as const;
-const OPTIONAL_COLUMNS = ["plateNumber", "mileage", "sourceSystem", "description"] as const;
+const OPTIONAL_COLUMNS = ["plateNumber", "chassisNumber", "mileage", "sourceSystem", "description"] as const;
 const ALL_COLUMNS = [...REQUIRED_COLUMNS, ...OPTIONAL_COLUMNS] as const;
 
 export type CsvIngestError = {
@@ -24,10 +24,15 @@ export type CsvIngestResult =
 
 type CanonicalColumn = (typeof ALL_COLUMNS)[number];
 
+function normalizeChassisKey(value: string): string {
+  return value.trim().replace(/\s+/g, "").toUpperCase();
+}
+
 type ValidatedCsvRow = {
   rowNumber: number;
   vin: string;
   plateNumber: string | null;
+  chassisNumber: string | null;
   make: string;
   model: string;
   year: number;
@@ -41,6 +46,7 @@ type ValidatedCsvRow = {
 type VehicleProfile = {
   vin: string;
   plateNumber: string | null;
+  chassisNumber: string | null;
   make: string;
   model: string;
   year: number;
@@ -161,6 +167,8 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
 
     const vin = normalizeVin(getCell(row, indexByColumn, "vin"));
     const plateNumber = getCell(row, indexByColumn, "plateNumber") || null;
+    const chassisRaw = getCell(row, indexByColumn, "chassisNumber");
+    const chassisNumber = chassisRaw ? normalizeChassisKey(chassisRaw) : null;
     const make = getCell(row, indexByColumn, "make");
     const model = getCell(row, indexByColumn, "model");
     const yearRaw = getCell(row, indexByColumn, "year");
@@ -230,7 +238,19 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
           message: `VIN conflicts with earlier row: plate number differs for ${vin}.`,
         });
       }
+      if (
+        existing.chassisNumber &&
+        chassisNumber &&
+        existing.chassisNumber !== chassisNumber
+      ) {
+        errors.push({
+          row: rowNumber,
+          field: "chassisNumber",
+          message: `VIN conflicts with earlier row: chassis number differs for ${vin}.`,
+        });
+      }
       if (!existing.plateNumber && plateNumber) existing.plateNumber = plateNumber;
+      if (!existing.chassisNumber && chassisNumber) existing.chassisNumber = chassisNumber;
       if (validEventType === EventType.IMPORT && (!existing.importDate || validEventDate < existing.importDate)) {
         existing.importDate = validEventDate;
       }
@@ -238,6 +258,7 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
       profileByVin.set(vin, {
         vin,
         plateNumber,
+        chassisNumber,
         make,
         model,
         year: validYear,
@@ -245,10 +266,23 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
       });
     }
 
+    if (chassisNumber) {
+      for (const [otherVin, profile] of profileByVin) {
+        if (otherVin !== vin && profile.chassisNumber === chassisNumber) {
+          errors.push({
+            row: rowNumber,
+            field: "chassisNumber",
+            message: `Chassis number ${chassisNumber} is already used for VIN ${otherVin} in this file.`,
+          });
+        }
+      }
+    }
+
     validRows.push({
       rowNumber,
       vin,
       plateNumber,
+      chassisNumber,
       make,
       model,
       year: validYear,
@@ -277,6 +311,7 @@ export async function ingestVehicleEventsCsv(csvText: string): Promise<CsvIngest
     const existing = profiles.get(row.vin);
     if (existing) {
       if (!existing.plateNumber && row.plateNumber) existing.plateNumber = row.plateNumber;
+      if (!existing.chassisNumber && row.chassisNumber) existing.chassisNumber = row.chassisNumber;
       if (row.eventType === EventType.IMPORT && (!existing.importDate || row.eventDate < existing.importDate)) {
         existing.importDate = row.eventDate;
       }
@@ -285,6 +320,7 @@ export async function ingestVehicleEventsCsv(csvText: string): Promise<CsvIngest
     profiles.set(row.vin, {
       vin: row.vin,
       plateNumber: row.plateNumber,
+      chassisNumber: row.chassisNumber,
       make: row.make,
       model: row.model,
       year: row.year,
@@ -310,6 +346,7 @@ export async function ingestVehicleEventsCsv(csvText: string): Promise<CsvIngest
         year: profile.year,
       };
       if (profile.plateNumber) updateData.plateNumber = profile.plateNumber;
+      if (profile.chassisNumber) updateData.chassisNumber = profile.chassisNumber;
       if (profile.importDate) updateData.importDate = profile.importDate;
 
       const vehicle = await tx.vehicle.upsert({
@@ -317,6 +354,7 @@ export async function ingestVehicleEventsCsv(csvText: string): Promise<CsvIngest
         create: {
           vin: profile.vin,
           plateNumber: profile.plateNumber,
+          chassisNumber: profile.chassisNumber,
           make: profile.make,
           model: profile.model,
           year: profile.year,

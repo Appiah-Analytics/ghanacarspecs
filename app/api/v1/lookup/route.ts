@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     if (resolved.result === "not_found") {
       return NextResponse.json(
-        { found: false, message: "No record found for that VIN or plate." },
+        { found: false, message: "No record found for that VIN, plate, or chassis number." },
         { status: 404 },
       );
     }
@@ -50,6 +50,7 @@ export async function POST(request: Request) {
         vehicle: {
           id: vehicle.id,
           vin: vehicle.vin,
+          chassisNumber: vehicle.chassisNumber,
           plateNumber: vehicle.plateNumber,
           make: vehicle.make,
           model: vehicle.model,

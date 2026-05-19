@@ -22,7 +22,11 @@
 
 - [x] Admin upload
 
-## Phase 3
+## Phase 5
+
+- [x] Chassis number support (schema, lookup, CSV, report UI)
+
+## Phase 3 (infrastructure)
 
 - [ ] Azure deployment
 

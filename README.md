@@ -45,11 +45,13 @@ That message appears **before** Next finishes compiling. On a slow disk, antivir
 
 Use any seeded **VIN** or **plate** (lookup uses the local DB only for these; no external call).
 
-| Vehicle | VIN | Plate |
-|--------|-----|--------|
-| Toyota Camry 2007 | `4T1BE46K37U123456` | `GR-1234-21` |
-| Volkswagen Golf 2014 | `WVWZZZ3CZWE123456` | `GT 5678-22` |
-| Honda Accord 1991 | `1HGBH41JXMN109186` | *(none)* |
+| Vehicle | VIN | Plate | Chassis |
+|--------|-----|-------|---------|
+| Toyota Camry 2007 | `4T1BE46K37U123456` | `GR-1234-21` | `BE46K37U123456` |
+| Volkswagen Golf 2014 | `WVWZZZ3CZWE123456` | `GT 5678-22` | `ZZZ3CZWE123456` |
+| Honda Accord 1991 | `1HGBH41JXMN109186` | *(none)* | `BH41JXMN109186` |
+
+Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case ignored for plate and chassis).
 
 **Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, full specs, a **Vehicle intelligence** section (mileage checks, accident flag, import indicator, service continuity, timeline summary, confidence score), and event timeline (mileage, source, dates per event).
 
@@ -87,9 +89,9 @@ If Next is running on another port, use that port instead (for example `http://l
 Upload a `.csv` file using this template:
 
 ```csv
-vin,plateNumber,make,model,year,eventType,eventDate,mileage,sourceSystem,description
-JTDKN3DU0A0123456,GR-9000-24,Toyota,Prius,2010,IMPORT,2024-01-12,87000,Tema Port,Imported from Japan
-JTDKN3DU0A0123456,GR-9000-24,Toyota,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Hybrid battery inspected
+vin,plateNumber,chassisNumber,make,model,year,eventType,eventDate,mileage,sourceSystem,description
+JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,IMPORT,2024-01-12,87000,Tema Port,Imported from Japan
+JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Hybrid battery inspected
 ```
 
 **Expected:** The upload page shows a success summary:
@@ -116,7 +118,7 @@ You should see a **Local GhanaCarSpecs record** with the imported vehicle specs 
 #### CSV validation rules
 
 - Required columns: `vin`, `make`, `model`, `year`, `eventType`, `eventDate`
-- Optional columns: `plateNumber`, `mileage`, `sourceSystem`, `description`
+- Optional columns: `plateNumber`, `chassisNumber`, `mileage`, `sourceSystem`, `description`
 - VIN must be exactly 17 characters.
 - `eventType` must be one of: `IMPORT`, `REGISTRATION`, `SERVICE`, `ACCIDENT`, `INSURANCE_CLAIM`, `MILEAGE_UPDATE`, `THEFT`, `OTHER`
 - `eventDate` must be a valid date, for example `2024-05-03`.

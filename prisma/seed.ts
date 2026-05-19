@@ -9,6 +9,7 @@ async function main() {
   const toyota = await prisma.vehicle.create({
     data: {
       vin: "4T1BE46K37U123456",
+      chassisNumber: "BE46K37U123456",
       plateNumber: "GR-1234-21",
       make: "Toyota",
       model: "Camry",
@@ -57,6 +58,7 @@ async function main() {
   const vw = await prisma.vehicle.create({
     data: {
       vin: "WVWZZZ3CZWE123456",
+      chassisNumber: "ZZZ3CZWE123456",
       plateNumber: "GT 5678-22",
       make: "Volkswagen",
       model: "Golf",
@@ -91,6 +93,7 @@ async function main() {
   const honda = await prisma.vehicle.create({
     data: {
       vin: "1HGBH41JXMN109186",
+      chassisNumber: "BH41JXMN109186",
       plateNumber: null,
       make: "Honda",
       model: "Accord",

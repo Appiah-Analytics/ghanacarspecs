@@ -42,7 +42,7 @@ export function LookupForm() {
         const msg =
           data && typeof data === "object" && "message" in data
             ? String((data as { message?: string }).message)
-            : "No record found for that VIN or plate.";
+            : "No record found for that VIN, plate, or chassis number.";
         setMessage(msg);
         return;
       }
@@ -77,7 +77,7 @@ export function LookupForm() {
       <form className="lookup-form" onSubmit={onSubmit} aria-label="Vehicle lookup">
         <input
           name="vinOrPlate"
-          placeholder="e.g. 4T1BE46K37U123456 or GR-1234-21"
+          placeholder="e.g. 4T1BE46K37U123456, GR-1234-21, or BE46K37U123456"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           autoComplete="off"

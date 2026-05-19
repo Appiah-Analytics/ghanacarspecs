@@ -34,6 +34,12 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
         </h2>
         <p className="report-sub">
           Identifiers: VIN <span className="mono">{vehicle.vin}</span>
+          {vehicle.chassisNumber ? (
+            <>
+              {" "}
+              &middot; Chassis <span className="mono">{vehicle.chassisNumber}</span>
+            </>
+          ) : null}
           {vehicle.plateNumber ? (
             <>
               {" "}
@@ -69,6 +75,10 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
           <div>
             <dt>VIN</dt>
             <dd className="mono">{vehicle.vin}</dd>
+          </div>
+          <div>
+            <dt>Chassis</dt>
+            <dd className="mono">{vehicle.chassisNumber ?? "-"}</dd>
           </div>
           <div>
             <dt>Plate</dt>

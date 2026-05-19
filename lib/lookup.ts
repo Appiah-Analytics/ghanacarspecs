@@ -19,13 +19,19 @@ export function normalizeVin(input: string): string {
   return input.trim().replace(/\s+/g, "").toUpperCase();
 }
 
-/** Normalize plate for comparison: uppercase, keep only letters and digits. */
+/** Normalize plate or chassis for comparison: uppercase, letters and digits only. */
 export function normalizePlateKey(input: string): string {
   return input.toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
-export async function lookupByVinOrPlate(vinOrPlate: string): Promise<VehicleWithEvents | null> {
-  const raw = vinOrPlate.trim();
+export const normalizeChassisKey = normalizePlateKey;
+
+/**
+ * Local lookup by VIN (17 chars), then plate, then chassis number.
+ * API body field remains `vinOrPlate` for compatibility; value may be any of the three.
+ */
+export async function lookupByVinPlateOrChassis(query: string): Promise<VehicleWithEvents | null> {
+  const raw = query.trim();
   if (!raw) return null;
 
   const asVin = normalizeVin(raw);
@@ -38,26 +44,44 @@ export async function lookupByVinOrPlate(vinOrPlate: string): Promise<VehicleWit
   }
 
   const plateKey = normalizePlateKey(raw);
-  if (!plateKey) return null;
+  if (plateKey) {
+    const plateCandidates = await prisma.vehicle.findMany({
+      where: { plateNumber: { not: null } },
+      include: vehicleInclude,
+    });
+    const byPlate = plateCandidates.find(
+      (v) => v.plateNumber && normalizePlateKey(v.plateNumber) === plateKey,
+    );
+    if (byPlate) return byPlate;
+  }
 
-  const candidates = await prisma.vehicle.findMany({
-    where: { plateNumber: { not: null } },
-    include: vehicleInclude,
-  });
+  const chassisKey = normalizeChassisKey(raw);
+  if (chassisKey) {
+    const chassisCandidates = await prisma.vehicle.findMany({
+      where: { chassisNumber: { not: null } },
+      include: vehicleInclude,
+    });
+    const byChassis = chassisCandidates.find(
+      (v) => v.chassisNumber && normalizeChassisKey(v.chassisNumber) === chassisKey,
+    );
+    if (byChassis) return byChassis;
+  }
 
-  const match = candidates.find((v) => v.plateNumber && normalizePlateKey(v.plateNumber) === plateKey);
-  return match ?? null;
+  return null;
 }
 
+/** @deprecated Use lookupByVinPlateOrChassis */
+export const lookupByVinOrPlate = lookupByVinPlateOrChassis;
+
 /**
- * Local DB first. If no row and input is a 17-character VIN, try NHTSA vPIC decode.
- * Plate-only lookups never hit the external API.
+ * Local DB first (VIN, plate, chassis). If no row and input is a 17-character VIN, try NHTSA vPIC.
+ * Plate and chassis lookups never trigger the external API.
  */
-export async function resolveLookupWithExternalVin(vinOrPlate: string): Promise<ResolveLookupOutcome> {
-  const local = await lookupByVinOrPlate(vinOrPlate);
+export async function resolveLookupWithExternalVin(query: string): Promise<ResolveLookupOutcome> {
+  const local = await lookupByVinPlateOrChassis(query);
   if (local) return { result: "local", vehicle: local };
 
-  const asVin = normalizeVin(vinOrPlate);
+  const asVin = normalizeVin(query);
   if (asVin.length !== 17) return { result: "not_found" };
 
   const decoded = await decodeVinNhtsa(asVin);
