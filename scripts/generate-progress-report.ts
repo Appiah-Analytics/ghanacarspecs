@@ -144,7 +144,7 @@ async function main() {
           bullet("Create lookup API"),
           bullet("Seed database"),
           bullet("Vehicle report page"),
-          p("Phase 2 (not started in this scope): CSV ingestion, risk flags, admin upload. Phase 3 (deferred): Azure deployment and monitoring."),
+          p("Phases 3–6 (CSV ingest, intelligence, chassis, admin dashboard) and Phase 7 deployment docs are tracked in docs/roadmap.md and docs/build_log.md."),
 
           h1("9. Explicitly out of scope (to date)"),
           bullet("Azure / cloud hosting, Terraform, Application Insights."),
@@ -154,7 +154,7 @@ async function main() {
 
           h1("10. How to run and test (summary)"),
           p("From repository root: npm install; npm run db:setup (or prisma db push and prisma db seed); npm run dev."),
-          p("Sample VINs: 4T1BE46K37U123456 (Toyota), WVWZZZ3CZWE123456 (Volkswagen), 1HGBH41JXMN109186 (Honda). Sample plates: GR-1234-21, GT 5678-22."),
+          p("Sample data: see docs/sample_data.md (seeded VINs, plates, chassis; external VIN WBADT43452G922939; CSV import JTDKN3DU0A0123456 / GR-9000-24)."),
           p("If port 3000 is busy, Next.js may bind to 3001; use the URL shown in the terminal for browser and curl/Invoke-RestMethod tests."),
 
           h1("11. Operational notes"),

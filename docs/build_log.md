@@ -3,8 +3,10 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-19 (Phase 6)  
+**Last updated:** 2026-05-19 (stabilization pass)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local), NHTSA vPIC (external VIN decode)
+
+**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–7. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
 
 ---
 
@@ -15,7 +17,7 @@ When you ship a meaningful feature:
 1. Add or extend a phase section below (or add **Phase N**).
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
-4. Cross-check `docs/roadmap.md` and `README.md` if scope changed.
+4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
 
@@ -52,13 +54,13 @@ Deliver a working **local-first** vehicle lookup app: user enters a VIN or plate
 - API: `curl` / `Invoke-RestMethod` against `POST /api/v1/lookup`
 - `npm run lint` (`tsc --noEmit`), `npm run build`
 
-**Sample values:**
+**Sample values:** See [`sample_data.md`](sample_data.md). Seeded vehicles:
 
-| Vehicle | VIN | Plate |
-|---------|-----|-------|
-| Toyota Camry 2007 | `4T1BE46K37U123456` | `GR-1234-21` |
-| Volkswagen Golf 2014 | `WVWZZZ3CZWE123456` | `GT 5678-22` |
-| Honda Accord 1991 | `1HGBH41JXMN109186` | *(none)* |
+| Vehicle | VIN | Plate | Chassis |
+|---------|-----|-------|---------|
+| Toyota Camry 2007 | `4T1BE46K37U123456` | `GR-1234-21` | `BE46K37U123456` |
+| Volkswagen Golf 2014 | `WVWZZZ3CZWE123456` | `GT 5678-22` | `ZZZ3CZWE123456` |
+| Honda Accord 1991 | `1HGBH41JXMN109186` | *(none)* | `BH41JXMN109186` |
 
 ### Known limitations
 
@@ -143,7 +145,7 @@ Allow **local admin** import of vehicle and event rows from CSV into SQLite: val
 
 - **Page:** `/admin/ingest` — upload form, embedded CSV template, validation rules list.
 - **Upload:** `POST /api/admin/ingest` (`multipart/form-data`, field `file`, `.csv` only).
-- **Columns:** Required `vin`, `make`, `model`, `year`, `eventType`, `eventDate`; optional `plateNumber`, `mileage`, `sourceSystem`, `description`.
+- **Columns:** Required `vin`, `make`, `model`, `year`, `eventType`, `eventDate`; optional `plateNumber`, `chassisNumber`, `mileage`, `sourceSystem`, `description`.
 - **Validation (all-or-nothing):** Header checks; VIN length 17; year range; enum event types; valid dates; integer mileage; **no conflicting VIN rows** (make/model/year/plate) within the same file.
 - **Write:** Transaction — `vehicle.upsert` by VIN, `vehicleEvent.createMany`; `description` → `rawPayload.description` + `importedFrom: "csv"`.
 - **UI feedback:** Success summary (created/updated vehicles, events inserted) or numbered row errors; nothing written on validation failure.
@@ -225,7 +227,7 @@ Computed in `analyzeVehicleIntelligence()` from vehicle + events:
 
 - Persist optional “risk snapshot” on report generation if API consumers need stable scores.
 - Event deduplication on CSV re-import.
-- Azure deployment + auth for admin/ingest (roadmap Phase 3 infra).
+- Azure deployment + auth for admin/ingest (roadmap Phase 7).
 - Partner API keys and paid report tiers (out of current scope).
 
 ---
@@ -322,7 +324,7 @@ Provide a simple **local admin dashboard** at `/admin` to view GhanaCarSpecs SQL
 
 - Auth for admin routes before any non-local deployment.
 - Optional filters on the vehicle table (make, year, accident flag).
-- Azure deployment and monitoring (roadmap Phase 3 infra).
+- Azure deployment and monitoring (roadmap Phase 7).
 
 ---
 
@@ -357,8 +359,48 @@ Admin → /admin (summary + vehicle table → /vehicles/[id])
 | Phase 2–4 (branch) | NHTSA fallback, CSV ingest, intelligence layer |
 | Phase 5 | Chassis number support |
 | Phase 6 | Local admin dashboard |
+| Phase 7 (docs) | Deployment readiness plan, `.env.example`, doc stabilization |
 
-For commit-level detail, use `git log` on branch `feature/real-vin-decoder` (and `cursor/initial-product-vision-docs` for early docs).
+For commit-level detail, use `git log` on the main feature branches for each phase.
+
+---
+
+## Stabilization pass — documentation alignment
+
+### Goal
+
+Align README, roadmap, architecture, deployment plan, and build log: consistent **phase numbering (1–7)**, verified **npm scripts**, canonical **sample VINs/plates/chassis**, and `.env.example` matching current and planned configuration. No product features; no deploy.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Canonical test data | `docs/sample_data.md` |
+| Phase roadmap | `docs/roadmap.md` (ordered Phases 1–7) |
+| Architecture | `docs/architecture.md` (current tree and flows) |
+| Deployment | `docs/deployment_plan.md`, `.env.example` |
+| Cross-links | `README.md`, `docs/build_log.md` |
+
+### Behavior implemented
+
+- Roadmap Phases 3–4 split out from the old combined “Phase 2” bucket (CSV vs intelligence).
+- Infrastructure and deployment docs are **Phase 7** (replacing the old “Phase 3 (infrastructure)” label).
+- External-decode failure test documents `00000000000000000` instead of a vague invalid-VIN note only.
+- `.env.example` states that `DATABASE_URL` is not wired in `schema.prisma` yet.
+
+### How it was tested
+
+- Compared all doc tables to `prisma/seed.ts` and `components/LookupForm.tsx` placeholder.
+- Verified `package.json` scripts against README and `deployment_plan.md`.
+
+### Known limitations
+
+- `scripts/generate-progress-report.ts` may still describe older phase groupings until regenerated.
+- `docs/product_vision.md` and `docs/project.md` use high-level phase wording only (not renumbered).
+
+### Next recommended step
+
+- Wire `env("DATABASE_URL")` when starting Phase 7 Azure work; follow `deployment_plan.md` checklist.
 
 ---
 

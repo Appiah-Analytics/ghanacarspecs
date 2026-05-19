@@ -1,6 +1,8 @@
 # GhanaCarSpecs (local MVP + VIN decode fallback + CSV ingestion)
 
-Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN** or **plate number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can also import vehicle/event rows from CSV files into SQLite.
+Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN**, **plate number**, or **chassis number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can import vehicle/event rows from CSV and view records on a simple **admin dashboard**.
+
+Canonical test values: [`docs/sample_data.md`](docs/sample_data.md).
 
 ## Prerequisites
 
@@ -43,7 +45,7 @@ That message appears **before** Next finishes compiling. On a slow disk, antivir
 
 ### A. Local GhanaCarSpecs record (database)
 
-Use any seeded **VIN** or **plate** (lookup uses the local DB only for these; no external call).
+Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](docs/sample_data.md) (lookup uses the local DB only; no external call).
 
 | Vehicle | VIN | Plate | Chassis |
 |--------|-----|-------|---------|
@@ -59,7 +61,7 @@ Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case i
 
 Use a **valid 17-character VIN** that is **not** in the seed list above (any real VIN NHTSA can decode works).
 
-Example (BMW, not in seed data):
+Example (BMW, not in seed data — see [`docs/sample_data.md`](docs/sample_data.md)):
 
 `WBADT43452G922939`
 
@@ -73,8 +75,11 @@ Use a **plate** that does not exist in the seed data, e.g. `XX-0000-00`.
 
 ### D. External decode failure
 
-Use a 17-character pattern NHTSA rejects (e.g. invalid check digit / invalid VIN).  
-**Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when the upstream decoder returns an error.
+Use this 17-character VIN (not in the seed database):
+
+`00000000000000000`
+
+**Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when NHTSA rejects the decode.
 
 ### E. Local admin dashboard
 
@@ -202,8 +207,19 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `prisma/schema.prisma` — `Vehicle`, `VehicleEvent`  
 - `prisma/seed.ts` — Sample data  
 
-See `docs/project.md`, `docs/architecture.md`, and `docs/roadmap.md` for scope.
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [`docs/roadmap.md`](docs/roadmap.md) | Phases 1–7 (delivery order) |
+| [`docs/build_log.md`](docs/build_log.md) | Engineering history per phase |
+| [`docs/architecture.md`](docs/architecture.md) | Current system design |
+| [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
+| [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
+| [`docs/project.md`](docs/project.md) | Scope and MVP definition |
+
+Copy [`.env.example`](.env.example) to `.env` when adding environment-based configuration (optional for local SQLite today).
 
 ## Out of scope (not implemented)
 
-Azure, Terraform, payments, auth, dealer/partner dashboards, and production ingestion automation.
+Azure hosting, Terraform, payments, auth, dealer/partner dashboards, and automated production ingestion. Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.
