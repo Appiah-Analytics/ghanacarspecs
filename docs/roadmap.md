@@ -16,11 +16,11 @@
 
 - [x] External VIN decode fallback (NHTSA vPIC when not in local DB)
 
-- [ ] CSV ingestion
+- [x] CSV ingestion
 
 - [ ] Risk flags
 
-- [ ] Admin upload
+- [x] Admin upload
 
 ## Phase 3
 

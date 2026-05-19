@@ -1,6 +1,6 @@
-# GhanaCarSpecs (local MVP + VIN decode fallback)
+# GhanaCarSpecs (local MVP + VIN decode fallback + CSV ingestion)
 
-Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN** or **plate number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode.
+Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN** or **plate number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can also import vehicle/event rows from CSV files into SQLite.
 
 ## Prerequisites
 
@@ -74,6 +74,66 @@ Use a **plate** that does not exist in the seed data, e.g. `XX-0000-00`.
 Use a 17-character pattern NHTSA rejects (e.g. invalid check digit / invalid VIN).  
 **Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when the upstream decoder returns an error.
 
+### E. Local CSV ingestion
+
+Open the local admin import page:
+
+```text
+http://localhost:3000/admin/ingest
+```
+
+If Next is running on another port, use that port instead (for example `http://localhost:3001/admin/ingest`).
+
+Upload a `.csv` file using this template:
+
+```csv
+vin,plateNumber,make,model,year,eventType,eventDate,mileage,sourceSystem,description
+JTDKN3DU0A0123456,GR-9000-24,Toyota,Prius,2010,IMPORT,2024-01-12,87000,Tema Port,Imported from Japan
+JTDKN3DU0A0123456,GR-9000-24,Toyota,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Hybrid battery inspected
+```
+
+**Expected:** The upload page shows a success summary:
+
+- Vehicles created
+- Vehicles updated
+- Events inserted
+- Rows processed
+
+Then test the imported record from the frontend lookup:
+
+```text
+JTDKN3DU0A0123456
+```
+
+or:
+
+```text
+GR-9000-24
+```
+
+You should see a **Local GhanaCarSpecs record** with the imported vehicle specs and event timeline.
+
+#### CSV validation rules
+
+- Required columns: `vin`, `make`, `model`, `year`, `eventType`, `eventDate`
+- Optional columns: `plateNumber`, `mileage`, `sourceSystem`, `description`
+- VIN must be exactly 17 characters.
+- `eventType` must be one of: `IMPORT`, `REGISTRATION`, `SERVICE`, `ACCIDENT`, `INSURANCE_CLAIM`, `MILEAGE_UPDATE`, `THEFT`, `OTHER`
+- `eventDate` must be a valid date, for example `2024-05-03`.
+- `mileage` is optional, but when present must be a whole number.
+- If the same VIN appears in multiple rows, `make`, `model`, `year`, and non-empty `plateNumber` must not conflict.
+- Validation is all-or-nothing: if any row has an error, no database records are written.
+
+Example conflict to test validation:
+
+```csv
+vin,plateNumber,make,model,year,eventType,eventDate,mileage,sourceSystem,description
+JTDKN3DU0A0123456,GR-9000-24,Toyota,Prius,2010,IMPORT,2024-01-12,87000,Tema Port,Imported from Japan
+JTDKN3DU0A0123456,GR-9000-24,Honda,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Make should conflict
+```
+
+**Expected:** The upload page shows row-level validation errors and imports nothing from that file.
+
 ## Test the lookup API (curl)
 
 **Local (seeded Toyota):**
@@ -117,7 +177,10 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/page.tsx` — Home + lookup form  
 - `app/vehicles/[id]/page.tsx` — Local vehicle report  
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
+- `app/admin/ingest/page.tsx` — Local admin CSV upload page  
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
+- `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
+- `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  
@@ -128,4 +191,4 @@ See `docs/project.md`, `docs/architecture.md`, and `docs/roadmap.md` for scope.
 
 ## Out of scope (not implemented)
 
-Azure, Terraform, payments, auth, dealer/partner dashboards, CSV ingestion (see roadmap for future work).
+Azure, Terraform, payments, auth, dealer/partner dashboards, risk flags, and production ingestion automation.

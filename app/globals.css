@@ -124,6 +124,12 @@ main.page {
   border-color: #fecaca;
 }
 
+.alert-success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
 .report {
   margin-top: 2rem;
   background: var(--surface);
@@ -348,4 +354,115 @@ main.page {
 
 .alert-not-found .alert-title {
   color: #78350f;
+}
+
+.admin-card {
+  margin-top: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.admin-card h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.admin-help {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.csv-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.file-label input {
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: #f8fafc;
+  font-weight: 400;
+}
+
+.csv-upload-form button {
+  align-self: flex-start;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.csv-upload-form button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.csv-upload-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 0.75rem 0 0;
+}
+
+.summary-grid dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.summary-grid dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.error-list {
+  margin: 0.85rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.error-list li {
+  margin: 0.35rem 0;
+}
+
+.csv-template {
+  margin: 1rem 0 0;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.plain-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.plain-list li {
+  margin: 0.4rem 0;
 }
