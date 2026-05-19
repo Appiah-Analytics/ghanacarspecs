@@ -76,9 +76,19 @@ Use a **plate** that does not exist in the seed data, e.g. `XX-0000-00`.
 Use a 17-character pattern NHTSA rejects (e.g. invalid check digit / invalid VIN).  
 **Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when the upstream decoder returns an error.
 
-### E. Local CSV ingestion
+### E. Local admin dashboard
 
-Open the local admin import page:
+Open the local admin dashboard:
+
+```text
+http://localhost:3000/admin
+```
+
+**Expected:** Summary cards (total vehicles, total events, accidents/claims, chassis numbers, imported vehicles) and a table of all local vehicles with links to each full report at `/vehicles/{id}`. Use **CSV ingestion** on the dashboard (or go to `/admin/ingest`) to import more records.
+
+### F. Local CSV ingestion
+
+Open the local admin CSV import page:
 
 ```text
 http://localhost:3000/admin/ingest
@@ -179,7 +189,9 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/page.tsx` — Home + lookup form  
 - `app/vehicles/[id]/page.tsx` — Local vehicle report  
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
+- `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
+- `lib/admin-dashboard.ts` — Admin summary queries and vehicle list  
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
 - `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
@@ -194,4 +206,4 @@ See `docs/project.md`, `docs/architecture.md`, and `docs/roadmap.md` for scope.
 
 ## Out of scope (not implemented)
 
-Azure, Terraform, payments, auth, dealer/partner dashboards, risk flags, and production ingestion automation.
+Azure, Terraform, payments, auth, dealer/partner dashboards, and production ingestion automation.

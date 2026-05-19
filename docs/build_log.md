@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-18 (Phase 5)  
+**Last updated:** 2026-05-19 (Phase 6)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local), NHTSA vPIC (external VIN decode)
 
 ---
@@ -279,6 +279,53 @@ Let users search and display **chassis numbers** alongside VIN and plate, withou
 
 ---
 
+## Phase 6 — Local admin dashboard
+
+### Goal
+
+Provide a simple **local admin dashboard** at `/admin` to view GhanaCarSpecs SQLite records: aggregate counts and a vehicle table with links to existing report pages. No authentication, Azure, or payments.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Admin UI | `app/admin/page.tsx` |
+| Data | `lib/admin-dashboard.ts` |
+| Admin ingest | `app/admin/ingest/page.tsx` (link back to `/admin`) |
+| Styles | `app/globals.css` (admin stats, table, back-row) |
+| Docs | `README.md`, `docs/roadmap.md`, `docs/build_log.md` |
+| Rules | `.cursor/rules/project_rules.md` (removed deferred “advanced admin dashboard”) |
+
+### Behavior implemented
+
+- **`/admin`:** Server-rendered dashboard with five summary cards: total vehicles, total events, vehicles with accident or insurance-claim events, vehicles with a chassis number, and imported vehicles (import event, `importDate`, or non-Ghana `countryOfOrigin` — same rules as vehicle intelligence).
+- **Vehicle table:** make, model, year, VIN, chassis, plate, event count, latest event date; each row links to `/vehicles/[id]` (existing report page).
+- **Navigation:** `/admin` links to `/admin/ingest`; ingest page links back to `/admin` and home lookup.
+- **`/admin/ingest`:** Unchanged CSV upload flow and API.
+
+### How it was tested
+
+- `npm run dev` → open `/admin` after `npm run db:setup`
+- Confirm summary counts match seeded data (3 vehicles, multiple events)
+- Click **View report** on a row → `/vehicles/[id]` loads full report
+- Open `/admin/ingest` from dashboard; upload CSV still works; back link returns to `/admin`
+- `npm run lint`, `npm run build`
+
+### Known limitations
+
+- No authentication — admin routes are open on localhost; not for public deployment as-is.
+- Imported-vehicle count loads all vehicles for filtering (fine for local MVP scale).
+- No search, pagination, or export on the vehicle table.
+- Summary does not include external NHTSA decodes (local DB only).
+
+### Next recommended step
+
+- Auth for admin routes before any non-local deployment.
+- Optional filters on the vehicle table (make, year, accident flag).
+- Azure deployment and monitoring (roadmap Phase 3 infra).
+
+---
+
 ## Cross-phase architecture (current)
 
 ```text
@@ -290,7 +337,8 @@ User → Home (LookupForm)
                    ├─ external VIN → sessionStorage → /decoded
                    └─ miss → 404
 
-Admin → /admin/ingest → POST /api/admin/ingest → lib/csv-ingest
+Admin → /admin (summary + vehicle table → /vehicles/[id])
+     → /admin/ingest → POST /api/admin/ingest → lib/csv-ingest
 ```
 
 **Database:** `prisma/dev.db` (SQLite) — `vehicles`, `vehicle_events`.
@@ -308,6 +356,7 @@ Admin → /admin/ingest → POST /api/admin/ingest → lib/csv-ingest
 | UX / seed fix | Report layout, ASCII seed strings, Word progress report |
 | Phase 2–4 (branch) | NHTSA fallback, CSV ingest, intelligence layer |
 | Phase 5 | Chassis number support |
+| Phase 6 | Local admin dashboard |
 
 For commit-level detail, use `git log` on branch `feature/real-vin-decoder` (and `cursor/initial-product-vision-docs` for early docs).
 

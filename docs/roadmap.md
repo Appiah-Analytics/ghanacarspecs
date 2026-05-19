@@ -26,6 +26,16 @@
 
 - [x] Chassis number support (schema, lookup, CSV, report UI)
 
+## Phase 6
+
+- [x] Local admin dashboard (`/admin`)
+
+- [x] Summary cards (vehicles, events, accidents/claims, chassis, imports)
+
+- [x] Vehicle table with links to `/vehicles/[id]`
+
+- [x] Link from `/admin` to `/admin/ingest` (CSV ingestion unchanged)
+
 ## Phase 3 (infrastructure)
 
 - [ ] Azure deployment

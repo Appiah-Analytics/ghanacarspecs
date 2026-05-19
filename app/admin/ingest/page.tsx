@@ -9,6 +9,10 @@ export default function AdminIngestPage() {
   return (
     <main className="page">
       <div className="back-row">
+        <Link href="/admin">Back to admin</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
         <Link href="/">Back to lookup</Link>
       </div>
 
