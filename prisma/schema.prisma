@@ -21,6 +21,7 @@ enum EventType {
 model Vehicle {
   id               String          @id @default(cuid())
   vin              String          @unique
+  chassisNumber    String?         @unique
   plateNumber      String?
   make             String
   model            String
