@@ -466,3 +466,100 @@ main.page {
 .plain-list li {
   margin: 0.4rem 0;
 }
+
+.intel-section {
+  padding-top: 0.25rem;
+}
+
+.intel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.intel-card {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.intel-card-wide {
+  grid-column: 1 / -1;
+}
+
+.intel-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.intel-score {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.intel-score-good {
+  color: #047857;
+}
+
+.intel-score-mid {
+  color: #b45309;
+}
+
+.intel-score-low {
+  color: #b91c1c;
+}
+
+.intel-flag {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.intel-meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.intel-detail {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.intel-factors {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.intel-factors li {
+  margin: 0.25rem 0;
+}
+
+.intel-card-good {
+  border-color: #a7f3d0;
+  background: #f0fdf4;
+}
+
+.intel-card-warn {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.intel-card-mid {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.intel-card-low {
+  border-color: #fecaca;
+  background: #fef2f2;
+}

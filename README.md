@@ -51,7 +51,7 @@ Use any seeded **VIN** or **plate** (lookup uses the local DB only for these; no
 | Volkswagen Golf 2014 | `WVWZZZ3CZWE123456` | `GT 5678-22` |
 | Honda Accord 1991 | `1HGBH41JXMN109186` | *(none)* |
 
-**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, full specs, and event timeline (mileage, source, dates per event).
+**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, full specs, a **Vehicle intelligence** section (mileage checks, accident flag, import indicator, service continuity, timeline summary, confidence score), and event timeline (mileage, source, dates per event).
 
 ### B. External VIN decoded record (NHTSA vPIC)
 
@@ -181,6 +181,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
 - `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
+- `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  

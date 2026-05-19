@@ -1,6 +1,8 @@
 import type { VehicleWithEvents } from "@/lib/lookup";
+import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 import { EventTimeline } from "@/components/EventTimeline";
 import { SourceBanner } from "@/components/SourceBanner";
+import { VehicleIntelligencePanel } from "@/components/VehicleIntelligence";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -9,6 +11,13 @@ function formatDate(d: Date | string | null | undefined): string {
 }
 
 export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
+  const intelligence = analyzeVehicleIntelligence({
+    year: vehicle.year,
+    countryOfOrigin: vehicle.countryOfOrigin,
+    importDate: vehicle.importDate,
+    events: vehicle.events,
+  });
+
   const lastMileage = vehicle.events.reduce<number | null>((max, ev) => {
     if (ev.mileage == null) return max;
     if (max == null || ev.mileage > max) return ev.mileage;
@@ -91,6 +100,8 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
           </div>
         </dl>
       </section>
+
+      <VehicleIntelligencePanel intelligence={intelligence} />
 
       <section className="report-section" aria-labelledby="history-heading">
         <h3 id="history-heading" className="report-section-title">

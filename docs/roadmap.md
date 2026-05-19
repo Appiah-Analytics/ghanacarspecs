@@ -18,7 +18,7 @@
 
 - [x] CSV ingestion
 
-- [ ] Risk flags
+- [x] Risk flags
 
 - [x] Admin upload
 

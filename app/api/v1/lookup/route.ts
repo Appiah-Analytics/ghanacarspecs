@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveLookupWithExternalVin } from "@/lib/lookup";
 import { RECORD_SOURCE_LABEL } from "@/lib/record-source";
+import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -68,6 +69,12 @@ export async function POST(request: Request) {
           sourceSystem: e.sourceSystem,
           rawPayload: e.rawPayload,
         })),
+        intelligence: analyzeVehicleIntelligence({
+          year: vehicle.year,
+          countryOfOrigin: vehicle.countryOfOrigin,
+          importDate: vehicle.importDate,
+          events: vehicle.events,
+        }),
       });
     }
 
