@@ -200,7 +200,11 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | `npm run lint` | Typecheck (`tsc --noEmit`) |
 | `npm run db:push` | Apply Prisma schema to SQLite |
 | `npm run db:seed` | Reseed sample data |
-| `npm run db:setup` | `db:push` then `db:seed` |
+| `npm run db:setup` | `db:push` then `db:seed` (SQLite — default) |
+| `npm run db:generate:postgres` | Generate Prisma client for PostgreSQL |
+| `npm run db:migrate:postgres` | Apply PostgreSQL migrations (requires `DATABASE_URL`) |
+| `npm run db:setup:postgres` | Postgres migrate + seed (staging/production) |
+| `npm run db:export:sqlite` | Export SQLite data to JSON |
 | `npm run report:docx` | Regenerate Word progress report in `docs/` |
 
 ## Project layout (main pieces)
@@ -221,7 +225,8 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  
-- `prisma/schema.prisma` — `Vehicle`, `VehicleEvent`  
+- `prisma/schema.prisma` — SQLite schema (local default)  
+- `prisma/schema.postgresql.prisma` — PostgreSQL schema (staging/production)  
 - `prisma/seed.ts` — Sample data  
 
 ## Documentation
@@ -232,6 +237,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | [`docs/build_log.md`](docs/build_log.md) | Engineering history per phase |
 | [`docs/architecture.md`](docs/architecture.md) | Current system design |
 | [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
+| [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
 

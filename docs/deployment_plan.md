@@ -1,7 +1,7 @@
 # GhanaCarSpecs — Deployment readiness plan
 
 **Status:** Documentation only — **do not deploy from this document alone.**  
-**Last updated:** 2026-05-19 (Phase 8 admin protection)  
+**Last updated:** 2026-05-20 (Phase 9 PostgreSQL readiness)  
 **Phase:** [Roadmap Phase 7](roadmap.md#phase-7--infrastructure--deployment)
 
 Related: [`architecture.md`](architecture.md), [`roadmap.md`](roadmap.md), [`build_log.md`](build_log.md), [`sample_data.md`](sample_data.md), [`.env.example`](../.env.example).
@@ -39,16 +39,17 @@ Not built: per-user accounts, OAuth, payments, Azure hosting, background jobs, `
 | Variable | Required today | Used in code? | Notes |
 |----------|----------------|---------------|--------|
 | `NODE_ENV` | Auto | Yes (`lib/prisma.ts`) | Logging and dev Prisma singleton |
-| `DATABASE_URL` | No | No (hardcoded in schema) | Set before PostgreSQL migration |
+| `DATABASE_URL` | PostgreSQL only | Yes (postgres schema) | Required for `schema.postgresql.prisma`; not used by default SQLite dev |
 | `PORT` | No | Next default | `next start` |
 | `NEXT_PUBLIC_APP_URL` | No | No | Planned canonical URL |
 | `ADMIN_API_KEY` | **Yes** (admin routes) | Yes | Preferred; Bearer token for ingest API. Must be **uncommented** in `.env` at repo root. |
 | `ADMIN_PASSWORD` | Alternative to API key | Yes | Used if `ADMIN_API_KEY` is unset |
 
 **Middleware note:** Admin vars are also inlined via `next.config.ts` `env` so Edge middleware can read them after a dev-server restart.
+
 | `AUTH_SECRET` | No | No | Reserved for future per-user auth |
 
-Copy [`.env.example`](../.env.example) to `.env` for local overrides. Prisma currently uses `url = "file:./dev.db"` in `prisma/schema.prisma` (not `env("DATABASE_URL")`).
+Copy [`.env.example`](../.env.example) to `.env` for local overrides. **SQLite local dev** uses `prisma/schema.prisma` (`file:./dev.db`). **PostgreSQL** uses `prisma/schema.postgresql.prisma` + `DATABASE_URL` — see [`postgresql.md`](postgresql.md).
 
 ---
 
@@ -101,13 +102,31 @@ No Kubernetes or Terraform required for first production.
 
 ---
 
-## 6. Future PostgreSQL migration path
+## 6. PostgreSQL migration path (Phase 9)
 
-1. Set `provider = "postgresql"` and `url = env("DATABASE_URL")` in `prisma/schema.prisma`.  
-2. Add `DATABASE_URL` to `.env` and Azure configuration.  
-3. Introduce `prisma migrate` (replace `db push` for production).  
-4. Migrate data (re-seed, CSV re-import, or export script).  
-5. Deploy with `npx prisma migrate deploy` before `next start`.
+GhanaCarSpecs uses a **dual-schema** Prisma setup so local SQLite is unchanged while production can use PostgreSQL. Full detail: [`postgresql.md`](postgresql.md).
+
+| Schema file | Provider | When |
+|-------------|----------|------|
+| `prisma/schema.prisma` | SQLite | Default local dev (`npm run db:setup`) |
+| `prisma/schema.postgresql.prisma` | PostgreSQL | Staging/production |
+
+### Safest cutover paths
+
+1. **Re-seed (MVP):** `npm run db:setup:postgres` on empty PostgreSQL — fastest for seed/CSV-only data.
+2. **Export/import:** `npm run db:export:sqlite` → `db:migrate:postgres` → `db:import:postgres` — preserves local SQLite rows.
+3. **CSV re-import:** Re-upload partner CSV after postgres migrate.
+
+### Production deploy sequence
+
+```bash
+npm run db:generate:postgres
+npm run db:migrate:postgres
+npm run build
+npm run start
+```
+
+Do **not** use SQLite in production. Committed migrations: `prisma/migrations/20260520120000_init/`.
 
 ---
 
@@ -161,8 +180,9 @@ Run a restore drill on staging before production cutover.
 ### Build and schema
 
 - [ ] `npm run lint` and `npm run build` pass on CI  
-- [ ] `DATABASE_URL` + PostgreSQL in Prisma schema  
-- [ ] `prisma migrate deploy` in release process  
+- [x] Dual Prisma schema (SQLite local + PostgreSQL production) — [`postgresql.md`](postgresql.md)  
+- [x] PostgreSQL migrations committed (`prisma/migrations/`)  
+- [ ] `db:generate:postgres` + `db:migrate:postgres` in release pipeline  
 - [ ] `postinstall` → `prisma generate` on deploy host  
 
 ### Database and hosting

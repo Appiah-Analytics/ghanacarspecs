@@ -1,8 +1,8 @@
 # GhanaCarSpecs Architecture
 
-**Stack:** Next.js 15 (App Router), React 19, TypeScript, Prisma 6, SQLite (`prisma/dev.db`), NHTSA vPIC (external VIN).
+**Stack:** Next.js 15 (App Router), React 19, TypeScript, Prisma 6, SQLite (local) / PostgreSQL (production-ready), NHTSA vPIC.
 
-**Phases:** See [`roadmap.md`](roadmap.md) (Phases 1–7). **Deployment:** [`deployment_plan.md`](deployment_plan.md). **Test data:** [`sample_data.md`](sample_data.md).
+**Phases:** See [`roadmap.md`](roadmap.md) (Phases 1–9). **Deployment:** [`deployment_plan.md`](deployment_plan.md). **PostgreSQL:** [`postgresql.md`](postgresql.md). **Test data:** [`sample_data.md`](sample_data.md).
 
 ---
 
@@ -60,7 +60,9 @@ ghanacarspecs/
 │   ├── vehicle-intelligence.ts
 │   └── record-source.ts
 ├── prisma/
-│   ├── schema.prisma
+│   ├── schema.prisma              # SQLite (local default)
+│   ├── schema.postgresql.prisma   # PostgreSQL (staging/production)
+│   ├── migrations/                # PostgreSQL migrations only
 │   └── seed.ts
 └── docs/
 ```
@@ -72,7 +74,7 @@ ghanacarspecs/
 - **Vehicle** — unique `vin`, optional unique `chassisNumber`, optional `plateNumber`, specs, import metadata.  
 - **VehicleEvent** — `eventType` enum, `eventDate`, optional `mileage`, `sourceSystem`, `rawPayload` JSON.
 
-Database file: `prisma/dev.db` (gitignored). See `prisma/schema.prisma`.
+**Local:** `prisma/dev.db` (SQLite, gitignored). **Production:** PostgreSQL via `schema.postgresql.prisma` + `DATABASE_URL`. See [`postgresql.md`](postgresql.md).
 
 ---
 

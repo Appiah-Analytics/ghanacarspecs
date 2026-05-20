@@ -3,10 +3,10 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-19 (Phase 8)  
-**Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local), NHTSA vPIC (external VIN decode)
+**Last updated:** 2026-05-20 (Phase 9)  
+**Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
-**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–8. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
+**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–9. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
 
 ---
 
@@ -362,6 +362,7 @@ Admin → /admin/login (ADMIN_API_KEY or ADMIN_PASSWORD)
 | Phase 6 | Local admin dashboard |
 | Phase 7 (docs) | Deployment readiness plan, `.env.example`, doc stabilization |
 | Phase 8 | Basic admin protection (env secret + middleware) |
+| Phase 9 | PostgreSQL readiness (dual schema + migrations) |
 
 For commit-level detail, use `git log` on the main feature branches for each phase.
 
@@ -409,6 +410,51 @@ Protect admin UI and CSV ingest API before any public deployment using a single 
 
 - Azure deployment (Phase 7) with secrets in App Service configuration.
 - Optional rate limiting on `/api/admin/login` and lookup API.
+
+---
+
+## Phase 9 — PostgreSQL readiness
+
+### Goal
+
+Prepare for **PostgreSQL in production** while keeping **SQLite local development** unchanged. No Azure provisioning or deploy.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| PostgreSQL schema | `prisma/schema.postgresql.prisma` |
+| Migrations | `prisma/migrations/20260520120000_init/`, `migration_lock.toml` |
+| Data scripts | `scripts/export-sqlite-data.ts`, `scripts/import-postgres-data.ts` |
+| Docs | `docs/postgresql.md`, `docs/deployment_plan.md` §6, `README.md`, `docs/roadmap.md`, `.env.example` |
+| Scripts | `package.json` (`db:generate:postgres`, `db:migrate:postgres`, `db:setup:postgres`, export/import) |
+| SQLite schema | `prisma/schema.prisma` (comment only — still default) |
+
+### Behavior implemented
+
+- **Dual-schema strategy:** Prisma cannot switch providers in one schema; SQLite stays in `schema.prisma`, PostgreSQL in `schema.postgresql.prisma` with `env("DATABASE_URL")`.
+- **Migrations:** Initial PostgreSQL migration committed; SQLite continues `db push` locally.
+- **Cutover paths documented:** re-seed (MVP), export/import scripts, CSV re-import.
+- **Production sequence:** `db:generate:postgres` → `db:migrate:postgres` → `build` → `start`.
+
+### How it was tested
+
+- `npm run db:setup` (SQLite unchanged)
+- `npm run db:export:sqlite` (exports seed vehicles)
+- `npm run db:generate:postgres`
+- `npm run lint`, `npm run build`
+
+### Known limitations
+
+- Two schema files must be kept in sync manually.
+- `@prisma/client` reflects last `db:generate*` run — document switching.
+- PostgreSQL migrate/import not exercised without a live Postgres instance.
+- Azure PostgreSQL still Phase 7 (not provisioned).
+
+### Next recommended step
+
+- Add `db:generate:postgres` + `db:migrate:postgres` to CI/deploy pipeline when Azure staging exists.
+- Optional: local Docker Postgres smoke test before first staging deploy.
 
 ---
 

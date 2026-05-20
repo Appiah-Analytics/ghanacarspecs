@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases are numbered in **delivery order** (1 → 8). The engineering detail for each shipped phase is in [`build_log.md`](build_log.md). Canonical test VINs and plates are in [`sample_data.md`](sample_data.md).
+Phases are numbered in **delivery order** (1 → 9). The engineering detail for each shipped phase is in [`build_log.md`](build_log.md). Canonical test VINs and plates are in [`sample_data.md`](sample_data.md).
 
 | Phase | Theme | Status |
 |-------|--------|--------|
@@ -12,6 +12,7 @@ Phases are numbered in **delivery order** (1 → 8). The engineering detail for 
 | 6 | Local admin dashboard | Done |
 | 7 | Infrastructure & deployment | In progress (docs only) |
 | 8 | Basic admin protection | Done |
+| 9 | PostgreSQL readiness | Done |
 
 ---
 
@@ -60,3 +61,11 @@ Phases are numbered in **delivery order** (1 → 8). The engineering detail for 
 - [x] Browser sign-in at `/admin/login` (httpOnly session cookie)
 - [x] CSV ingest API accepts `Authorization: Bearer` or `X-Admin-Key`
 - [x] Public lookup unchanged (no admin secret required)
+
+## Phase 9 — PostgreSQL readiness
+
+- [x] Dual Prisma schema (`schema.prisma` SQLite + `schema.postgresql.prisma`)
+- [x] Initial PostgreSQL migration (`prisma/migrations/20260520120000_init`)
+- [x] npm scripts for postgres generate, migrate, setup, export/import
+- [x] Documentation (`docs/postgresql.md`, deployment plan §6)
+- [x] Local SQLite workflow unchanged (`npm run db:setup`)

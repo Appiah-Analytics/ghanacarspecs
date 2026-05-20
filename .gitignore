@@ -12,6 +12,7 @@ out/
 # Prisma
 prisma/*.db
 prisma/*.db-journal
+prisma/data/
 
 # Logs and caches
 npm-debug.log*
