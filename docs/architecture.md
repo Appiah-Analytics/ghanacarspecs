@@ -90,10 +90,12 @@ API contract: `POST /api/v1/lookup` with `{ "vinOrPlate": string }`.
 
 ## Admin flow
 
+- **`middleware.ts`** — blocks `/admin/*` and `/api/admin/*` unless configured and authenticated.  
+- **`/admin/login`** — browser sign-in; sets httpOnly `gcs_admin_session` cookie when `ADMIN_API_KEY` or `ADMIN_PASSWORD` matches.  
 - **`/admin`** — aggregate stats and vehicle table (links to reports).  
-- **`/admin/ingest`** — CSV upload → `POST /api/admin/ingest` → validate all rows → transactional upsert.
+- **`/admin/ingest`** — CSV upload → `POST /api/admin/ingest` (also accepts `Authorization: Bearer` or `X-Admin-Key`).
 
-No authentication on admin routes (localhost / pre-production only).
+One shared deployment secret — no user accounts or OAuth (Phase 8).
 
 ---
 

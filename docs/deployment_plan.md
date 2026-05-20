@@ -1,7 +1,7 @@
 # GhanaCarSpecs — Deployment readiness plan
 
 **Status:** Documentation only — **do not deploy from this document alone.**  
-**Last updated:** 2026-05-19 (stabilization pass)  
+**Last updated:** 2026-05-19 (Phase 8 admin protection)  
 **Phase:** [Roadmap Phase 7](roadmap.md#phase-7--infrastructure--deployment)
 
 Related: [`architecture.md`](architecture.md), [`roadmap.md`](roadmap.md), [`build_log.md`](build_log.md), [`sample_data.md`](sample_data.md), [`.env.example`](../.env.example).
@@ -18,18 +18,19 @@ User → Home → POST /api/v1/lookup → lib/lookup
               ├─ external VIN → sessionStorage → /decoded
               └─ miss → 404
 
-Admin → /admin → /vehicles/[id]
+Admin → /admin/login → /admin → /vehicles/[id]
      → /admin/ingest → POST /api/admin/ingest → lib/csv-ingest
 ```
 
 | Route | Purpose |
 |-------|---------|
 | `/`, `/vehicles/[id]`, `/decoded` | Public lookup and reports |
-| `/admin`, `/admin/ingest` | Local admin (no auth) |
-| `POST /api/v1/lookup` | Lookup API |
-| `POST /api/admin/ingest` | CSV import |
+| `/admin/login` | Admin sign-in (env secret) |
+| `/admin`, `/admin/ingest` | Protected admin UI |
+| `POST /api/v1/lookup` | Public lookup API |
+| `POST /api/admin/ingest` | Protected CSV import |
 
-Not built: auth, payments, Azure hosting, background jobs, `public/` static assets.
+Not built: per-user accounts, OAuth, payments, Azure hosting, background jobs, `public/` static assets.
 
 ---
 
@@ -41,8 +42,11 @@ Not built: auth, payments, Azure hosting, background jobs, `public/` static asse
 | `DATABASE_URL` | No | No (hardcoded in schema) | Set before PostgreSQL migration |
 | `PORT` | No | Next default | `next start` |
 | `NEXT_PUBLIC_APP_URL` | No | No | Planned canonical URL |
-| `ADMIN_API_KEY` | No | No | Planned ingest protection |
-| `AUTH_SECRET` | No | No | Planned sessions |
+| `ADMIN_API_KEY` | **Yes** (admin routes) | Yes | Preferred; Bearer token for ingest API. Must be **uncommented** in `.env` at repo root. |
+| `ADMIN_PASSWORD` | Alternative to API key | Yes | Used if `ADMIN_API_KEY` is unset |
+
+**Middleware note:** Admin vars are also inlined via `next.config.ts` `env` so Edge middleware can read them after a dev-server restart.
+| `AUTH_SECRET` | No | No | Reserved for future per-user auth |
 
 Copy [`.env.example`](../.env.example) to `.env` for local overrides. Prisma currently uses `url = "file:./dev.db"` in `prisma/schema.prisma` (not `env("DATABASE_URL")`).
 
@@ -68,7 +72,7 @@ npm run dev         # http://localhost:3000
 | `npm run db:setup` | `db:push` then `db:seed` |
 | `npm run report:docx` | Regenerate Word report in `docs/` |
 
-Verify with values in [`sample_data.md`](sample_data.md). Admin: `/admin`, ingest: `/admin/ingest`.
+Verify with values in [`sample_data.md`](sample_data.md). Admin: set `ADMIN_API_KEY` or `ADMIN_PASSWORD` in `.env`, sign in at `/admin/login`, then use `/admin` and `/admin/ingest`.
 
 ---
 
@@ -111,7 +115,7 @@ No Kubernetes or Terraform required for first production.
 
 - App Service + PostgreSQL in one region; firewall DB to App Service outbound IPs.  
 - Allow HTTPS outbound to `vpic.nhtsa.dot.gov`.  
-- Protect or disable `/admin` and `/api/admin/ingest` before go-live.  
+- Set a strong `ADMIN_API_KEY` (or `ADMIN_PASSWORD`) in production secrets; rotate if leaked.  
 - Staging and production: separate apps and databases.  
 - Enable HTTPS-only and Application Insights.
 
@@ -143,7 +147,8 @@ Run a restore drill on staging before production cutover.
 
 | Risk | Mitigation before production |
 |------|------------------------------|
-| Open admin routes | Auth, API key, or IP restriction |
+| Weak admin secret | Long random `ADMIN_API_KEY`; never commit `.env` |
+| Stolen session cookie | `httpOnly`, `secure` in production, HTTPS only |
 | Public lookup API | Rate limiting |
 | CSV upload size | Body size limits on route and host |
 | Secrets in git | `.env` gitignored; platform secret store |
@@ -168,7 +173,8 @@ Run a restore drill on staging before production cutover.
 
 ### Security and ops
 
-- [ ] Admin routes protected or disabled  
+- [ ] `ADMIN_API_KEY` or `ADMIN_PASSWORD` set in production secrets  
+- [ ] Admin sign-in and CSV ingest tested on staging  
 - [ ] No secrets committed; `.env.example` documents names only  
 - [ ] Application Insights and 5xx alerts  
 - [ ] Smoke tests from [`sample_data.md`](sample_data.md) on staging  

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSignOut } from "@/components/AdminSignOut";
 import { getAdminDashboardSummary, getAdminVehicleRows } from "@/lib/admin-dashboard";
 
 export const dynamic = "force-dynamic";
@@ -35,13 +36,15 @@ export default async function AdminDashboardPage() {
           ·
         </span>
         <Link href="/admin/ingest">CSV ingestion</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
+        <AdminSignOut />
       </div>
 
       <section className="hero">
         <h1>Admin dashboard</h1>
-        <p>
-          Local overview of GhanaCarSpecs SQLite records. No authentication yet — use on localhost for development only.
-        </p>
+        <p>Local overview of GhanaCarSpecs SQLite records. Access is limited to holders of the deployment admin secret.</p>
       </section>
 
       <section className="admin-stats" aria-labelledby="admin-stats-heading">

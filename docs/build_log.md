@@ -3,10 +3,10 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-19 (stabilization pass)  
+**Last updated:** 2026-05-19 (Phase 8)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local), NHTSA vPIC (external VIN decode)
 
-**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–7. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
+**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–8. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
 
 ---
 
@@ -339,7 +339,8 @@ User → Home (LookupForm)
                    ├─ external VIN → sessionStorage → /decoded
                    └─ miss → 404
 
-Admin → /admin (summary + vehicle table → /vehicles/[id])
+Admin → /admin/login (ADMIN_API_KEY or ADMIN_PASSWORD)
+     → /admin (summary + vehicle table → /vehicles/[id])
      → /admin/ingest → POST /api/admin/ingest → lib/csv-ingest
 ```
 
@@ -360,8 +361,54 @@ Admin → /admin (summary + vehicle table → /vehicles/[id])
 | Phase 5 | Chassis number support |
 | Phase 6 | Local admin dashboard |
 | Phase 7 (docs) | Deployment readiness plan, `.env.example`, doc stabilization |
+| Phase 8 | Basic admin protection (env secret + middleware) |
 
 For commit-level detail, use `git log` on the main feature branches for each phase.
+
+---
+
+## Phase 8 — Basic admin protection
+
+### Goal
+
+Protect admin UI and CSV ingest API before any public deployment using a single environment secret — no user accounts, OAuth, or database users.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Auth | `lib/admin-auth.ts` |
+| Middleware | `middleware.ts` |
+| Login | `app/admin/login/page.tsx`, `app/api/admin/login/route.ts`, `app/api/admin/logout/route.ts`, `components/AdminLoginForm.tsx`, `components/AdminSignOut.tsx` |
+| Ingest | `app/api/admin/ingest/route.ts`, `components/CsvUploadForm.tsx` |
+| Admin UI | `app/admin/page.tsx`, `app/admin/ingest/page.tsx`, `app/globals.css` |
+| Config / docs | `.env.example`, `README.md`, `docs/roadmap.md`, `docs/deployment_plan.md`, `docs/architecture.md` |
+
+### Behavior implemented
+
+- **`ADMIN_API_KEY`** (preferred) or **`ADMIN_PASSWORD`** must be set or admin routes return **503** with configuration guidance.
+- **Middleware** guards `/admin`, `/admin/ingest`, and `/api/admin/*` except `/admin/login`, `/api/admin/login`, `/api/admin/logout`.
+- **Browser:** sign-in at `/admin/login` → httpOnly session cookie (8 hours, `secure` in production).
+- **API / scripts:** `Authorization: Bearer <secret>` or `X-Admin-Key: <secret>` on `POST /api/admin/ingest`.
+- **Public lookup** (`/`, `/api/v1/lookup`, `/vehicles/[id]`, `/decoded`) unchanged.
+
+### How it was tested
+
+- Without `.env` secret → `/admin` redirects to login with not-configured message.
+- With secret → login → dashboard and CSV upload succeed; sign out clears access.
+- `POST /api/v1/lookup` without admin headers still works.
+- `npm run lint`, `npm run build`
+
+### Known limitations
+
+- Single shared secret for all admins (no per-user audit trail).
+- No rate limiting on login attempts.
+- Session is a static HMAC-derived token (no server-side session store).
+
+### Next recommended step
+
+- Azure deployment (Phase 7) with secrets in App Service configuration.
+- Optional rate limiting on `/api/admin/login` and lookup API.
 
 ---
 

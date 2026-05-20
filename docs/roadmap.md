@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases are numbered in **delivery order** (1 → 7). The engineering detail for each shipped phase is in [`build_log.md`](build_log.md). Canonical test VINs and plates are in [`sample_data.md`](sample_data.md).
+Phases are numbered in **delivery order** (1 → 8). The engineering detail for each shipped phase is in [`build_log.md`](build_log.md). Canonical test VINs and plates are in [`sample_data.md`](sample_data.md).
 
 | Phase | Theme | Status |
 |-------|--------|--------|
@@ -11,6 +11,7 @@ Phases are numbered in **delivery order** (1 → 7). The engineering detail for 
 | 5 | Chassis number support | Done |
 | 6 | Local admin dashboard | Done |
 | 7 | Infrastructure & deployment | In progress (docs only) |
+| 8 | Basic admin protection | Done |
 
 ---
 
@@ -51,3 +52,11 @@ Phases are numbered in **delivery order** (1 → 7). The engineering detail for 
 - [x] Deployment readiness documentation (`docs/deployment_plan.md`, `.env.example`)
 - [ ] Azure deployment (not started — see deployment plan)
 - [ ] Monitoring
+
+## Phase 8 — Basic admin protection
+
+- [x] Protect `/admin` and `/admin/ingest` (middleware + API checks)
+- [x] `ADMIN_API_KEY` or `ADMIN_PASSWORD` from environment
+- [x] Browser sign-in at `/admin/login` (httpOnly session cookie)
+- [x] CSV ingest API accepts `Authorization: Bearer` or `X-Admin-Key`
+- [x] Public lookup unchanged (no admin secret required)

@@ -16,10 +16,21 @@ From the repository root:
 
 ```bash
 npm install
+cp .env.example .env
+# Edit .env: set ADMIN_API_KEY or ADMIN_PASSWORD (required for /admin routes)
 npm run db:setup
 ```
 
 `db:setup` runs `prisma db push` (creates/updates `prisma/dev.db`) and `prisma db seed` (sample vehicles and events).
+
+**Admin access:** Set `ADMIN_API_KEY` or `ADMIN_PASSWORD` in `.env`, restart the dev server, then open `/admin/login`. Public lookup (`/` and `POST /api/v1/lookup`) does not require admin credentials.
+
+### Admin env not loading?
+
+1. **File location:** `.env` must live at the **repo root** (same folder as `package.json`), not under `app/` or `prisma/`.
+2. **Uncommented:** `ADMIN_API_KEY=...` must be a real line — not `# ADMIN_API_KEY=...` (a commented copy of `.env.example` is ignored).
+3. **Restart:** Stop and restart `npm run dev` after editing `.env` (middleware inlines env at compile time).
+4. **Check:** Open `/admin/login` — the **Env check** box shows whether the server sees `ADMIN_API_KEY` / `ADMIN_PASSWORD` (never the secret value).
 
 ## Run the app
 
@@ -83,21 +94,24 @@ Use this 17-character VIN (not in the seed database):
 
 ### E. Local admin dashboard
 
-Open the local admin dashboard:
+1. Ensure `.env` has `ADMIN_API_KEY` or `ADMIN_PASSWORD` and restart `npm run dev`.
+2. Open `http://localhost:3000/admin/login`, enter the same secret, then visit the dashboard.
 
 ```text
 http://localhost:3000/admin
 ```
 
-**Expected:** Summary cards (total vehicles, total events, accidents/claims, chassis numbers, imported vehicles) and a table of all local vehicles with links to each full report at `/vehicles/{id}`. Use **CSV ingestion** on the dashboard (or go to `/admin/ingest`) to import more records.
+**Expected:** Summary cards and a vehicle table with links to `/vehicles/{id}`. Unauthenticated requests redirect to `/admin/login`.
 
 ### F. Local CSV ingestion
 
-Open the local admin CSV import page:
+Sign in at `/admin/login` first, then open:
 
 ```text
 http://localhost:3000/admin/ingest
 ```
+
+**API / curl:** Send the secret as `Authorization: Bearer <ADMIN_API_KEY>` or `X-Admin-Key: <secret>` on `POST /api/admin/ingest`.
 
 If Next is running on another port, use that port instead (for example `http://localhost:3001/admin/ingest`).
 
@@ -197,6 +211,9 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
 - `lib/admin-dashboard.ts` — Admin summary queries and vehicle list  
+- `lib/admin-auth.ts` — Admin secret verification and session cookie  
+- `middleware.ts` — Protects `/admin` and `/api/admin/*`  
+- `app/admin/login/page.tsx` — Admin sign-in  
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
 - `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
@@ -218,8 +235,8 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
 
-Copy [`.env.example`](.env.example) to `.env` when adding environment-based configuration (optional for local SQLite today).
+Copy [`.env.example`](.env.example) to `.env`. **Admin routes require** `ADMIN_API_KEY` or `ADMIN_PASSWORD` (see Phase 8 in the roadmap).
 
 ## Out of scope (not implemented)
 
-Azure hosting, Terraform, payments, auth, dealer/partner dashboards, and automated production ingestion. Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.
+Azure hosting, Terraform, payments, per-user accounts, OAuth, dealer/partner dashboards, and automated production ingestion. Admin uses a **single shared secret** (not user accounts). Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.
