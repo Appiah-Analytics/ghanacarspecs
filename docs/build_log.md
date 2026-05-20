@@ -3,10 +3,10 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-20 (Phase 9)  
+**Last updated:** 2026-05-20 (Phase 10)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
-**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–9. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
+**Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
 
 ---
 
@@ -106,7 +106,7 @@ Keep **local database lookup first**. If a **17-character VIN** is not in SQLite
 ### How it was tested
 
 - Seeded VIN still resolves **local** (e.g. `4T1BE46K37U123456`).
-- Non-seeded valid VIN (e.g. `WBADT43452G922939`) → `/decoded` with external banner.
+- Non-seeded valid VIN (e.g. `1HGCM82633A004352`) → `/decoded` with external banner.
 - Unknown plate → 404 on home (no external call).
 - `npm run lint`, `npm run build`
 - Git Bash / PowerShell `curl` against lookup API (use correct port if 3001).
@@ -263,7 +263,7 @@ Let users search and display **chassis numbers** alongside VIN and plate, withou
 
 - `npm run db:push` and `npm run db:seed` after schema change.
 - Lookup by seeded VIN, plate, and chassis (e.g. Toyota chassis `BE46K37U123456`).
-- Confirm `WBADT43452G922939` still uses external decode when not in DB.
+- Confirm `1HGCM82633A004352` still uses external decode when not in DB.
 - `npm run lint`, `npm run build`
 
 ### Known limitations
@@ -363,8 +363,52 @@ Admin → /admin/login (ADMIN_API_KEY or ADMIN_PASSWORD)
 | Phase 7 (docs) | Deployment readiness plan, `.env.example`, doc stabilization |
 | Phase 8 | Basic admin protection (env secret + middleware) |
 | Phase 9 | PostgreSQL readiness (dual schema + migrations) |
+| Phase 10 | Public demo readiness (homepage, disclaimer, demo plan) |
 
 For commit-level detail, use `git log` on the main feature branches for each phase.
+
+---
+
+## Phase 10 — Public demo readiness
+
+### Goal
+
+Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence and history platform for Ghana, with clear sample-data disclaimers and try-it examples — without deploying or adding payments, accounts, DVLA, or Azure.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Homepage | `app/page.tsx`, `components/HowItWorks.tsx`, `components/DemoExamples.tsx`, `components/PublicDisclaimer.tsx` |
+| Chrome | `components/SiteHeader.tsx`, `components/SiteFooter.tsx`, `app/layout.tsx` (metadata) |
+| Lookup | `components/LookupForm.tsx` (fill-demo event, input id) |
+| Styles | `app/globals.css` |
+| Docs | `docs/public_demo_plan.md`, `README.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- Homepage positions **local GhanaCarSpecs records** + **NHTSA external decode** with Ghana-focused messaging.
+- **Try the demo** section with one-click fill from [`sample_data.md`](sample_data.md) values.
+- **Public demo notice** disclaimer: sample local data; external decode limitations.
+- Site header/footer; **no admin link** on public homepage.
+- Open Graph / title / description updated for demo sharing.
+- Admin protection unchanged (Phase 8).
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual: Try buttons fill lookup; local VIN, external VIN, not-found flows unchanged
+
+### Known limitations
+
+- Demo examples omit invalid-VIN error case on homepage (documented in `sample_data.md`).
+- `AdminEnvDiagnostic` still on `/admin/login` (admin-only).
+- Not deployed to Vercel/Neon yet — see `public_demo_plan.md` checklist.
+
+### Next recommended step
+
+- Optional public deploy to Vercel + Neon using `public_demo_plan.md` §6.
+- Azure production path remains Phase 7 when ready.
 
 ---
 

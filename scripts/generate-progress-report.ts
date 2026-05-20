@@ -154,7 +154,7 @@ async function main() {
 
           h1("10. How to run and test (summary)"),
           p("From repository root: npm install; npm run db:setup (or prisma db push and prisma db seed); npm run dev."),
-          p("Sample data: see docs/sample_data.md (seeded VINs, plates, chassis; external VIN WBADT43452G922939; CSV import JTDKN3DU0A0123456 / GR-9000-24)."),
+          p("Sample data: see docs/sample_data.md (seeded VINs, plates, chassis; external VIN 1HGCM82633A004352; CSV import JTDKN3DU0A0123456 / GR-9000-24)."),
           p("If port 3000 is busy, Next.js may bind to 3001; use the URL shown in the terminal for browser and curl/Invoke-RestMethod tests."),
 
           h1("11. Operational notes"),

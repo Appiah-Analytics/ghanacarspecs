@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases are numbered in **delivery order** (1 → 9). The engineering detail for each shipped phase is in [`build_log.md`](build_log.md). Canonical test VINs and plates are in [`sample_data.md`](sample_data.md).
+Phases are numbered in **delivery order** (1 → 10). The engineering detail for each shipped phase is in [`build_log.md`](build_log.md). Canonical test VINs and plates are in [`sample_data.md`](sample_data.md).
 
 | Phase | Theme | Status |
 |-------|--------|--------|
@@ -13,6 +13,7 @@ Phases are numbered in **delivery order** (1 → 9). The engineering detail for 
 | 7 | Infrastructure & deployment | In progress (docs only) |
 | 8 | Basic admin protection | Done |
 | 9 | PostgreSQL readiness | Done |
+| 10 | Public demo readiness | Done |
 
 ---
 
@@ -69,3 +70,13 @@ Phases are numbered in **delivery order** (1 → 9). The engineering detail for 
 - [x] npm scripts for postgres generate, migrate, setup, export/import
 - [x] Documentation (`docs/postgresql.md`, deployment plan §6)
 - [x] Local SQLite workflow unchanged (`npm run db:setup`)
+
+## Phase 10 — Public demo readiness
+
+- [x] Homepage messaging for Ghana vehicle intelligence & history
+- [x] How lookup works (local records + NHTSA fallback)
+- [x] Try-the-demo section (`docs/sample_data.md` values)
+- [x] Public disclaimer (sample data vs external decode)
+- [x] Site metadata and light public UX polish
+- [x] No prominent admin link on homepage
+- [x] `docs/public_demo_plan.md` (Vercel/Neon checklist for later)

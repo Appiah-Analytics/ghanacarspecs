@@ -72,17 +72,19 @@ Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case i
 
 Use a **valid 17-character VIN** that is **not** in the seed list above (any real VIN NHTSA can decode works).
 
-Example (BMW, not in seed data — see [`docs/sample_data.md`](docs/sample_data.md)):
+Example (not in seed data — see [`docs/sample_data.md`](docs/sample_data.md)):
 
-`WBADT43452G922939`
+`1HGCM82633A004352`
 
-**Expected:** After submit, redirect to `/decoded` with a blue banner **External VIN decoded record**, decoded specifications, and an empty event-history note (no local rows).
+**Expected:** After submit, redirect to `/decoded` with a blue banner **External VIN decoded record**, decoded specifications from NHTSA vPIC, and an empty event-history note (no local GhanaCarSpecs rows). Only **17-character VINs** use this fallback; plates and chassis numbers do not.
 
-### C. No record found
+### C. No local record (real or demo identifier)
 
-Use a **plate** that does not exist in the seed data, e.g. `XX-0000-00`.
+Use a plate not in the sample database, for example `GR-9999-99` or `XX-0000-00`.
 
-**Expected:** Orange **No record found** message on the home page (plates do not trigger the external VIN API).
+**Expected:** Orange alert titled **No local GhanaCarSpecs record** explaining that the demonstration database has limited sample vehicles only — not DVLA, insurer, police, garage, or official Ghana records. Real Ghana identifiers not in the demo are not a claim that the vehicle has no history.
+
+Plates and chassis numbers do **not** trigger the external VIN API. Only valid **17-character VINs** may fall back to NHTSA vPIC.
 
 ### D. External decode failure
 
@@ -182,7 +184,7 @@ Response includes `"recordSource":"local"` and `"recordSourceLabel":"Local Ghana
 ```bash
 curl -s -X POST "http://localhost:3000/api/v1/lookup" ^
   -H "Content-Type: application/json" ^
-  -d "{\"vinOrPlate\":\"WBADT43452G922939\"}"
+  -d "{\"vinOrPlate\":\"1HGCM82633A004352\"}"
 ```
 
 Response includes `"recordSource":"external"`, `"recordSourceLabel":"External VIN decoded record"`, `"dataProvider":"NHTSA vPIC"`, and a `decoded` object.
@@ -238,6 +240,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | [`docs/architecture.md`](docs/architecture.md) | Current system design |
 | [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
 | [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
+| [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
 
