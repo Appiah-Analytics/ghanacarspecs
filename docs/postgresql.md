@@ -68,14 +68,27 @@ Migrations live in `prisma/migrations/` and apply **only** to PostgreSQL (`--sch
 
 ### 3. Production deploy order
 
+**Vercel (automatic):** When `VERCEL=1`, `npm install` and `npm run build` (or `vercel-build`) use the PostgreSQL schema:
+
+```bash
+# Handled by scripts/production-build.mjs on Vercel:
+prisma generate --schema prisma/schema.postgresql.prisma
+prisma migrate deploy --schema prisma/schema.postgresql.prisma
+next build
+```
+
+Set **`DATABASE_URL`** in the Vercel project (Neon pooled connection string). Run **`npm run db:seed`** once against Neon if the database is empty (migrations do not seed data).
+
+**Manual / other hosts:**
+
 ```bash
 npm run db:generate:postgres
 npm run db:migrate:postgres
-npm run build
+npm run build:local   # or npm run build on Vercel only
 npm run start
 ```
 
-**Important:** Production builds must run `db:generate:postgres` so `@prisma/client` targets PostgreSQL. Local dev uses `db:generate` (SQLite) after working on postgres.
+**Important:** Local `npm run dev` and `npm run db:setup` still use **SQLite** (`schema.prisma`). Only Vercel/production builds switch to PostgreSQL via `VERCEL=1`.
 
 ---
 
@@ -148,6 +161,25 @@ When editing Prisma models:
 3. Local: `npm run db:push` and test.
 4. PostgreSQL: `npm run db:migrate:postgres:dev` to add a migration; commit `prisma/migrations/`.
 5. Regenerate clients: `db:generate` (local) and `db:generate:postgres` (deploy).
+
+---
+
+## Vercel + Neon
+
+| Vercel setting | Value |
+|----------------|--------|
+| **Build Command** | `npm run vercel-build` (default via `vercel.json`) |
+| **Environment** | `DATABASE_URL` = Neon PostgreSQL connection string |
+| **Admin (optional)** | `ADMIN_API_KEY` or `ADMIN_PASSWORD` |
+
+The build runs `prisma generate --schema prisma/schema.postgresql.prisma` before `next build`. If lookup returns **Lookup failed**, check Vercel logs: usually missing `DATABASE_URL`, wrong connection string, or Prisma client generated for SQLite (redeploy after this fix).
+
+One-time after creating the Neon database:
+
+```bash
+DATABASE_URL="postgresql://..." npm run db:migrate:postgres
+DATABASE_URL="postgresql://..." npm run db:seed
+```
 
 ---
 

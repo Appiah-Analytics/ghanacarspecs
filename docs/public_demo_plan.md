@@ -110,7 +110,7 @@ Use when the team chooses to host a public demo URL. **Not executed in Phase 10.
 
 - [ ] Set `ADMIN_API_KEY` in Vercel secrets (do not expose to client)
 - [ ] `NODE_ENV=production` (automatic on Vercel)
-- [ ] Build: `npm run build` (ensure `db:generate:postgres` ran in build or prebuild)
+- [ ] Build: `npm run vercel-build` (or `npm run build` on Vercel — auto-generates PostgreSQL Prisma client and runs `migrate deploy`; set `DATABASE_URL` first)
 - [ ] Smoke test production URL:
   - [ ] Homepage loads; Try demo examples work
   - [ ] Local VIN lookup → report

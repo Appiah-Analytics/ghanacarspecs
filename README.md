@@ -197,7 +197,9 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | -------- | ----------- |
 | `npm run dev` | Next.js dev server (Turbopack) |
 | `npm run dev:webpack` | Dev server (Webpack fallback) |
-| `npm run build` | Production build |
+| `npm run build` | Production build (SQLite client locally; PostgreSQL on Vercel via `VERCEL=1`) |
+| `npm run build:local` | `db:generate` (SQLite) then `next build` — test production bundle locally |
+| `npm run vercel-build` | Same as production build on Vercel (postgres generate + migrate + `next build`) |
 | `npm run start` | Production server (after `build`) |
 | `npm run lint` | Typecheck (`tsc --noEmit`) |
 | `npm run db:push` | Apply Prisma schema to SQLite |
@@ -228,7 +230,8 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  
 - `prisma/schema.prisma` — SQLite schema (local default)  
-- `prisma/schema.postgresql.prisma` — PostgreSQL schema (staging/production)  
+- `prisma/schema.postgresql.prisma` — PostgreSQL schema (Vercel / Neon production)  
+- `vercel.json` — Vercel build command (`vercel-build`)  
 - `prisma/seed.ts` — Sample data  
 
 ## Documentation
