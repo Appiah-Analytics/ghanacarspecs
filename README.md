@@ -1,6 +1,8 @@
 # GhanaCarSpecs (local MVP + VIN decode fallback + CSV ingestion)
 
-Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN** or **plate number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can also import vehicle/event rows from CSV files into SQLite.
+Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN**, **plate number**, or **chassis number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can import vehicle/event rows from CSV and view records on a simple **admin dashboard**.
+
+Canonical test values: [`docs/sample_data.md`](docs/sample_data.md).
 
 ## Prerequisites
 
@@ -14,10 +16,21 @@ From the repository root:
 
 ```bash
 npm install
+cp .env.example .env
+# Edit .env: set ADMIN_API_KEY or ADMIN_PASSWORD (required for /admin routes)
 npm run db:setup
 ```
 
 `db:setup` runs `prisma db push` (creates/updates `prisma/dev.db`) and `prisma db seed` (sample vehicles and events).
+
+**Admin access:** Set `ADMIN_API_KEY` or `ADMIN_PASSWORD` in `.env`, restart the dev server, then open `/admin/login`. Public lookup (`/` and `POST /api/v1/lookup`) does not require admin credentials.
+
+### Admin env not loading?
+
+1. **File location:** `.env` must live at the **repo root** (same folder as `package.json`), not under `app/` or `prisma/`.
+2. **Uncommented:** `ADMIN_API_KEY=...` must be a real line — not `# ADMIN_API_KEY=...` (a commented copy of `.env.example` is ignored).
+3. **Restart:** Stop and restart `npm run dev` after editing `.env` (middleware inlines env at compile time).
+4. **Check:** Open `/admin/login` — the **Env check** box shows whether the server sees `ADMIN_API_KEY` / `ADMIN_PASSWORD` (never the secret value).
 
 ## Run the app
 
@@ -43,7 +56,7 @@ That message appears **before** Next finishes compiling. On a slow disk, antivir
 
 ### A. Local GhanaCarSpecs record (database)
 
-Use any seeded **VIN** or **plate** (lookup uses the local DB only for these; no external call).
+Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](docs/sample_data.md) (lookup uses the local DB only; no external call). The homepage explains **where to find a VIN or chassis number** on the vehicle or on Ghana paperwork.
 
 | Vehicle | VIN | Plate | Chassis |
 |--------|-----|-------|---------|
@@ -59,30 +72,48 @@ Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case i
 
 Use a **valid 17-character VIN** that is **not** in the seed list above (any real VIN NHTSA can decode works).
 
-Example (BMW, not in seed data):
+Example (not in seed data — see [`docs/sample_data.md`](docs/sample_data.md)):
 
-`WBADT43452G922939`
+`1HGCM82633A004352`
 
-**Expected:** After submit, redirect to `/decoded` with a blue banner **External VIN decoded record**, decoded specifications, and an empty event-history note (no local rows).
+**Expected:** After submit, redirect to `/decoded` with a blue banner **External VIN decoded record**, decoded specifications from NHTSA vPIC, and an empty event-history note (no local GhanaCarSpecs rows). Only **17-character VINs** use this fallback; plates and chassis numbers do not.
 
-### C. No record found
+### C. No local record (real or demo identifier)
 
-Use a **plate** that does not exist in the seed data, e.g. `XX-0000-00`.
+Use a plate not in the sample database, for example `GR-9999-99` or `XX-0000-00`.
 
-**Expected:** Orange **No record found** message on the home page (plates do not trigger the external VIN API).
+**Expected:** Orange alert titled **No local GhanaCarSpecs record** explaining that the demonstration database has limited sample vehicles only — not DVLA, insurer, police, garage, or official Ghana records. Real Ghana identifiers not in the demo are not a claim that the vehicle has no history.
+
+Plates and chassis numbers do **not** trigger the external VIN API. Only valid **17-character VINs** may fall back to NHTSA vPIC.
 
 ### D. External decode failure
 
-Use a 17-character pattern NHTSA rejects (e.g. invalid check digit / invalid VIN).  
-**Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when the upstream decoder returns an error.
+Use this 17-character VIN (not in the seed database):
 
-### E. Local CSV ingestion
+`00000000000000000`
 
-Open the local admin import page:
+**Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when NHTSA rejects the decode.
+
+### E. Local admin dashboard
+
+1. Ensure `.env` has `ADMIN_API_KEY` or `ADMIN_PASSWORD` and restart `npm run dev`.
+2. Open `http://localhost:3000/admin/login`, enter the same secret, then visit the dashboard.
+
+```text
+http://localhost:3000/admin
+```
+
+**Expected:** Summary cards and a vehicle table with links to `/vehicles/{id}`. Unauthenticated requests redirect to `/admin/login`.
+
+### F. Local CSV ingestion
+
+Sign in at `/admin/login` first, then open:
 
 ```text
 http://localhost:3000/admin/ingest
 ```
+
+**API / curl:** Send the secret as `Authorization: Bearer <ADMIN_API_KEY>` or `X-Admin-Key: <secret>` on `POST /api/admin/ingest`.
 
 If Next is running on another port, use that port instead (for example `http://localhost:3001/admin/ingest`).
 
@@ -153,7 +184,7 @@ Response includes `"recordSource":"local"` and `"recordSourceLabel":"Local Ghana
 ```bash
 curl -s -X POST "http://localhost:3000/api/v1/lookup" ^
   -H "Content-Type: application/json" ^
-  -d "{\"vinOrPlate\":\"WBADT43452G922939\"}"
+  -d "{\"vinOrPlate\":\"1HGCM82633A004352\"}"
 ```
 
 Response includes `"recordSource":"external"`, `"recordSourceLabel":"External VIN decoded record"`, `"dataProvider":"NHTSA vPIC"`, and a `decoded` object.
@@ -171,7 +202,11 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | `npm run lint` | Typecheck (`tsc --noEmit`) |
 | `npm run db:push` | Apply Prisma schema to SQLite |
 | `npm run db:seed` | Reseed sample data |
-| `npm run db:setup` | `db:push` then `db:seed` |
+| `npm run db:setup` | `db:push` then `db:seed` (SQLite — default) |
+| `npm run db:generate:postgres` | Generate Prisma client for PostgreSQL |
+| `npm run db:migrate:postgres` | Apply PostgreSQL migrations (requires `DATABASE_URL`) |
+| `npm run db:setup:postgres` | Postgres migrate + seed (staging/production) |
+| `npm run db:export:sqlite` | Export SQLite data to JSON |
 | `npm run report:docx` | Regenerate Word progress report in `docs/` |
 
 ## Project layout (main pieces)
@@ -179,7 +214,12 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/page.tsx` — Home + lookup form  
 - `app/vehicles/[id]/page.tsx` — Local vehicle report  
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
+- `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
+- `lib/admin-dashboard.ts` — Admin summary queries and vehicle list  
+- `lib/admin-auth.ts` — Admin secret verification and session cookie  
+- `middleware.ts` — Protects `/admin` and `/api/admin/*`  
+- `app/admin/login/page.tsx` — Admin sign-in  
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
 - `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
@@ -187,11 +227,25 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  
-- `prisma/schema.prisma` — `Vehicle`, `VehicleEvent`  
+- `prisma/schema.prisma` — SQLite schema (local default)  
+- `prisma/schema.postgresql.prisma` — PostgreSQL schema (staging/production)  
 - `prisma/seed.ts` — Sample data  
 
-See `docs/project.md`, `docs/architecture.md`, and `docs/roadmap.md` for scope.
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [`docs/roadmap.md`](docs/roadmap.md) | Phases 1–7 (delivery order) |
+| [`docs/build_log.md`](docs/build_log.md) | Engineering history per phase |
+| [`docs/architecture.md`](docs/architecture.md) | Current system design |
+| [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
+| [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
+| [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
+| [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
+| [`docs/project.md`](docs/project.md) | Scope and MVP definition |
+
+Copy [`.env.example`](.env.example) to `.env`. **Admin routes require** `ADMIN_API_KEY` or `ADMIN_PASSWORD` (see Phase 8 in the roadmap).
 
 ## Out of scope (not implemented)
 
-Azure, Terraform, payments, auth, dealer/partner dashboards, risk flags, and production ingestion automation.
+Azure hosting, Terraform, payments, per-user accounts, OAuth, dealer/partner dashboards, and automated production ingestion. Admin uses a **single shared secret** (not user accounts). Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSignOut } from "@/components/AdminSignOut";
 import { CsvUploadForm } from "@/components/CsvUploadForm";
 
 const CSV_TEMPLATE = `vin,plateNumber,chassisNumber,make,model,year,eventType,eventDate,mileage,sourceSystem,description
@@ -9,15 +10,20 @@ export default function AdminIngestPage() {
   return (
     <main className="page">
       <div className="back-row">
+        <Link href="/admin">Back to admin</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
         <Link href="/">Back to lookup</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
+        <AdminSignOut />
       </div>
 
       <section className="hero">
         <h1>CSV ingestion</h1>
-        <p>
-          Local admin-only import for vehicle and event records. There is no authentication yet, so keep this tool for
-          local development only.
-        </p>
+        <p>Import vehicle and event records from CSV. Requires an admin session — public lookup is unchanged.</p>
       </section>
 
       <CsvUploadForm />

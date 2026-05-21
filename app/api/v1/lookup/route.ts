@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { resolveLookupWithExternalVin } from "@/lib/lookup";
+import { getExternalDecodeFailedMessage, getLocalNotFoundMessage } from "@/lib/lookup-messages";
 import { RECORD_SOURCE_LABEL } from "@/lib/record-source";
 import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 
@@ -24,17 +25,20 @@ export async function POST(request: Request) {
     const resolved = await resolveLookupWithExternalVin(vinOrPlate);
 
     if (resolved.result === "not_found") {
+      const notFound = getLocalNotFoundMessage(vinOrPlate);
       return NextResponse.json(
-        { found: false, message: "No record found for that VIN, plate, or chassis number." },
+        { found: false, title: notFound.title, message: notFound.message },
         { status: 404 },
       );
     }
 
     if (resolved.result === "external_failed") {
+      const failed = getExternalDecodeFailedMessage(resolved.reason);
       return NextResponse.json(
         {
           found: false,
-          message: "No local GhanaCarSpecs record. External VIN decode did not return usable data.",
+          title: failed.title,
+          message: failed.message,
           detail: resolved.reason,
         },
         { status: 502 },

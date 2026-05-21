@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type IngestError = {
@@ -20,6 +21,7 @@ type IngestResponse =
   | { ok: false; errors: IngestError[] };
 
 export function CsvUploadForm() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<IngestSummary | null>(null);
   const [errors, setErrors] = useState<IngestError[]>([]);
@@ -37,8 +39,19 @@ export function CsvUploadForm() {
       const res = await fetch("/api/admin/ingest", {
         method: "POST",
         body: formData,
+        credentials: "same-origin",
       });
       const data = (await res.json()) as IngestResponse;
+
+      if (res.status === 401) {
+        router.push("/admin/login?from=/admin/ingest");
+        return;
+      }
+
+      if (res.status === 503) {
+        setErrors([{ row: 1, message: "Admin protection is not configured on this server." }]);
+        return;
+      }
 
       if (data.ok) {
         setSummary(data.summary);
@@ -58,7 +71,8 @@ export function CsvUploadForm() {
     <section className="admin-card" aria-labelledby="csv-upload-heading">
       <h2 id="csv-upload-heading">Upload CSV</h2>
       <p className="admin-help">
-        Local admin tool only. The file is validated first; if any row has an error, no records are written.
+        Requires an admin session (sign in at /admin/login). The file is validated first; if any row has an error, no
+        records are written.
       </p>
 
       <form className="csv-upload-form" onSubmit={onSubmit}>

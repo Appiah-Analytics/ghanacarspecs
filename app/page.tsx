@@ -1,17 +1,30 @@
+import { DemoExamples } from "@/components/DemoExamples";
+import { HowItWorks } from "@/components/HowItWorks";
 import { LookupForm } from "@/components/LookupForm";
+import { PublicDisclaimer } from "@/components/PublicDisclaimer";
+import { VinChassisGuidance } from "@/components/VinChassisGuidance";
 
 export default function HomePage() {
   return (
     <main className="page">
-      <section className="hero">
-        <h1>Check a car's history in Ghana</h1>
-        <p>
-          Enter a <strong>VIN</strong>, <strong>plate number</strong>, or <strong>chassis number</strong>. Local
-          GhanaCarSpecs records are shown first; if a 17-character VIN is not in the database, we fall back to a free
-          public VIN decoder (NHTSA vPIC) and label the result clearly.
+      <section className="hero hero-home">
+        <p className="hero-eyebrow">Vehicle intelligence &amp; history · Ghana</p>
+        <h1>Understand a vehicle before you buy, sell, or insure it</h1>
+        <p className="hero-lead">
+          GhanaCarSpecs combines <strong>local vehicle records</strong> (specs, imports, service, accidents where
+          available) with <strong>public VIN decoding</strong> when we do not yet have the car on file. Enter a VIN,
+          Ghana plate number, or chassis number to see what the platform can surface today.
         </p>
         <LookupForm />
       </section>
+
+      <VinChassisGuidance />
+
+      <HowItWorks />
+
+      <DemoExamples />
+
+      <PublicDisclaimer />
     </main>
   );
 }

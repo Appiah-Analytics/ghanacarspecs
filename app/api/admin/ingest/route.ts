@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { verifyAdminRequest } from "@/lib/admin-auth";
 import { ingestVehicleEventsCsv } from "@/lib/csv-ingest";
 
 export async function POST(request: Request) {
+  const cookieStore = await cookies();
+  if (!(await verifyAdminRequest(request, cookieStore))) {
+    return NextResponse.json(
+      { ok: false, errors: [{ row: 1, message: "Unauthorized. Sign in at /admin/login or send Authorization: Bearer <secret>." }] },
+      { status: 401 },
+    );
+  }
+
   let formData: FormData;
   try {
     formData = await request.formData();

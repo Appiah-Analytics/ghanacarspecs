@@ -88,8 +88,6 @@ Do not build:
 
 - Partner portal
 
-- Advanced admin dashboard
-
 ## If Uncertain
 
 Choose the simplest working solution.
