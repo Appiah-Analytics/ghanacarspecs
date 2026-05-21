@@ -2,9 +2,38 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  EXTERNAL_DECODE_FAILED_MESSAGE,
+  EXTERNAL_DECODE_FAILED_TITLE,
+  LOCAL_NOT_FOUND_MESSAGE,
+  LOCAL_NOT_FOUND_TITLE,
+  LOOKUP_UNAVAILABLE_MESSAGE,
+  LOOKUP_UNAVAILABLE_TITLE,
+} from "@/lib/lookup-messages";
 import { EXTERNAL_LOOKUP_STORAGE_KEY } from "@/lib/lookup-storage";
 
 export const FILL_LOOKUP_EVENT = "ghanacarspecs:fill-lookup";
+
+type LookupAlertPayload = {
+  title?: string;
+  message?: string;
+  error?: string;
+};
+
+function alertFromPayload(
+  data: unknown,
+  fallback: { title: string; body: string },
+): { title: string; body: string } {
+  const d = (data && typeof data === "object" ? data : {}) as LookupAlertPayload;
+  const title = typeof d.title === "string" ? d.title : fallback.title;
+  const body =
+    typeof d.message === "string"
+      ? d.message
+      : typeof d.error === "string"
+        ? d.error
+        : fallback.body;
+  return { title, body };
+}
 
 export function LookupForm() {
   const router = useRouter();
@@ -54,33 +83,46 @@ export function LookupForm() {
       }
 
       if (res.status === 404) {
-        const d = data as { title?: string; message?: string };
-        setNotFound({
-          title: typeof d.title === "string" ? d.title : "No local GhanaCarSpecs record",
-          body:
-            typeof d.message === "string"
-              ? d.message
-              : "There is no local GhanaCarSpecs record for this search in our demonstration database yet.",
-        });
+        setNotFound(
+          alertFromPayload(data, {
+            title: LOCAL_NOT_FOUND_TITLE,
+            body: LOCAL_NOT_FOUND_MESSAGE,
+          }),
+        );
         return;
       }
 
       if (res.status === 502) {
-        const d = data as { title?: string; message?: string };
-        setError({
-          title: typeof d.title === "string" ? d.title : "External VIN decode failed",
-          body: typeof d.message === "string" ? d.message : "External VIN decode did not return usable data.",
-        });
+        setError(
+          alertFromPayload(data, {
+            title: EXTERNAL_DECODE_FAILED_TITLE,
+            body: EXTERNAL_DECODE_FAILED_MESSAGE,
+          }),
+        );
         return;
       }
 
-      const errMsg =
-        data && typeof data === "object" && "error" in data
-          ? String((data as { error?: string }).error)
-          : `Request failed (${res.status})`;
-      setError({ title: "Something went wrong", body: errMsg });
+      if (res.status >= 500) {
+        setError(
+          alertFromPayload(data, {
+            title: LOOKUP_UNAVAILABLE_TITLE,
+            body: LOOKUP_UNAVAILABLE_MESSAGE,
+          }),
+        );
+        return;
+      }
+
+      setError(
+        alertFromPayload(data, {
+          title: LOOKUP_UNAVAILABLE_TITLE,
+          body: LOOKUP_UNAVAILABLE_MESSAGE,
+        }),
+      );
     } catch {
-      setError({ title: "Something went wrong", body: "Network error — try again." });
+      setError({
+        title: LOOKUP_UNAVAILABLE_TITLE,
+        body: LOOKUP_UNAVAILABLE_MESSAGE,
+      });
     } finally {
       setLoading(false);
     }

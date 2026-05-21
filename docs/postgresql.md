@@ -172,7 +172,7 @@ When editing Prisma models:
 | **Environment** | `DATABASE_URL` = Neon PostgreSQL connection string |
 | **Admin (optional)** | `ADMIN_API_KEY` or `ADMIN_PASSWORD` |
 
-The build runs `prisma generate --schema prisma/schema.postgresql.prisma` before `next build`. If lookup returns **Lookup failed**, check Vercel logs: usually missing `DATABASE_URL`, wrong connection string, or Prisma client generated for SQLite (redeploy after this fix).
+The build runs `prisma generate --schema prisma/schema.postgresql.prisma` before `next build`. If lookup shows **Lookup temporarily unavailable** (HTTP 500), check Vercel logs: usually missing `DATABASE_URL`, wrong connection string, or Prisma client generated for SQLite (redeploy after this fix).
 
 One-time after creating the Neon database:
 

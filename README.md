@@ -82,7 +82,7 @@ Example (not in seed data — see [`docs/sample_data.md`](docs/sample_data.md)):
 
 Use a plate not in the sample database, for example `GR-9999-99` or `XX-0000-00`.
 
-**Expected:** Orange alert titled **No local GhanaCarSpecs record** explaining that the demonstration database has limited sample vehicles only — not DVLA, insurer, police, garage, or official Ghana records. Real Ghana identifiers not in the demo are not a claim that the vehicle has no history.
+**Expected:** Orange alert titled **No local GhanaCarSpecs record found yet** with copy explaining the demo database only — not DVLA, insurer, police, garage, or official Ghana records. Real Ghana plates or chassis numbers not in the demo are not a claim that the vehicle has no history.
 
 Plates and chassis numbers do **not** trigger the external VIN API. Only valid **17-character VINs** may fall back to NHTSA vPIC.
 
@@ -92,7 +92,7 @@ Use this 17-character VIN (not in the seed database):
 
 `00000000000000000`
 
-**Expected:** Red error area with HTTP **502** and a short explanation plus `detail` from the server when NHTSA rejects the decode.
+**Expected:** Red error titled **VIN could not be decoded** (HTTP **502**) explaining no local record and that NHTSA vPIC did not return usable data. Server `detail` is for debugging only.
 
 ### E. Local admin dashboard
 

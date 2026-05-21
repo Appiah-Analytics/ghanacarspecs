@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-20 (Phase 10)  
+**Last updated:** 2026-05-20 (Lookup error UX)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -410,6 +410,39 @@ Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence an
 
 - Optional public deploy to Vercel + Neon using `public_demo_plan.md` §6.
 - Azure production path remains Phase 7 when ready.
+
+---
+
+## Lookup error UX (post–Phase 10)
+
+### Goal
+
+Replace generic **Something went wrong** / **Lookup failed** copy with clearer, trust-building messages for demo users — without changing lookup or database logic.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Messages | `lib/lookup-messages.ts` (titles/bodies, plate/chassis heuristic for 404 copy) |
+| API | `app/api/v1/lookup/route.ts` (500 returns `title` + `message`) |
+| UI | `components/LookupForm.tsx` (structured fallbacks, 500 handling) |
+| Docs | `README.md`, `docs/build_log.md` |
+
+### Behavior implemented
+
+- **404:** **No local GhanaCarSpecs record found yet** — generic or plate/chassis-specific body; no implication of official Ghana records.
+- **502:** **VIN could not be decoded** — local miss + NHTSA failure; `detail` still in JSON for logs.
+- **500 / network:** **Lookup temporarily unavailable** — professional retry guidance.
+- Lookup routing and Prisma queries unchanged.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual: `GR-9999-99` (404), `00000000000000000` (502), seeded VIN (200)
+
+### Next recommended step
+
+- Optional deploy; monitor Vercel logs for 500s (often `DATABASE_URL` / Prisma on production).
 
 ---
 

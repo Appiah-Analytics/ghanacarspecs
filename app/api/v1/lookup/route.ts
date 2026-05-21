@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { resolveLookupWithExternalVin } from "@/lib/lookup";
-import { getExternalDecodeFailedMessage, getLocalNotFoundMessage } from "@/lib/lookup-messages";
+import {
+  getExternalDecodeFailedMessage,
+  getLocalNotFoundMessage,
+  getLookupUnavailableMessage,
+} from "@/lib/lookup-messages";
 import { RECORD_SOURCE_LABEL } from "@/lib/record-source";
 import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 
@@ -94,6 +98,15 @@ export async function POST(request: Request) {
     });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: "Lookup failed" }, { status: 500 });
+    const unavailable = getLookupUnavailableMessage();
+    return NextResponse.json(
+      {
+        found: false,
+        error: unavailable.title,
+        title: unavailable.title,
+        message: unavailable.message,
+      },
+      { status: 500 },
+    );
   }
 }
