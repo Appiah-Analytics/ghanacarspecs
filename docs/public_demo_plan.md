@@ -75,6 +75,7 @@ Use language like **“demonstration”**, **“sample records”**, and **“pl
 - Homepage positions GhanaCarSpecs as **vehicle intelligence & history for Ghana**.
 - **How lookup works** explains local-first + NHTSA fallback.
 - **Try the demo** uses canonical sample values.
+- **Where do I find my VIN or chassis number?** — Ghana-relevant guidance (door frame, dashboard, documents; VIN, plate, or chassis).
 - **Public demo notice** disclaimer on the homepage.
 - Site header/footer branding; **no admin link** on the public homepage.
 - Metadata title/description updated for sharing and search previews.
@@ -146,4 +147,5 @@ When sample data or flows change, update:
 
 - [`sample_data.md`](sample_data.md)
 - `components/DemoExamples.tsx` (homepage try list)
+- `components/VinChassisGuidance.tsx` (where to find VIN/chassis/plate)
 - This document if demo promises or deploy target changes

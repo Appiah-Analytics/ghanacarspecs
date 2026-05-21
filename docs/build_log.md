@@ -379,7 +379,7 @@ Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence an
 
 | Area | Paths |
 |------|--------|
-| Homepage | `app/page.tsx`, `components/HowItWorks.tsx`, `components/DemoExamples.tsx`, `components/PublicDisclaimer.tsx` |
+| Homepage | `app/page.tsx`, `components/HowItWorks.tsx`, `components/DemoExamples.tsx`, `components/VinChassisGuidance.tsx`, `components/PublicDisclaimer.tsx` |
 | Chrome | `components/SiteHeader.tsx`, `components/SiteFooter.tsx`, `app/layout.tsx` (metadata) |
 | Lookup | `components/LookupForm.tsx` (fill-demo event, input id) |
 | Styles | `app/globals.css` |
@@ -389,6 +389,7 @@ Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence an
 
 - Homepage positions **local GhanaCarSpecs records** + **NHTSA external decode** with Ghana-focused messaging.
 - **Try the demo** section with one-click fill from [`sample_data.md`](sample_data.md) values.
+- **VIN/chassis guidance** for Ghana users (where to find identifiers; what to enter; demo DB limitation).
 - **Public demo notice** disclaimer: sample local data; external decode limitations.
 - Site header/footer; **no admin link** on public homepage.
 - Open Graph / title / description updated for demo sharing.

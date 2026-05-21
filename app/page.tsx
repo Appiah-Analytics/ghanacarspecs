@@ -2,6 +2,7 @@ import { DemoExamples } from "@/components/DemoExamples";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LookupForm } from "@/components/LookupForm";
 import { PublicDisclaimer } from "@/components/PublicDisclaimer";
+import { VinChassisGuidance } from "@/components/VinChassisGuidance";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,8 @@ export default function HomePage() {
         </p>
         <LookupForm />
       </section>
+
+      <VinChassisGuidance />
 
       <HowItWorks />
 

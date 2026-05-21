@@ -126,7 +126,8 @@ main.page {
 
 .how-it-works,
 .demo-section,
-.public-disclaimer {
+.public-disclaimer,
+.lookup-guidance {
   margin-top: 1.5rem;
   padding: 1.5rem;
   background: var(--surface);
@@ -137,9 +138,62 @@ main.page {
 
 .how-it-works h2,
 .demo-section h2,
-.public-disclaimer h2 {
+.public-disclaimer h2,
+.lookup-guidance h2 {
   margin: 0 0 0.75rem;
   font-size: 1.15rem;
+}
+
+.lookup-guidance-intro {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.lookup-guidance-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .lookup-guidance-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.lookup-guidance h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.lookup-guidance-try {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+}
+
+.lookup-options {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.lookup-options li {
+  margin: 0.35rem 0;
+}
+
+.lookup-guidance-note {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #334155;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
 }
 
 .demo-intro,

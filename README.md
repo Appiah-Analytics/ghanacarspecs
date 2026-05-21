@@ -56,7 +56,7 @@ That message appears **before** Next finishes compiling. On a slow disk, antivir
 
 ### A. Local GhanaCarSpecs record (database)
 
-Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](docs/sample_data.md) (lookup uses the local DB only; no external call).
+Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](docs/sample_data.md) (lookup uses the local DB only; no external call). The homepage explains **where to find a VIN or chassis number** on the vehicle or on Ghana paperwork.
 
 | Vehicle | VIN | Plate | Chassis |
 |--------|-----|-------|---------|
