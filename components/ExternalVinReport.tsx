@@ -1,5 +1,6 @@
-import type { ExternalVinSpecs } from "@/lib/nhtsa-vin";
+import { ExternalPhotosNotice } from "@/components/VehiclePhotos";
 import { SourceBanner } from "@/components/SourceBanner";
+import type { ExternalVinSpecs } from "@/lib/nhtsa-vin";
 
 const SPEC_ROWS: { key: keyof ExternalVinSpecs; label: string }[] = [
   { key: "modelYear", label: "Model year" },
@@ -69,6 +70,8 @@ export function ExternalVinReport({ vin, specs, dataProvider }: Props) {
           <p className="timeline-empty">No specification fields were returned for this VIN.</p>
         ) : null}
       </section>
+
+      <ExternalPhotosNotice />
 
       <section className="report-section" aria-labelledby="ext-history-heading">
         <h3 id="ext-history-heading" className="report-section-title">

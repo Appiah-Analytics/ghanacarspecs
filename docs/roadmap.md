@@ -14,6 +14,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 8 | Basic admin protection | Done |
 | 9 | PostgreSQL readiness | Done |
 | 10 | Public demo readiness | Done |
+| 11 | Vehicle photos / visual evidence (foundation) | Done |
 
 ---
 
@@ -80,3 +81,12 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Site metadata and light public UX polish
 - [x] No prominent admin link on homepage
 - [x] `docs/public_demo_plan.md` (Vercel/Neon checklist for later)
+
+## Phase 11 — Vehicle photos / visual evidence (foundation)
+
+- [x] `VehiclePhoto` model (SQLite + PostgreSQL schemas)
+- [x] Seed sample photos (placeholder assets under `public/demo-photos/`)
+- [x] **Visual evidence** section on local vehicle reports (`VehiclePhotos`)
+- [x] External decode page: labeled “no local photos” notice (not a gallery)
+- [ ] Admin photo upload (future)
+- [ ] Public user upload (out of scope)

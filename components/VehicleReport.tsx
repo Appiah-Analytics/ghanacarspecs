@@ -1,8 +1,9 @@
-import type { VehicleWithEvents } from "@/lib/lookup";
-import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 import { EventTimeline } from "@/components/EventTimeline";
 import { SourceBanner } from "@/components/SourceBanner";
 import { VehicleIntelligencePanel } from "@/components/VehicleIntelligence";
+import { VehiclePhotos } from "@/components/VehiclePhotos";
+import type { VehicleReportData } from "@/lib/vehicle-report";
+import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -10,7 +11,7 @@ function formatDate(d: Date | string | null | undefined): string {
   return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
+export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
   const intelligence = analyzeVehicleIntelligence({
     year: vehicle.year,
     countryOfOrigin: vehicle.countryOfOrigin,
@@ -112,6 +113,8 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleWithEvents }) {
       </section>
 
       <VehicleIntelligencePanel intelligence={intelligence} />
+
+      <VehiclePhotos photos={vehicle.photos} />
 
       <section className="report-section" aria-labelledby="history-heading">
         <h3 id="history-heading" className="report-section-title">

@@ -22,6 +22,14 @@ enum EventType {
   OTHER
 }
 
+enum PhotoSourceType {
+  IMPORT_CONDITION
+  INSPECTION
+  ACCIDENT_REPAIR
+  AUCTION
+  OTHER
+}
+
 model Vehicle {
   id               String          @id @default(cuid())
   vin              String          @unique
@@ -39,8 +47,24 @@ model Vehicle {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   events           VehicleEvent[]
+  photos           VehiclePhoto[]
 
   @@map("vehicles")
+}
+
+model VehiclePhoto {
+  id          String          @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  url         String
+  caption     String
+  sourceType  PhotoSourceType
+  sourceLabel String?
+  takenAt     DateTime?
+  createdAt   DateTime        @default(now())
+
+  @@index([vehicleId])
+  @@map("vehicle_photos")
 }
 
 model VehicleEvent {

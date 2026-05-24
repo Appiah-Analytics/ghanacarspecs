@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-20 (Lookup error UX)  
+**Last updated:** 2026-05-20 (Phase 11 — vehicle photos)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -410,6 +410,58 @@ Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence an
 
 - Optional public deploy to Vercel + Neon using `public_demo_plan.md` §6.
 - Azure production path remains Phase 7 when ready.
+
+---
+
+## Phase 11 — Vehicle photos / visual evidence (foundation)
+
+### Goal
+
+Add database and UI foundation for vehicle photos (import condition, inspection, accident/repair evidence) based on early user feedback — without upload, accounts, payments, or official Ghana integrations.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Schema | `prisma/schema.prisma`, `prisma/schema.postgresql.prisma`, `prisma/migrations/20260520140000_vehicle_photos/` |
+| Seed | `prisma/seed.ts`, `public/demo-photos/*.svg` |
+| UI | `components/VehiclePhotos.tsx`, `components/VehicleReport.tsx`, `components/ExternalVinReport.tsx`, `app/vehicles/[id]/page.tsx`, `app/globals.css` |
+| Lib | `lib/vehicle-report.ts`, `lib/photo-source.ts` |
+| Docs | `README.md`, `docs/roadmap.md`, `docs/build_log.md` |
+
+### Behavior implemented
+
+- **`VehiclePhoto`:** `url`, `caption`, `sourceType` (`PhotoSourceType` enum), optional `sourceLabel`, optional `takenAt`, cascade delete with vehicle.
+- Local reports: **Visual evidence** grid with captions and source labels; empty state when no rows.
+- External `/decoded`: short notice that no local GhanaCarSpecs photos exist (no gallery).
+- Lookup API and admin protection unchanged. Photo upload documented as future work.
+
+### Database updates required
+
+```bash
+# Local SQLite
+npm run db:push && npm run db:seed
+
+# Neon / Vercel production
+DATABASE_URL="postgresql://..." npm run db:migrate:postgres
+DATABASE_URL="postgresql://..." npm run db:seed
+```
+
+Vercel deploys run `migrate deploy` automatically when `VERCEL=1`; re-seed Neon manually if demo photos are missing.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual: open seeded Toyota/VW reports for photo grid; `/decoded` shows no-local-photos notice
+
+### Known limitations
+
+- No admin or public upload; CSV ingest does not create photos.
+- Placeholder SVGs only — not real vehicle imagery.
+
+### Next recommended step
+
+- Admin photo attach/upload API (behind existing admin auth).
 
 ---
 

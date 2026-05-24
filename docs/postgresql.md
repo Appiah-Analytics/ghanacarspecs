@@ -174,12 +174,14 @@ When editing Prisma models:
 
 The build runs `prisma generate --schema prisma/schema.postgresql.prisma` before `next build`. If lookup shows **Lookup temporarily unavailable** (HTTP 500), check Vercel logs: usually missing `DATABASE_URL`, wrong connection string, or Prisma client generated for SQLite (redeploy after this fix).
 
-One-time after creating the Neon database:
+One-time after creating the Neon database (and after each new migration, e.g. `vehicle_photos`):
 
 ```bash
 DATABASE_URL="postgresql://..." npm run db:migrate:postgres
 DATABASE_URL="postgresql://..." npm run db:seed
 ```
+
+Vercel production builds run `migrate deploy` automatically; run `db:seed` manually when you need demo photo rows on Neon.
 
 ---
 

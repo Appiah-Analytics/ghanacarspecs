@@ -214,7 +214,8 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 ## Project layout (main pieces)
 
 - `app/page.tsx` — Home + lookup form  
-- `app/vehicles/[id]/page.tsx` — Local vehicle report  
+- `app/vehicles/[id]/page.tsx` — Local vehicle report (specs, visual evidence, events)  
+- `components/VehiclePhotos.tsx` — Sample photo gallery / empty state on local reports  
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
 - `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
@@ -232,7 +233,24 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `prisma/schema.prisma` — SQLite schema (local default)  
 - `prisma/schema.postgresql.prisma` — PostgreSQL schema (Vercel / Neon production)  
 - `vercel.json` — Vercel build command (`vercel-build`)  
-- `prisma/seed.ts` — Sample data  
+- `prisma/seed.ts` — Sample data (vehicles, events, demo photos)  
+- `public/demo-photos/` — SVG placeholders for seeded visual evidence (not real private photos)  
+
+### Vehicle photos (demo)
+
+Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Seeded examples use placeholder SVGs with captions such as import condition, inspection, and accident/repair evidence. These are **sample/demo visual evidence only** — not DVLA, police, insurer, or official Ghana records. **Photo upload is not implemented yet** (future admin work).
+
+After pulling schema changes:
+
+```bash
+# Local SQLite
+npm run db:push
+npm run db:seed
+
+# Neon / production
+DATABASE_URL="postgresql://..." npm run db:migrate:postgres
+DATABASE_URL="postgresql://..." npm run db:seed
+```
 
 ## Documentation
 
@@ -251,4 +269,4 @@ Copy [`.env.example`](.env.example) to `.env`. **Admin routes require** `ADMIN_A
 
 ## Out of scope (not implemented)
 
-Azure hosting, Terraform, payments, per-user accounts, OAuth, dealer/partner dashboards, and automated production ingestion. Admin uses a **single shared secret** (not user accounts). Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.
+Azure hosting, Terraform, payments, per-user accounts, OAuth, dealer/partner dashboards, automated production ingestion, and **vehicle photo upload** (schema and read-only UI only for now). Admin uses a **single shared secret** (not user accounts). Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.

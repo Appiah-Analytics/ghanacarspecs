@@ -1,8 +1,16 @@
-import { PrismaClient, EventType } from "@prisma/client";
+import { PrismaClient, EventType, PhotoSourceType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const DEMO_PHOTOS = {
+  import: "/demo-photos/import-condition.svg",
+  inspection: "/demo-photos/inspection.svg",
+  accident: "/demo-photos/accident-repair.svg",
+  auction: "/demo-photos/auction.svg",
+} as const;
+
 async function main() {
+  await prisma.vehiclePhoto.deleteMany();
   await prisma.vehicleEvent.deleteMany();
   await prisma.vehicle.deleteMany();
 
@@ -52,6 +60,24 @@ async function main() {
           },
         ],
       },
+      photos: {
+        create: [
+          {
+            url: DEMO_PHOTOS.import,
+            caption: "Sample import condition photo — exterior at port arrival (demo placeholder)",
+            sourceType: PhotoSourceType.IMPORT_CONDITION,
+            sourceLabel: "Tema Port — demo importer",
+            takenAt: new Date("2019-03-14"),
+          },
+          {
+            url: DEMO_PHOTOS.inspection,
+            caption: "Sample inspection photo — pre-registration walkaround (demo placeholder)",
+            sourceType: PhotoSourceType.INSPECTION,
+            sourceLabel: "Independent inspection partner (sample)",
+            takenAt: new Date("2019-03-28"),
+          },
+        ],
+      },
     },
   });
 
@@ -87,6 +113,24 @@ async function main() {
           },
         ],
       },
+      photos: {
+        create: [
+          {
+            url: DEMO_PHOTOS.import,
+            caption: "Sample import condition photo — yard intake after shipping (demo placeholder)",
+            sourceType: PhotoSourceType.IMPORT_CONDITION,
+            sourceLabel: "Importer Beta (sample)",
+            takenAt: new Date("2021-06-28"),
+          },
+          {
+            url: DEMO_PHOTOS.accident,
+            caption: "Sample accident/repair evidence photo — panel damage documentation (demo placeholder)",
+            sourceType: PhotoSourceType.ACCIDENT_REPAIR,
+            sourceLabel: "Body shop estimate (sample)",
+            takenAt: new Date("2023-11-06"),
+          },
+        ],
+      },
     },
   });
 
@@ -112,6 +156,17 @@ async function main() {
             mileage: 120000,
             sourceSystem: "Classic Imports Ltd",
             rawPayload: {},
+          },
+        ],
+      },
+      photos: {
+        create: [
+          {
+            url: DEMO_PHOTOS.auction,
+            caption: "Sample auction/pre-sale condition photo — lot listing still (demo placeholder)",
+            sourceType: PhotoSourceType.AUCTION,
+            sourceLabel: "US auction export listing (sample)",
+            takenAt: new Date("2015-07-20"),
           },
         ],
       },
