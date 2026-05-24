@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-label="Volkswagen demo accident damage placeholder">
+  <rect width="640" height="400" fill="#450a0a"/>
+  <rect x="48" y="64" width="544" height="272" rx="12" fill="#7f1d1d"/>
+  <path d="M200 200 L280 120 L360 200 L320 280 L240 280 Z" fill="none" stroke="#fca5a5" stroke-width="3" stroke-dasharray="6 4"/>
+  <circle cx="280" cy="200" r="36" fill="#ef4444" opacity="0.5"/>
+  <text x="280" y="206" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#fef2f2">IMPACT</text>
+  <rect x="420" y="100" width="140" height="56" rx="8" fill="#991b1b" stroke="#fecaca" stroke-width="2"/>
+  <text x="490" y="128" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fecaca">Kumasi · sample</text>
+  <text x="490" y="146" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#fca5a5">Nov 2023 event</text>
+  <text x="320" y="40" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#fecaca" letter-spacing="0.1em">DEMO ACCIDENT EVIDENCE · NOT INSURER FILE</text>
+  <text x="320" y="300" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26" font-weight="700" fill="#fef2f2">VW Golf · panel damage record</text>
+  <text x="320" y="332" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="#fca5a5">Sample claim documentation placeholder only</text>
+</svg>

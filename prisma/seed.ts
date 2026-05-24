@@ -2,11 +2,14 @@ import { PrismaClient, EventType, PhotoSourceType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+/** Vehicle-specific demo placeholders — not real or official evidence. */
 const DEMO_PHOTOS = {
-  import: "/demo-photos/import-condition.svg",
-  inspection: "/demo-photos/inspection.svg",
-  accident: "/demo-photos/accident-repair.svg",
-  auction: "/demo-photos/auction.svg",
+  toyotaPortImport: "/demo-photos/toyota-tema-port-import.svg",
+  toyotaInspection: "/demo-photos/toyota-inspection-walkaround.svg",
+  vwAccident: "/demo-photos/vw-accident-damage.svg",
+  vwRepair: "/demo-photos/vw-body-shop-repair.svg",
+  hondaAuction: "/demo-photos/honda-us-auction-lot.svg",
+  hondaImportSource: "/demo-photos/honda-export-import-source.svg",
 } as const;
 
 async function main() {
@@ -63,17 +66,19 @@ async function main() {
       photos: {
         create: [
           {
-            url: DEMO_PHOTOS.import,
-            caption: "Sample import condition photo — exterior at port arrival (demo placeholder)",
+            url: DEMO_PHOTOS.toyotaPortImport,
+            caption:
+              "Toyota Camry — sample Tema Port arrival condition after shipping (demo placeholder; not customs or DVLA proof)",
             sourceType: PhotoSourceType.IMPORT_CONDITION,
-            sourceLabel: "Tema Port — demo importer",
+            sourceLabel: "Tema Port intake — demo importer only",
             takenAt: new Date("2019-03-14"),
           },
           {
-            url: DEMO_PHOTOS.inspection,
-            caption: "Sample inspection photo — pre-registration walkaround (demo placeholder)",
+            url: DEMO_PHOTOS.toyotaInspection,
+            caption:
+              "Toyota Camry — sample independent pre-registration walkaround and checklist (demo placeholder; not dealer-certified)",
             sourceType: PhotoSourceType.INSPECTION,
-            sourceLabel: "Independent inspection partner (sample)",
+            sourceLabel: "Inspection partner (sample) — not police or insurer",
             takenAt: new Date("2019-03-28"),
           },
         ],
@@ -116,18 +121,20 @@ async function main() {
       photos: {
         create: [
           {
-            url: DEMO_PHOTOS.import,
-            caption: "Sample import condition photo — yard intake after shipping (demo placeholder)",
-            sourceType: PhotoSourceType.IMPORT_CONDITION,
-            sourceLabel: "Importer Beta (sample)",
-            takenAt: new Date("2021-06-28"),
+            url: DEMO_PHOTOS.vwAccident,
+            caption:
+              "VW Golf — sample accident panel damage at Kumasi (demo placeholder; not insurer claim file or police report)",
+            sourceType: PhotoSourceType.ACCIDENT_REPAIR,
+            sourceLabel: "Insurer Gamma (sample narrative only)",
+            takenAt: new Date("2023-11-05"),
           },
           {
-            url: DEMO_PHOTOS.accident,
-            caption: "Sample accident/repair evidence photo — panel damage documentation (demo placeholder)",
+            url: DEMO_PHOTOS.vwRepair,
+            caption:
+              "VW Golf — sample body-shop repair estimate after minor accident (demo placeholder; not authorized dealer work order)",
             sourceType: PhotoSourceType.ACCIDENT_REPAIR,
             sourceLabel: "Body shop estimate (sample)",
-            takenAt: new Date("2023-11-06"),
+            takenAt: new Date("2023-11-12"),
           },
         ],
       },
@@ -162,11 +169,20 @@ async function main() {
       photos: {
         create: [
           {
-            url: DEMO_PHOTOS.auction,
-            caption: "Sample auction/pre-sale condition photo — lot listing still (demo placeholder)",
+            url: DEMO_PHOTOS.hondaAuction,
+            caption:
+              "Honda Accord — sample US auction lot listing before export (demo placeholder; not dealer inventory or title record)",
             sourceType: PhotoSourceType.AUCTION,
-            sourceLabel: "US auction export listing (sample)",
+            sourceLabel: "US auction lot #A-4192 (sample)",
             takenAt: new Date("2015-07-20"),
+          },
+          {
+            url: DEMO_PHOTOS.hondaImportSource,
+            caption:
+              "Honda Accord — sample export-to-Ghana import source trail (demo placeholder; not customs or DVLA documentation)",
+            sourceType: PhotoSourceType.IMPORT_CONDITION,
+            sourceLabel: "Classic Imports Ltd — demo intake",
+            takenAt: new Date("2015-09-08"),
           },
         ],
       },
