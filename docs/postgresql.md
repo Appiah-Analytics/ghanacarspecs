@@ -68,16 +68,23 @@ Migrations live in `prisma/migrations/` and apply **only** to PostgreSQL (`--sch
 
 ### 3. Production deploy order
 
-**Vercel (automatic):** When `VERCEL=1`, `npm install` and `npm run build` (or `vercel-build`) use the PostgreSQL schema:
+**Vercel build (automatic):** When `VERCEL=1`, `npm install` and `npm run build` (or `vercel-build`) run:
 
 ```bash
-# Handled by scripts/production-build.mjs on Vercel:
+# scripts/production-build.mjs on Vercel:
 prisma generate --schema prisma/schema.postgresql.prisma
-prisma migrate deploy --schema prisma/schema.postgresql.prisma
 next build
 ```
 
-Set **`DATABASE_URL`** in the Vercel project (Neon pooled connection string). Run **`npm run db:seed`** once against Neon if the database is empty (migrations do not seed data).
+Migrations are **not** run during the Vercel build (avoids Neon advisory-lock timeouts on concurrent deploys). Set **`DATABASE_URL`** in the Vercel project (Neon pooled connection string).
+
+**Migrations (manual):** When the Prisma schema changes, run migrations **before or after** deploy from your machine or CI — not inside the Vercel build:
+
+```bash
+DATABASE_URL="postgresql://..." npm run db:migrate:postgres
+```
+
+Run **`npm run db:seed`** separately when you need demo data (migrations do not seed).
 
 **Manual / other hosts:**
 
@@ -174,14 +181,14 @@ When editing Prisma models:
 
 The build runs `prisma generate --schema prisma/schema.postgresql.prisma` before `next build`. If lookup shows **Lookup temporarily unavailable** (HTTP 500), check Vercel logs: usually missing `DATABASE_URL`, wrong connection string, or Prisma client generated for SQLite (redeploy after this fix).
 
-One-time after creating the Neon database (and after each new migration, e.g. `vehicle_photos`):
+**Before first deploy** (empty Neon) or **when schema changes** (before or after `git push` / Vercel redeploy):
 
 ```bash
 DATABASE_URL="postgresql://..." npm run db:migrate:postgres
-DATABASE_URL="postgresql://..." npm run db:seed
+DATABASE_URL="postgresql://..." npm run db:seed   # optional — demo rows only
 ```
 
-Vercel production builds run `migrate deploy` automatically; run `db:seed` manually when you need demo photo rows on Neon.
+Typical flow when you add a migration: commit `prisma/migrations/`, run `db:migrate:postgres` against Neon, then deploy (or deploy first, then migrate — but the app needs the migration applied before new columns are used).
 
 ---
 

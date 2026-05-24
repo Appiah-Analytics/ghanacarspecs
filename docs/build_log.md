@@ -447,7 +447,7 @@ DATABASE_URL="postgresql://..." npm run db:migrate:postgres
 DATABASE_URL="postgresql://..." npm run db:seed
 ```
 
-Vercel deploys run `migrate deploy` automatically when `VERCEL=1`; re-seed Neon manually if demo photos are missing.
+Run `db:migrate:postgres` manually against Neon when the schema changes (not during Vercel build); re-seed with `db:seed` if demo data is missing.
 
 ### How it was tested
 

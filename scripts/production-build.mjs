@@ -1,6 +1,7 @@
 /**
  * Production build entrypoint.
- * On Vercel (VERCEL=1): generate PostgreSQL Prisma client, apply migrations, then next build.
+ * On Vercel (VERCEL=1): generate PostgreSQL Prisma client, then next build.
+ * Migrations are not run here — use npm run db:migrate:postgres manually when the schema changes.
  * Locally: next build only (use npm run db:generate for SQLite client before testing production locally).
  */
 import { execSync } from "node:child_process";
@@ -15,7 +16,6 @@ if (isVercel) {
   }
 
   execSync("npx prisma generate --schema prisma/schema.postgresql.prisma", { stdio: "inherit" });
-  execSync("npx prisma migrate deploy --schema prisma/schema.postgresql.prisma", { stdio: "inherit" });
 } else {
   console.log("[production-build] Local build — using existing Prisma client (SQLite after npm install).");
 }

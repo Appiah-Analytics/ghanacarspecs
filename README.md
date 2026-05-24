@@ -199,7 +199,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | `npm run dev:webpack` | Dev server (Webpack fallback) |
 | `npm run build` | Production build (SQLite client locally; PostgreSQL on Vercel via `VERCEL=1`) |
 | `npm run build:local` | `db:generate` (SQLite) then `next build` — test production bundle locally |
-| `npm run vercel-build` | Same as production build on Vercel (postgres generate + migrate + `next build`) |
+| `npm run vercel-build` | Vercel build: postgres `prisma generate` + `next build` (no migrate during build) |
 | `npm run start` | Production server (after `build`) |
 | `npm run lint` | Typecheck (`tsc --noEmit`) |
 | `npm run db:push` | Apply Prisma schema to SQLite |
@@ -247,10 +247,23 @@ After pulling schema changes:
 npm run db:push
 npm run db:seed
 
-# Neon / production
+# Neon / production (manual — not run on Vercel build)
 DATABASE_URL="postgresql://..." npm run db:migrate:postgres
 DATABASE_URL="postgresql://..." npm run db:seed
 ```
+
+### Vercel + Neon deploy
+
+Vercel runs **`prisma generate`** (PostgreSQL schema) and **`next build`** only. It does **not** run `prisma migrate deploy` during build (avoids advisory-lock timeouts on Neon).
+
+When the schema changes, run migrations **manually before or after deploy**:
+
+```bash
+DATABASE_URL="postgresql://..." npm run db:migrate:postgres
+DATABASE_URL="postgresql://..." npm run db:seed   # optional
+```
+
+See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow.
 
 ## Documentation
 
