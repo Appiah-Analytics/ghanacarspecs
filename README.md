@@ -251,6 +251,8 @@ npm run db:seed
 
 Restart `npm run dev` after `db:generate` so the Prisma client includes the `photos` relation. Open a vehicle from a **fresh lookup** (IDs change after re-seed).
 
+**Local dev uses SQLite** (`prisma/dev.db`) even if `.env` contains a Neon `DATABASE_URL`. Comment out `DATABASE_URL` in `.env` for normal local work, or photos will seed to SQLite while an misconfigured client could read empty data elsewhere. See `.env.example`.
+
 ```bash
 # Neon / production (manual — not run on Vercel build)
 DATABASE_URL="postgresql://..." npm run db:migrate:postgres

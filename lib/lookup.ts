@@ -1,6 +1,9 @@
 import type { Prisma } from "@prisma/client";
+import { normalizeChassisKey, normalizePlateKey, normalizeVin } from "@/lib/lookup-normalize";
 import { prisma } from "@/lib/prisma";
 import { decodeVinNhtsa, type ExternalVinSpecs } from "@/lib/nhtsa-vin";
+
+export { normalizeChassisKey, normalizePlateKey, normalizeVin } from "@/lib/lookup-normalize";
 
 const vehicleInclude = {
   events: { orderBy: { eventDate: "desc" as const } },
@@ -13,18 +16,6 @@ export type ResolveLookupOutcome =
   | { result: "external"; vin: string; specs: ExternalVinSpecs; provider: string }
   | { result: "not_found" }
   | { result: "external_failed"; reason: string };
-
-/** Normalize VIN: trim, uppercase, remove spaces. */
-export function normalizeVin(input: string): string {
-  return input.trim().replace(/\s+/g, "").toUpperCase();
-}
-
-/** Normalize plate or chassis for comparison: uppercase, letters and digits only. */
-export function normalizePlateKey(input: string): string {
-  return input.toUpperCase().replace(/[^A-Z0-9]/g, "");
-}
-
-export const normalizeChassisKey = normalizePlateKey;
 
 /**
  * Local lookup by VIN (17 chars), then plate, then chassis number.

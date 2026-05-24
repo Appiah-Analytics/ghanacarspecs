@@ -9,12 +9,43 @@ export const vehicleReportInclude = {
 
 export type VehicleReportData = Prisma.VehicleGetPayload<{ include: typeof vehicleReportInclude }>;
 
+function logVehicleReportLoad(
+  id: string,
+  vehicle: { vin: string; photos: { id: string; url: string }[] } | null,
+): void {
+  if (process.env.NODE_ENV !== "development") return;
+  console.info("[vehicle-report]", {
+    vehicleId: id,
+    found: Boolean(vehicle),
+    vin: vehicle?.vin ?? null,
+    photoCount: vehicle?.photos.length ?? 0,
+    photoUrls: vehicle?.photos.map((p) => p.url) ?? [],
+  });
+}
+
 /** Load a vehicle with events and photos for `/vehicles/[id]`. */
 export async function getVehicleForReport(id: string): Promise<VehicleReportData | null> {
   const vehicle = await prisma.vehicle.findUnique({
     where: { id },
     include: vehicleReportInclude,
   });
+
+  logVehicleReportLoad(id, vehicle);
+
   if (!vehicle) return null;
-  return { ...vehicle, photos: vehicle.photos ?? [] };
+
+  const photos = Array.isArray(vehicle.photos) ? vehicle.photos : [];
+
+  if (process.env.NODE_ENV === "development" && photos.length === 0) {
+    const byVin = await prisma.vehicle.findFirst({
+      where: { id },
+      select: {
+        vin: true,
+        _count: { select: { photos: true } },
+      },
+    });
+    console.warn("[vehicle-report] photos empty for id; DB counts:", byVin);
+  }
+
+  return { ...vehicle, photos };
 }

@@ -1,4 +1,4 @@
-import { normalizePlateKey, normalizeVin } from "@/lib/lookup";
+import { normalizePlateKey, normalizeVin } from "@/lib/lookup-normalize";
 
 /** Verified NHTSA vPIC decode example (not in local seed database). */
 export const EXTERNAL_DEMO_VIN = "1HGCM82633A004352";
