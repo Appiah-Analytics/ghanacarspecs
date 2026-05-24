@@ -240,13 +240,18 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 
 Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Seeded examples use placeholder SVGs with captions such as import condition, inspection, and accident/repair evidence. These are **sample/demo visual evidence only** — not DVLA, police, insurer, or official Ghana records. **Photo upload is not implemented yet** (future admin work).
 
-After pulling schema changes:
+After pulling schema changes (including `VehiclePhoto`):
 
 ```bash
+npm run db:generate
 # Local SQLite
 npm run db:push
 npm run db:seed
+```
 
+Restart `npm run dev` after `db:generate` so the Prisma client includes the `photos` relation. Open a vehicle from a **fresh lookup** (IDs change after re-seed).
+
+```bash
 # Neon / production (manual — not run on Vercel build)
 DATABASE_URL="postgresql://..." npm run db:migrate:postgres
 DATABASE_URL="postgresql://..." npm run db:seed

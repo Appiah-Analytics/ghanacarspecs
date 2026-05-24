@@ -1,5 +1,5 @@
-import Image from "next/image";
 import type { VehiclePhoto } from "@prisma/client";
+import { normalizeDemoPhotoSrc } from "@/lib/demo-photo-urls";
 import { formatPhotoSource } from "@/lib/photo-source";
 
 function formatTakenAt(d: Date | string | null | undefined): string | null {
@@ -9,10 +9,12 @@ function formatTakenAt(d: Date | string | null | undefined): string | null {
 }
 
 type Props = {
-  photos: VehiclePhoto[];
+  photos?: VehiclePhoto[] | null;
 };
 
 export function VehiclePhotos({ photos }: Props) {
+  const items = photos ?? [];
+
   return (
     <section className="report-section" aria-labelledby="photos-heading">
       <h3 id="photos-heading" className="report-section-title">
@@ -23,24 +25,25 @@ export function VehiclePhotos({ photos }: Props) {
         DVLA, police, insurer, or other official Ghana evidence.
       </p>
 
-      {photos.length === 0 ? (
+      {items.length === 0 ? (
         <p className="photo-empty" role="status">
           No GhanaCarSpecs photos are available for this vehicle yet.
         </p>
       ) : (
         <ul className="photo-grid">
-          {photos.map((photo) => {
+          {items.map((photo) => {
             const taken = formatTakenAt(photo.takenAt);
             return (
               <li key={photo.id} className="photo-card">
                 <div className="photo-thumb-wrap">
-                  <Image
-                    src={photo.url}
+                  <img
+                    src={normalizeDemoPhotoSrc(photo.url)}
                     alt={photo.caption}
-                    width={320}
-                    height={200}
                     className="photo-thumb"
-                    unoptimized={photo.url.endsWith(".svg")}
+                    width={640}
+                    height={400}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <div className="photo-card-body">

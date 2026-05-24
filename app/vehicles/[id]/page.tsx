@@ -1,17 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { VehicleReport } from "@/components/VehicleReport";
-import { prisma } from "@/lib/prisma";
-import { vehicleReportInclude } from "@/lib/vehicle-report";
+import { getVehicleForReport } from "@/lib/vehicle-report";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function VehiclePage({ params }: Props) {
   const { id } = await params;
-  const vehicle = await prisma.vehicle.findUnique({
-    where: { id },
-    include: vehicleReportInclude,
-  });
+  const vehicle = await getVehicleForReport(id);
 
   if (!vehicle) notFound();
 

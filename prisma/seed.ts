@@ -1,16 +1,7 @@
 import { PrismaClient, EventType, PhotoSourceType } from "@prisma/client";
+import { DEMO_PHOTO_URLS } from "../lib/demo-photo-urls";
 
 const prisma = new PrismaClient();
-
-/** Vehicle-specific demo placeholders — not real or official evidence. */
-const DEMO_PHOTOS = {
-  toyotaPortImport: "/demo-photos/toyota-tema-port-import.svg",
-  toyotaInspection: "/demo-photos/toyota-inspection-walkaround.svg",
-  vwAccident: "/demo-photos/vw-accident-damage.svg",
-  vwRepair: "/demo-photos/vw-body-shop-repair.svg",
-  hondaAuction: "/demo-photos/honda-us-auction-lot.svg",
-  hondaImportSource: "/demo-photos/honda-export-import-source.svg",
-} as const;
 
 async function main() {
   await prisma.vehiclePhoto.deleteMany();
@@ -66,7 +57,7 @@ async function main() {
       photos: {
         create: [
           {
-            url: DEMO_PHOTOS.toyotaPortImport,
+            url: DEMO_PHOTO_URLS.toyotaPortImport,
             caption:
               "Toyota Camry — sample Tema Port arrival condition after shipping (demo placeholder; not customs or DVLA proof)",
             sourceType: PhotoSourceType.IMPORT_CONDITION,
@@ -74,7 +65,7 @@ async function main() {
             takenAt: new Date("2019-03-14"),
           },
           {
-            url: DEMO_PHOTOS.toyotaInspection,
+            url: DEMO_PHOTO_URLS.toyotaInspection,
             caption:
               "Toyota Camry — sample independent pre-registration walkaround and checklist (demo placeholder; not dealer-certified)",
             sourceType: PhotoSourceType.INSPECTION,
@@ -121,7 +112,7 @@ async function main() {
       photos: {
         create: [
           {
-            url: DEMO_PHOTOS.vwAccident,
+            url: DEMO_PHOTO_URLS.vwAccident,
             caption:
               "VW Golf — sample accident panel damage at Kumasi (demo placeholder; not insurer claim file or police report)",
             sourceType: PhotoSourceType.ACCIDENT_REPAIR,
@@ -129,7 +120,7 @@ async function main() {
             takenAt: new Date("2023-11-05"),
           },
           {
-            url: DEMO_PHOTOS.vwRepair,
+            url: DEMO_PHOTO_URLS.vwRepair,
             caption:
               "VW Golf — sample body-shop repair estimate after minor accident (demo placeholder; not authorized dealer work order)",
             sourceType: PhotoSourceType.ACCIDENT_REPAIR,
@@ -169,7 +160,7 @@ async function main() {
       photos: {
         create: [
           {
-            url: DEMO_PHOTOS.hondaAuction,
+            url: DEMO_PHOTO_URLS.hondaAuction,
             caption:
               "Honda Accord — sample US auction lot listing before export (demo placeholder; not dealer inventory or title record)",
             sourceType: PhotoSourceType.AUCTION,
@@ -177,7 +168,7 @@ async function main() {
             takenAt: new Date("2015-07-20"),
           },
           {
-            url: DEMO_PHOTOS.hondaImportSource,
+            url: DEMO_PHOTO_URLS.hondaImportSource,
             caption:
               "Honda Accord — sample export-to-Ghana import source trail (demo placeholder; not customs or DVLA documentation)",
             sourceType: PhotoSourceType.IMPORT_CONDITION,

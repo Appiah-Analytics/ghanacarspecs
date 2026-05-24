@@ -114,7 +114,7 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
 
       <VehicleIntelligencePanel intelligence={intelligence} />
 
-      <VehiclePhotos photos={vehicle.photos} />
+      <VehiclePhotos photos={vehicle.photos ?? []} />
 
       <section className="report-section" aria-labelledby="history-heading">
         <h3 id="history-heading" className="report-section-title">
