@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-20 (Phase 11 — vehicle photos)  
+**Last updated:** 2026-05-20 (Neon seed / photos postmortem)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -410,6 +410,33 @@ Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence an
 
 - Optional public deploy to Vercel + Neon using `public_demo_plan.md` §6.
 - Azure production path remains Phase 7 when ready.
+
+---
+
+## Production Neon seed & VehiclePhoto debugging
+
+### Goal
+
+Document and fix empty **Visual evidence** on Vercel/Neon while local SQLite showed photos; make production seed reliable.
+
+### Root issues
+
+- Seed logged `file:…/dev.db` even when `DATABASE_URL` pointed at Neon.
+- `vehicle_photos` empty on Neon (`photo_count = 0`); UI empty state was correct for data, not CSS.
+- Seed briefly imported `lib/prisma.ts` → `server-only` failure under `tsx`.
+- Vercel build ran `migrate deploy` → Neon P1002 advisory lock timeout.
+
+### Fixes
+
+- `lib/prisma-datasource.ts`: Postgres when `DATABASE_URL` uses `postgres://` / `postgresql://`; else SQLite.
+- `prisma/seed.ts`: direct `PrismaClient`, VIN upserts, masked `[seed] database:` log.
+- Vercel build: generate postgres client + `next build` only (manual migrate).
+- Runbook: [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md).
+
+### Verification
+
+- `[seed] database: postgresql://…` (masked) when seeding Neon.
+- SQL: `photo_count = 2` per seed VIN; fresh homepage lookup.
 
 ---
 

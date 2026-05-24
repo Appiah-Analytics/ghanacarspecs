@@ -1,27 +1,44 @@
 /**
- * Resolve the database URL for the active Prisma client.
- * Local dev always uses SQLite at prisma/dev.db so seed data matches the app,
- * even when DATABASE_URL in .env points at Neon for production testing.
+ * Resolve the database URL for Prisma (app + seed).
+ * PostgreSQL when DATABASE_URL uses postgres protocol; otherwise local SQLite.
  */
-export function resolvePrismaDatabaseUrl(): string {
-  const isVercel = process.env.VERCEL === "1" || process.env.VERCEL === "true";
+export function isPostgresDatabaseUrl(url: string): boolean {
+  const trimmed = url.trim().toLowerCase();
+  return trimmed.startsWith("postgresql://") || trimmed.startsWith("postgres://");
+}
 
-  if (isVercel) {
-    const url = process.env.DATABASE_URL?.trim();
-    if (!url) {
-      throw new Error("DATABASE_URL is required when VERCEL=1 (PostgreSQL).");
-    }
-    return url;
+export function resolvePrismaDatabaseUrl(): string {
+  const envUrl = process.env.DATABASE_URL?.trim();
+
+  if (envUrl && isPostgresDatabaseUrl(envUrl)) {
+    return envUrl;
   }
 
-  if (process.env.USE_POSTGRES_LOCAL === "1" || process.env.USE_POSTGRES_LOCAL === "true") {
-    const url = process.env.DATABASE_URL?.trim();
-    if (!url) {
-      throw new Error("USE_POSTGRES_LOCAL is set but DATABASE_URL is missing.");
+  const isVercel = process.env.VERCEL === "1" || process.env.VERCEL === "true";
+  if (isVercel) {
+    if (!envUrl) {
+      throw new Error("DATABASE_URL is required when VERCEL=1 (PostgreSQL).");
     }
-    return url;
+    return envUrl;
   }
 
   const sqliteFile = `${process.cwd()}/prisma/dev.db`.replace(/\\/g, "/");
   return `file:${sqliteFile}`;
+}
+
+/** Safe log line for seed/scripts — never prints passwords. */
+export function formatDatabaseUrlForLog(url: string): string {
+  if (url.startsWith("file:")) {
+    return url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.password) {
+      parsed.password = "***";
+    }
+    return parsed.toString();
+  } catch {
+    return url.replace(/:([^:@/]+)@/, ":***@");
+  }
 }

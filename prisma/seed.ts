@@ -1,6 +1,6 @@
 import { EventType, PhotoSourceType, PrismaClient, type Prisma } from "@prisma/client";
 import { DEMO_PHOTO_URLS } from "../lib/demo-photo-urls";
-import { resolvePrismaDatabaseUrl } from "../lib/prisma-datasource";
+import { formatDatabaseUrlForLog, resolvePrismaDatabaseUrl } from "../lib/prisma-datasource";
 
 const prisma = new PrismaClient({
   datasources: { db: { url: resolvePrismaDatabaseUrl() } },
@@ -69,7 +69,8 @@ async function assertSeedPhotoCounts(): Promise<void> {
 }
 
 async function main() {
-  console.info("[seed] database:", resolvePrismaDatabaseUrl().replace(/:[^:@/]+@/, ":***@"));
+  const databaseUrl = resolvePrismaDatabaseUrl();
+  console.info("[seed] database:", formatDatabaseUrlForLog(databaseUrl));
 
   // Clear all demo photos/events so nothing is orphaned on stale vehicle IDs.
   await prisma.vehiclePhoto.deleteMany();

@@ -251,7 +251,7 @@ npm run db:seed
 
 Restart `npm run dev` after `db:generate` so the Prisma client includes the `photos` relation. Open a vehicle from a **fresh lookup** (IDs change after re-seed).
 
-**Local dev uses SQLite** (`prisma/dev.db`) even if `.env` contains a Neon `DATABASE_URL`. Comment out `DATABASE_URL` in `.env` for normal local work, or photos will seed to SQLite while an misconfigured client could read empty data elsewhere. See `.env.example`.
+**Local SQLite (default):** leave `DATABASE_URL` unset — seed and app use `prisma/dev.db`. **Neon seed:** set `DATABASE_URL` to a `postgresql://…` string, run `npm run db:generate:postgres` and `npm run db:migrate:postgres`, then `npm run db:seed` (log should show `postgresql://…`, not `file:…`). See `.env.example`.
 
 ```bash
 # Neon / production (manual — not run on Vercel build)
@@ -260,6 +260,8 @@ DATABASE_URL="postgresql://..." npm run db:seed
 ```
 
 ### Vercel + Neon deploy
+
+For production seed debugging (empty Visual evidence, `photo_count`, wrong database), see [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md).
 
 Vercel runs **`prisma generate`** (PostgreSQL schema) and **`next build`** only. It does **not** run `prisma migrate deploy` during build (avoids advisory-lock timeouts on Neon).
 
@@ -281,6 +283,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/architecture.md`](docs/architecture.md) | Current system design |
 | [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
 | [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
+| [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md) | Neon production seed & VehiclePhoto runbook |
 | [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
