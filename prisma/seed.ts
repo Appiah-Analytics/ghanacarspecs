@@ -1,7 +1,10 @@
-import { EventType, PhotoSourceType, type Prisma } from "@prisma/client";
+import { EventType, PhotoSourceType, PrismaClient, type Prisma } from "@prisma/client";
 import { DEMO_PHOTO_URLS } from "../lib/demo-photo-urls";
-import { prisma } from "../lib/prisma";
 import { resolvePrismaDatabaseUrl } from "../lib/prisma-datasource";
+
+const prisma = new PrismaClient({
+  datasources: { db: { url: resolvePrismaDatabaseUrl() } },
+});
 
 const SEED_VINS = ["4T1BE46K37U123456", "WVWZZZ3CZWE123456", "1HGBH41JXMN109186"] as const;
 
