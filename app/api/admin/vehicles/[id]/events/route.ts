@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin-api";
 import {
   createAdminVehicleEvent,
+  parseConfidenceLevel,
   parseEventType,
   parseOptionalMileage,
+  parseProvenanceType,
   parseRequiredDate,
 } from "@/lib/admin-record-mutations";
 
@@ -53,12 +55,32 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ ok: false, error: mileage.message, field: mileage.field }, { status: 400 });
   }
 
+  const confidenceRaw = typeof data.confidenceLevel === "string" ? data.confidenceLevel : "";
+  const confidenceLevel = parseConfidenceLevel(confidenceRaw);
+  if (typeof confidenceLevel !== "string") {
+    return NextResponse.json(
+      { ok: false, error: confidenceLevel.message, field: "confidenceLevel" },
+      { status: 400 },
+    );
+  }
+
+  const provenanceRaw = typeof data.provenanceType === "string" ? data.provenanceType : "";
+  const provenanceType = parseProvenanceType(provenanceRaw);
+  if (typeof provenanceType !== "string") {
+    return NextResponse.json(
+      { ok: false, error: provenanceType.message, field: "provenanceType" },
+      { status: 400 },
+    );
+  }
+
   const result = await createAdminVehicleEvent(vehicleId, {
     eventType,
     eventDate: eventDate as Date,
     mileage: mileage as number | null,
     sourceSystem,
     description: typeof data.description === "string" ? data.description : undefined,
+    confidenceLevel,
+    provenanceType,
   });
 
   if (!result.ok) {

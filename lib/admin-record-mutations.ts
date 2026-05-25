@@ -1,4 +1,10 @@
-import { EventType, PhotoSourceType, type Prisma } from "@prisma/client";
+import {
+  ConfidenceLevel,
+  EventType,
+  PhotoSourceType,
+  ProvenanceType,
+  type Prisma,
+} from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export type AdminMutationError = { field?: string; message: string };
@@ -32,6 +38,20 @@ export function parseEventType(value: string): EventType | AdminMutationError {
     return value as EventType;
   }
   return { message: "Invalid event type." };
+}
+
+export function parseConfidenceLevel(value: string): ConfidenceLevel | AdminMutationError {
+  if (Object.values(ConfidenceLevel).includes(value as ConfidenceLevel)) {
+    return value as ConfidenceLevel;
+  }
+  return { message: "Invalid confidence level." };
+}
+
+export function parseProvenanceType(value: string): ProvenanceType | AdminMutationError {
+  if (Object.values(ProvenanceType).includes(value as ProvenanceType)) {
+    return value as ProvenanceType;
+  }
+  return { message: "Invalid provenance type." };
 }
 
 export function parseOptionalDate(value: string): Date | null | AdminMutationError {
@@ -72,6 +92,8 @@ export type CreatePhotoInput = {
   sourceType: PhotoSourceType;
   sourceLabel?: string;
   takenAt?: Date | null;
+  confidenceLevel: ConfidenceLevel;
+  provenanceType: ProvenanceType;
 };
 
 export async function createAdminVehiclePhoto(
@@ -94,6 +116,8 @@ export async function createAdminVehiclePhoto(
       sourceType: input.sourceType,
       sourceLabel: input.sourceLabel?.trim() || null,
       takenAt: input.takenAt ?? null,
+      confidenceLevel: input.confidenceLevel,
+      provenanceType: input.provenanceType,
     },
   });
 
@@ -106,6 +130,8 @@ export type CreateEventInput = {
   mileage?: number | null;
   sourceSystem: string;
   description?: string;
+  confidenceLevel: ConfidenceLevel;
+  provenanceType: ProvenanceType;
 };
 
 export async function createAdminVehicleEvent(
@@ -135,6 +161,8 @@ export async function createAdminVehicleEvent(
       mileage: input.mileage ?? null,
       sourceSystem,
       rawPayload,
+      confidenceLevel: input.confidenceLevel,
+      provenanceType: input.provenanceType,
     },
   });
 

@@ -454,6 +454,59 @@ Make admin operational for growing records beyond seed/CSV: manage a vehicle, at
 
 ---
 
+## Phase 13 — Evidence confidence & provenance (presentation)
+
+### Goal
+
+Communicate trust level and origin for every visual evidence item and timeline event — data structure and UI only, no scoring algorithms or external APIs.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Schema | `prisma/schema.prisma`, `prisma/schema.postgresql.prisma`, `prisma/migrations/20260520160000_evidence_confidence_provenance/` |
+| Seed | `prisma/seed.ts` (Toyota importer/internal, VW other, Honda auction/importer; all LOW) |
+| UI | `components/EvidenceBadges.tsx`, `components/VehiclePhotos.tsx`, `components/EventTimeline.tsx`, `components/AdminAddPhotoForm.tsx`, `components/AdminAddEventForm.tsx`, `app/admin/vehicles/[id]/page.tsx`, `app/globals.css` |
+| Lib | `lib/evidence-metadata.ts`, `lib/admin-record-mutations.ts`, `lib/admin-form-options-client.ts` |
+| API | `app/api/admin/vehicles/[id]/photos/route.ts`, `app/api/admin/vehicles/[id]/events/route.ts` |
+| Docs | `docs/evidence_confidence_and_provenance.md`, `README.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- Enums `ConfidenceLevel` (LOW, MEDIUM, HIGH, VERIFIED) and `ProvenanceType` (DEMO, USER_SUBMITTED, DEALER, IMPORTER, AUCTION, INTERNAL, GOVERNMENT, INSURER, POLICE, OTHER) on photos and events; defaults LOW / OTHER.
+- Public badges: provenance + confidence on each photo card and timeline event; color-coded confidence (gray / amber / blue / green).
+- Trust explanation block under **Visual evidence** heading.
+- Admin forms: required provenance and confidence dropdowns; existing URL/date validation unchanged.
+
+### Database updates required
+
+```bash
+npm run db:generate
+npm run db:push          # local SQLite
+npm run db:seed
+
+# Neon
+DATABASE_URL="postgresql://..." npm run db:migrate:postgres
+DATABASE_URL="postgresql://..." npm run db:seed
+```
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- `npm run db:seed` — seeded vehicles show badges on public report
+
+### Known limitations
+
+- No automated confidence scoring or moderation.
+- CSV ingest still uses schema defaults for new events (LOW / OTHER).
+- Government/police/insurer provenance labels are informational until official integrations exist.
+
+### Next recommended step
+
+- Partner-specific default provenance on ingest; workflow to elevate confidence only after verification.
+
+---
+
 ## Production Neon seed & VehiclePhoto debugging
 
 ### Goal

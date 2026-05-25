@@ -18,3 +18,25 @@ export const PHOTO_SOURCE_TYPE_OPTIONS = [
   { value: "AUCTION", label: "Auction / pre-sale" },
   { value: "OTHER", label: "Other" },
 ] as const;
+
+/** Keep in sync with `lib/evidence-metadata.ts` */
+export const CONFIDENCE_LEVEL_OPTIONS = [
+  { value: "LOW", label: "Low confidence" },
+  { value: "MEDIUM", label: "Medium confidence" },
+  { value: "HIGH", label: "High confidence" },
+  { value: "VERIFIED", label: "Verified" },
+] as const;
+
+/** Keep in sync with `lib/evidence-metadata.ts` */
+export const PROVENANCE_TYPE_OPTIONS = [
+  { value: "DEMO", label: "Demo / sample" },
+  { value: "USER_SUBMITTED", label: "User submitted" },
+  { value: "DEALER", label: "Dealer" },
+  { value: "IMPORTER", label: "Importer" },
+  { value: "AUCTION", label: "Auction" },
+  { value: "INTERNAL", label: "Internal (GhanaCarSpecs)" },
+  { value: "GOVERNMENT", label: "Government" },
+  { value: "INSURER", label: "Insurer" },
+  { value: "POLICE", label: "Police" },
+  { value: "OTHER", label: "Other" },
+] as const;

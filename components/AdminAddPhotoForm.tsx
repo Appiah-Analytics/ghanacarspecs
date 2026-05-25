@@ -2,7 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { PHOTO_SOURCE_TYPE_OPTIONS } from "@/lib/admin-form-options-client";
+import {
+  CONFIDENCE_LEVEL_OPTIONS,
+  PHOTO_SOURCE_TYPE_OPTIONS,
+  PROVENANCE_TYPE_OPTIONS,
+} from "@/lib/admin-form-options-client";
 
 type Props = {
   vehicleId: string;
@@ -27,6 +31,8 @@ export function AdminAddPhotoForm({ vehicleId }: Props) {
       sourceType: String(formData.get("sourceType") ?? ""),
       sourceLabel: String(formData.get("sourceLabel") ?? ""),
       takenAt: String(formData.get("takenAt") ?? ""),
+      provenanceType: String(formData.get("provenanceType") ?? ""),
+      confidenceLevel: String(formData.get("confidenceLevel") ?? ""),
     };
 
     try {
@@ -76,6 +82,26 @@ export function AdminAddPhotoForm({ vehicleId }: Props) {
           Source type <span className="admin-required">*</span>
           <select name="sourceType" required defaultValue="OTHER">
             {PHOTO_SOURCE_TYPE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Provenance <span className="admin-required">*</span>
+          <select name="provenanceType" required defaultValue="OTHER">
+            {PROVENANCE_TYPE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Confidence <span className="admin-required">*</span>
+          <select name="confidenceLevel" required defaultValue="LOW">
+            {CONFIDENCE_LEVEL_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>

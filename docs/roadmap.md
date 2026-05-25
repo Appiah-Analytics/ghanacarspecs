@@ -101,3 +101,15 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Provenance notice on admin manage page
 - [x] Protected APIs: `POST /api/admin/vehicles/[id]/photos|events`
 - [x] `docs/admin_record_management.md`
+
+## Phase 13 — Evidence confidence & provenance (presentation)
+
+- [x] `confidenceLevel` + `provenanceType` on `VehiclePhoto` and `VehicleEvent`
+- [x] PostgreSQL migration + SQLite schema parity
+- [x] Seed demo provenance (Toyota importer/internal, VW other, Honda auction/importer) — all LOW confidence
+- [x] Admin photo/event forms: provenance + confidence dropdowns
+- [x] Public report badges on photos and timeline events
+- [x] Visual evidence trust explanation block
+- [x] `docs/evidence_confidence_and_provenance.md`
+- [ ] Automated confidence scoring (out of scope)
+- [ ] Official DVLA/police/insurer API integration (future)

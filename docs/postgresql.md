@@ -33,10 +33,10 @@ npm run dev
 |---------|-------------|
 | `npm run db:generate` | Generate SQLite Prisma client (also runs on `postinstall`) |
 | `npm run db:push` | Apply schema to SQLite |
-| `npm run db:seed` | Reseed sample data |
+| `npm run db:seed` | Reseed sample data (SQLite schema only) |
 | `npm run db:setup` | `db:push` + `db:seed` |
 
-`DATABASE_URL` is **not required** for the default SQLite workflow.
+`DATABASE_URL` is **not required** for the default SQLite workflow. Do **not** run `npm run db:seed` when `DATABASE_URL` points at Neon — use `npm run db:seed:postgres` instead (see below).
 
 ---
 
@@ -55,8 +55,14 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/ghanacarspecs?sslmode=require
 ```bash
 npm run db:generate:postgres
 npm run db:migrate:postgres
-npm run db:seed
+npm run db:seed:postgres
 ```
+
+| Command | Description |
+|---------|-------------|
+| `npm run db:generate:postgres` | Generate PostgreSQL Prisma client |
+| `npm run db:migrate:postgres` | Apply migrations to `DATABASE_URL` |
+| `npm run db:seed:postgres` | Reseed demo data (PostgreSQL schema + client) |
 
 Or use the combined helper (requires `DATABASE_URL`):
 
@@ -84,7 +90,7 @@ Migrations are **not** run during the Vercel build (avoids Neon advisory-lock ti
 DATABASE_URL="postgresql://..." npm run db:migrate:postgres
 ```
 
-Run **`npm run db:seed`** separately when you need demo data (migrations do not seed).
+Run **`npm run db:seed:postgres`** separately when you need demo data (migrations do not seed). Do not use `npm run db:seed` against Neon — that command uses the SQLite Prisma schema.
 
 **Manual / other hosts:**
 
@@ -186,8 +192,9 @@ The build runs `prisma generate --schema prisma/schema.postgresql.prisma` before
 **Before first deploy** (empty Neon) or **when schema changes** (before or after `git push` / Vercel redeploy):
 
 ```bash
-DATABASE_URL="postgresql://..." npm run db:migrate:postgres
-DATABASE_URL="postgresql://..." npm run db:seed   # optional — demo rows only
+npm run db:generate:postgres
+npm run db:migrate:postgres
+npm run db:seed:postgres   # optional — demo rows only
 ```
 
 Typical flow when you add a migration: commit `prisma/migrations/`, run `db:migrate:postgres` against Neon, then deploy (or deploy first, then migrate — but the app needs the migration applied before new columns are used).

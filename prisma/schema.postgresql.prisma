@@ -30,6 +30,26 @@ enum PhotoSourceType {
   OTHER
 }
 
+enum ConfidenceLevel {
+  LOW
+  MEDIUM
+  HIGH
+  VERIFIED
+}
+
+enum ProvenanceType {
+  DEMO
+  USER_SUBMITTED
+  DEALER
+  IMPORTER
+  AUCTION
+  INTERNAL
+  GOVERNMENT
+  INSURER
+  POLICE
+  OTHER
+}
+
 model Vehicle {
   id               String          @id @default(cuid())
   vin              String          @unique
@@ -53,30 +73,34 @@ model Vehicle {
 }
 
 model VehiclePhoto {
-  id          String          @id @default(cuid())
-  vehicleId   String
-  vehicle     Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  url         String
-  caption     String
-  sourceType  PhotoSourceType
-  sourceLabel String?
-  takenAt     DateTime?
-  createdAt   DateTime        @default(now())
+  id              String          @id @default(cuid())
+  vehicleId       String
+  vehicle         Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  url             String
+  caption         String
+  sourceType      PhotoSourceType
+  sourceLabel     String?
+  takenAt         DateTime?
+  confidenceLevel ConfidenceLevel @default(LOW)
+  provenanceType  ProvenanceType  @default(OTHER)
+  createdAt       DateTime        @default(now())
 
   @@index([vehicleId])
   @@map("vehicle_photos")
 }
 
 model VehicleEvent {
-  id           String    @id @default(cuid())
-  vehicleId    String
-  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  eventType    EventType
-  eventDate    DateTime
-  mileage      Int?
-  sourceSystem String?
-  rawPayload   Json?
-  createdAt    DateTime  @default(now())
+  id              String          @id @default(cuid())
+  vehicleId       String
+  vehicle         Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  eventType       EventType
+  eventDate       DateTime
+  mileage         Int?
+  sourceSystem    String?
+  rawPayload      Json?
+  confidenceLevel ConfidenceLevel @default(LOW)
+  provenanceType  ProvenanceType  @default(OTHER)
+  createdAt       DateTime        @default(now())
 
   @@index([vehicleId])
   @@map("vehicle_events")

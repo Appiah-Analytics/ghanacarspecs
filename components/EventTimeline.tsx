@@ -1,4 +1,5 @@
 import type { VehicleEvent } from "@prisma/client";
+import { EvidenceBadges } from "@/components/EvidenceBadges";
 
 function formatEventDate(d: Date): string {
   return d.toLocaleString(undefined, {
@@ -22,7 +23,10 @@ export function EventTimeline({ events }: { events: VehicleEvent[] }) {
       {events.map((e) => (
         <li key={e.id} className="timeline-card">
           <div className="timeline-card-top">
-            <span className="event-type-badge">{formatEventType(e.eventType)}</span>
+            <div className="timeline-card-heading">
+              <span className="event-type-badge">{formatEventType(e.eventType)}</span>
+              <EvidenceBadges provenanceType={e.provenanceType} confidenceLevel={e.confidenceLevel} />
+            </div>
             <time className="event-date" dateTime={e.eventDate.toISOString()}>
               {formatEventDate(e.eventDate)}
             </time>

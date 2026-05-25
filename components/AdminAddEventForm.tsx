@@ -2,7 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { EVENT_TYPE_OPTIONS } from "@/lib/admin-form-options-client";
+import {
+  CONFIDENCE_LEVEL_OPTIONS,
+  EVENT_TYPE_OPTIONS,
+  PROVENANCE_TYPE_OPTIONS,
+} from "@/lib/admin-form-options-client";
 
 type Props = {
   vehicleId: string;
@@ -27,6 +31,8 @@ export function AdminAddEventForm({ vehicleId }: Props) {
       mileage: String(formData.get("mileage") ?? ""),
       sourceSystem: String(formData.get("sourceSystem") ?? ""),
       description: String(formData.get("description") ?? ""),
+      provenanceType: String(formData.get("provenanceType") ?? ""),
+      confidenceLevel: String(formData.get("confidenceLevel") ?? ""),
     };
 
     try {
@@ -78,6 +84,26 @@ export function AdminAddEventForm({ vehicleId }: Props) {
         <label>
           Source system <span className="admin-required">*</span>
           <input name="sourceSystem" type="text" required placeholder="Who reported this event?" />
+        </label>
+        <label>
+          Provenance <span className="admin-required">*</span>
+          <select name="provenanceType" required defaultValue="OTHER">
+            {PROVENANCE_TYPE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Confidence <span className="admin-required">*</span>
+          <select name="confidenceLevel" required defaultValue="LOW">
+            {CONFIDENCE_LEVEL_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
           Mileage (km)

@@ -25,8 +25,8 @@ Neon SQL initially showed vehicles present but **`photo_count = 0`** for seed VI
 
 ## Root causes
 
-1. **Seed targeted SQLite, not Neon**  
-   `resolvePrismaDatabaseUrl()` always used `file:…/prisma/dev.db` for local runs unless `VERCEL=1` or `USE_POSTGRES_LOCAL=1`. With `DATABASE_URL` set to Neon in `.env`, `npm run db:seed` still logged `file:…/dev.db`, so photos were written to SQLite while production read Neon.
+1. **Seed targeted SQLite, not Neon**
+   `npm run db:seed` uses the **SQLite** Prisma schema (`schema.prisma`). With `DATABASE_URL` set to Neon, you must run **`npm run db:seed:postgres`** after `db:generate:postgres` and `db:migrate:postgres`. Using `db:seed` against Neon causes a schema/provider mismatch or seeds the wrong database.
 
 2. **App/seed database split (earlier)**  
    Even when the UI path was correct, lookup and reports could read Neon (empty photos) while seed populated SQLite (six `VehiclePhoto` rows).
@@ -53,7 +53,7 @@ Neon SQL initially showed vehicles present but **`photo_count = 0`** for seed VI
 | `getVehicleForReport()` / `vehicleReportInclude` | Includes `photos` with correct relation name |
 | `VehicleReport` → `VehiclePhotos` | Props passed; empty state = `photos.length === 0` |
 | CSS / SVG paths | Section rendered; broken SVGs were a separate issue (invalid XML in placeholders) |
-| `npm run db:seed` log line | Must show `postgresql://…` (masked), not `file:…/dev.db`, when seeding Neon |
+| `npm run db:seed:postgres` log line | Must show `postgresql://…` (masked), not `file:…/dev.db` |
 | Neon SQL photo counts | `photo_count` should be **2** per seed VIN after correct seed |
 | Prisma client for Postgres seed | `npm run db:generate:postgres` before seeding Neon |
 | Vercel `DATABASE_URL` | Must match the Neon branch/database you migrate and seed |
@@ -81,7 +81,7 @@ PowerShell (from repo root):
 $env:DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 npm run db:generate:postgres
 npm run db:migrate:postgres
-npm run db:seed
+npm run db:seed:postgres
 ```
 
 bash:
@@ -90,7 +90,7 @@ bash:
 export DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 npm run db:generate:postgres
 npm run db:migrate:postgres
-npm run db:seed
+npm run db:seed:postgres
 ```
 
 ### Expected seed output
@@ -173,7 +173,7 @@ Before declaring production visual evidence fixed:
 - [ ] **Vercel `DATABASE_URL`** matches the Neon project/branch you migrate and seed.
 - [ ] **Neon tables** exist (`vehicles`, `vehicle_events`, `vehicle_photos`).
 - [ ] **`npm run db:migrate:postgres`** completed against that `DATABASE_URL`.
-- [ ] **`npm run db:seed`** logs **`postgresql://…` masked**, not `file:…/dev.db`.
+- [ ] **`npm run db:seed:postgres`** (not `db:seed`) logs **`postgresql://…` masked**, not `file:…/dev.db`.
 - [ ] **SQL** `photo_count = 2` for all three seed VINs (query above).
 - [ ] **Fresh lookup** from homepage for each VIN — do not rely on old `/vehicles/[id]` bookmarks.
 - [ ] **Redeploy Vercel** only after code/config changes — not required after seed-only updates.

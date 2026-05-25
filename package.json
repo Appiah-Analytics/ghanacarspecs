@@ -19,8 +19,9 @@
     "db:migrate:postgres": "prisma migrate deploy --schema prisma/schema.postgresql.prisma",
     "db:migrate:postgres:dev": "prisma migrate dev --schema prisma/schema.postgresql.prisma",
     "db:seed": "prisma db seed",
+    "db:seed:postgres": "prisma db seed --schema prisma/schema.postgresql.prisma",
     "db:setup": "prisma db push && prisma db seed",
-    "db:setup:postgres": "npm run db:generate:postgres && prisma migrate deploy --schema prisma/schema.postgresql.prisma && prisma db seed",
+    "db:setup:postgres": "npm run db:generate:postgres && prisma migrate deploy --schema prisma/schema.postgresql.prisma && npm run db:seed:postgres",
     "db:export:sqlite": "tsx scripts/export-sqlite-data.ts",
     "db:import:postgres": "tsx scripts/import-postgres-data.ts",
     "report:docx": "tsx scripts/generate-progress-report.ts"

@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin-api";
 import {
   createAdminVehiclePhoto,
+  parseConfidenceLevel,
   parseOptionalDate,
   parsePhotoSourceType,
+  parseProvenanceType,
   validatePhotoUrl,
 } from "@/lib/admin-record-mutations";
 
@@ -49,12 +51,32 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ ok: false, error: takenAt.message, field: takenAt.field }, { status: 400 });
   }
 
+  const confidenceRaw = typeof data.confidenceLevel === "string" ? data.confidenceLevel : "";
+  const confidenceLevel = parseConfidenceLevel(confidenceRaw);
+  if (typeof confidenceLevel !== "string") {
+    return NextResponse.json(
+      { ok: false, error: confidenceLevel.message, field: "confidenceLevel" },
+      { status: 400 },
+    );
+  }
+
+  const provenanceRaw = typeof data.provenanceType === "string" ? data.provenanceType : "";
+  const provenanceType = parseProvenanceType(provenanceRaw);
+  if (typeof provenanceType !== "string") {
+    return NextResponse.json(
+      { ok: false, error: provenanceType.message, field: "provenanceType" },
+      { status: 400 },
+    );
+  }
+
   const result = await createAdminVehiclePhoto(vehicleId, {
     url,
     caption: typeof data.caption === "string" ? data.caption : undefined,
     sourceType,
     sourceLabel: typeof data.sourceLabel === "string" ? data.sourceLabel : undefined,
     takenAt: takenAt as Date | null,
+    confidenceLevel,
+    provenanceType,
   });
 
   if (!result.ok) {

@@ -2,7 +2,7 @@
 
 How operators add **timeline events** and **visual evidence URLs** to existing vehicles after CSV ingestion or seed data.
 
-**Related:** [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md), [`postgresql.md`](postgresql.md), [`sample_data.md`](sample_data.md)
+**Related:** [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md), [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md), [`postgresql.md`](postgresql.md), [`sample_data.md`](sample_data.md)
 
 ---
 
@@ -34,6 +34,8 @@ Public reports remain demo-safe; do not imply official Ghana records.
 |--------|----------|--------|
 | Photo URL | Yes | Must start with `/demo-photos/`, `http://`, or `https://` |
 | Source type | Yes | `PhotoSourceType` enum (import, inspection, accident/repair, auction, other) |
+| Provenance | Yes | `ProvenanceType` enum (demo, importer, dealer, government, etc.) |
+| Confidence | Yes | `ConfidenceLevel` enum (LOW, MEDIUM, HIGH, VERIFIED) |
 | Caption | No | Defaults to a generic admin caption if empty |
 | Source label | No | e.g. “Partner intake (sample)” |
 | Taken at | No | Date picker |
@@ -55,6 +57,8 @@ After success, the page refreshes and shows a confirmation banner.
 | Event type | Yes | Matches `EventType` enum |
 | Event date | Yes | Date picker |
 | Source system | Yes | Who reported the event (free text) |
+| Provenance | Yes | `ProvenanceType` enum |
+| Confidence | Yes | `ConfidenceLevel` enum |
 | Mileage | No | Whole km |
 | Description | No | Stored in `rawPayload` with `addedFrom: "admin"` |
 
@@ -65,8 +69,8 @@ After success, the page refreshes and shows a confirmation banner.
 ## Verify on the public report
 
 1. From the manage page, open **Public report** (`/vehicles/[id]`).
-2. Confirm **Visual evidence** shows new photo cards (or empty state if none).
-3. Confirm **Event history** lists the new event (newest first).
+2. Confirm **Visual evidence** shows new photo cards with provenance and confidence badges (or empty state if none).
+3. Confirm **Event history** lists the new event with badges (newest first).
 4. Prefer a **fresh lookup** from `/` by VIN/plate/chassis rather than stale bookmarks.
 
 ---

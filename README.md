@@ -212,11 +212,12 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | `npm run start` | Production server (after `build`) |
 | `npm run lint` | Typecheck (`tsc --noEmit`) |
 | `npm run db:push` | Apply Prisma schema to SQLite |
-| `npm run db:seed` | Reseed sample data |
+| `npm run db:seed` | Reseed sample data (SQLite schema — local only) |
 | `npm run db:setup` | `db:push` then `db:seed` (SQLite — default) |
 | `npm run db:generate:postgres` | Generate Prisma client for PostgreSQL |
 | `npm run db:migrate:postgres` | Apply PostgreSQL migrations (requires `DATABASE_URL`) |
-| `npm run db:setup:postgres` | Postgres migrate + seed (staging/production) |
+| `npm run db:seed:postgres` | Reseed sample data on PostgreSQL (requires `DATABASE_URL`) |
+| `npm run db:setup:postgres` | Postgres generate + migrate + seed (staging/production) |
 | `npm run db:export:sqlite` | Export SQLite data to JSON |
 | `npm run report:docx` | Regenerate Word progress report in `docs/` |
 
@@ -224,7 +225,9 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 
 - `app/page.tsx` — Home + lookup form  
 - `app/vehicles/[id]/page.tsx` — Local vehicle report (specs, visual evidence, events)  
-- `components/VehiclePhotos.tsx` — Sample photo gallery / empty state on local reports  
+- `components/VehiclePhotos.tsx` — Sample photo gallery with provenance/confidence badges  
+- `components/EvidenceBadges.tsx` — Provenance and confidence badges on reports  
+- `lib/evidence-metadata.ts` — Badge labels and styling helpers  
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
 - `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
@@ -250,7 +253,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 
 ### Vehicle photos (demo)
 
-Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Seeded examples use placeholder SVGs with captions such as import condition, inspection, and accident/repair evidence. These are **sample/demo visual evidence only** — not DVLA, police, insurer, or official Ghana records. Admins can attach **photo URLs** on `/admin/vehicles/[id]` (no file upload yet).
+Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Each photo and timeline event shows **provenance** (e.g. importer, auction, internal) and **confidence** (LOW through VERIFIED) badges so users can judge trust at a glance. Seeded examples use placeholder SVGs — **not** DVLA, police, insurer, or official Ghana records unless a future integration says otherwise. Admins set provenance and confidence when adding photo URLs or events on `/admin/vehicles/[id]` (no file upload yet). See [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md).
 
 After pulling schema changes (including `VehiclePhoto`):
 
@@ -263,13 +266,16 @@ npm run db:seed
 
 Restart `npm run dev` after `db:generate` so the Prisma client includes the `photos` relation. Open a vehicle from a **fresh lookup** (IDs change after re-seed).
 
-**Local SQLite (default):** leave `DATABASE_URL` unset — seed and app use `prisma/dev.db`. **Neon seed:** set `DATABASE_URL` to a `postgresql://…` string, run `npm run db:generate:postgres` and `npm run db:migrate:postgres`, then `npm run db:seed` (log should show `postgresql://…`, not `file:…`). See `.env.example`.
+**Local SQLite (default):** leave `DATABASE_URL` unset — use `npm run db:seed` (SQLite schema). **Neon:** set `DATABASE_URL` to a `postgresql://…` string, then use the PostgreSQL scripts (not `db:seed`). See `.env.example`.
 
 ```bash
 # Neon / production (manual — not run on Vercel build)
-DATABASE_URL="postgresql://..." npm run db:migrate:postgres
-DATABASE_URL="postgresql://..." npm run db:seed
+npm run db:generate:postgres
+npm run db:migrate:postgres
+npm run db:seed:postgres
 ```
+
+The seed log should show `postgresql://…` (masked), not `file:…/dev.db`.
 
 ### Vercel + Neon deploy
 
@@ -280,8 +286,9 @@ Vercel runs **`prisma generate`** (PostgreSQL schema) and **`next build`** only.
 When the schema changes, run migrations **manually before or after deploy**:
 
 ```bash
-DATABASE_URL="postgresql://..." npm run db:migrate:postgres
-DATABASE_URL="postgresql://..." npm run db:seed   # optional
+npm run db:generate:postgres
+npm run db:migrate:postgres
+npm run db:seed:postgres   # optional — demo rows only
 ```
 
 See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow.
@@ -297,6 +304,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
 | [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md) | Neon production seed & VehiclePhoto runbook |
 | [`docs/admin_record_management.md`](docs/admin_record_management.md) | Admin manage page: events & visual evidence URLs |
+| [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) | Trust model, enums, badges, future official feeds |
 | [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |

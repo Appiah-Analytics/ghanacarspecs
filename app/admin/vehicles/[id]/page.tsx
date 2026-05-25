@@ -5,6 +5,7 @@ import { AdminAddPhotoForm } from "@/components/AdminAddPhotoForm";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminSignOut } from "@/components/AdminSignOut";
 import { EventTimeline } from "@/components/EventTimeline";
+import { EvidenceBadges } from "@/components/EvidenceBadges";
 import { formatPhotoSource } from "@/lib/photo-source";
 import { getAdminVehicleManage } from "@/lib/admin-vehicle-manage";
 
@@ -122,6 +123,7 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
                     {photo.url}
                   </a>
                 </p>
+                <EvidenceBadges provenanceType={photo.provenanceType} confidenceLevel={photo.confidenceLevel} />
                 <p className="admin-record-list-meta">
                   {photo.caption} · {formatPhotoSource(photo.sourceType, photo.sourceLabel)}
                   {photo.takenAt ? ` · ${formatIdentityDate(photo.takenAt)}` : ""}

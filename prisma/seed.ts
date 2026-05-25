@@ -1,4 +1,11 @@
-import { EventType, PhotoSourceType, PrismaClient, type Prisma } from "@prisma/client";
+import {
+  ConfidenceLevel,
+  EventType,
+  PhotoSourceType,
+  ProvenanceType,
+  PrismaClient,
+  type Prisma,
+} from "@prisma/client";
 import { DEMO_PHOTO_URLS } from "../lib/demo-photo-urls";
 import { formatDatabaseUrlForLog, resolvePrismaDatabaseUrl } from "../lib/prisma-datasource";
 
@@ -98,6 +105,8 @@ async function main() {
         mileage: 45000,
         sourceSystem: "Tema Port - Importer Alpha",
         rawPayload: { note: "Cleared customs" },
+        provenanceType: ProvenanceType.IMPORTER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         eventType: EventType.REGISTRATION,
@@ -105,6 +114,8 @@ async function main() {
         mileage: 45120,
         sourceSystem: "DVLA (sample)",
         rawPayload: { plate: "GR-1234-21" },
+        provenanceType: ProvenanceType.INTERNAL,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         eventType: EventType.SERVICE,
@@ -112,6 +123,8 @@ async function main() {
         mileage: 62000,
         sourceSystem: "Accra Auto Care",
         rawPayload: { service: "Oil change, brakes inspected" },
+        provenanceType: ProvenanceType.INTERNAL,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         eventType: EventType.MILEAGE_UPDATE,
@@ -119,6 +132,8 @@ async function main() {
         mileage: 78000,
         sourceSystem: "Insurer renewal (sample)",
         rawPayload: {},
+        provenanceType: ProvenanceType.INTERNAL,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
     ],
     [
@@ -129,6 +144,8 @@ async function main() {
         sourceType: PhotoSourceType.IMPORT_CONDITION,
         sourceLabel: "Tema Port intake — demo importer only",
         takenAt: new Date("2019-03-14"),
+        provenanceType: ProvenanceType.IMPORTER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         url: DEMO_PHOTO_URLS.toyotaInspection,
@@ -137,6 +154,8 @@ async function main() {
         sourceType: PhotoSourceType.INSPECTION,
         sourceLabel: "Inspection partner (sample) — not police or insurer",
         takenAt: new Date("2019-03-28"),
+        provenanceType: ProvenanceType.INTERNAL,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
     ],
   );
@@ -163,6 +182,8 @@ async function main() {
         mileage: 88000,
         sourceSystem: "Importer Beta",
         rawPayload: {},
+        provenanceType: ProvenanceType.OTHER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         eventType: EventType.ACCIDENT,
@@ -170,6 +191,8 @@ async function main() {
         mileage: 102400,
         sourceSystem: "Insurer Gamma (sample)",
         rawPayload: { severity: "minor", location: "Kumasi" },
+        provenanceType: ProvenanceType.OTHER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
     ],
     [
@@ -180,6 +203,8 @@ async function main() {
         sourceType: PhotoSourceType.ACCIDENT_REPAIR,
         sourceLabel: "Insurer Gamma (sample narrative only)",
         takenAt: new Date("2023-11-05"),
+        provenanceType: ProvenanceType.OTHER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         url: DEMO_PHOTO_URLS.vwRepair,
@@ -188,6 +213,8 @@ async function main() {
         sourceType: PhotoSourceType.ACCIDENT_REPAIR,
         sourceLabel: "Body shop estimate (sample)",
         takenAt: new Date("2023-11-12"),
+        provenanceType: ProvenanceType.OTHER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
     ],
   );
@@ -214,6 +241,8 @@ async function main() {
         mileage: 120000,
         sourceSystem: "Classic Imports Ltd",
         rawPayload: {},
+        provenanceType: ProvenanceType.IMPORTER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
     ],
     [
@@ -224,6 +253,8 @@ async function main() {
         sourceType: PhotoSourceType.AUCTION,
         sourceLabel: "US auction lot #A-4192 (sample)",
         takenAt: new Date("2015-07-20"),
+        provenanceType: ProvenanceType.AUCTION,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
       {
         url: DEMO_PHOTO_URLS.hondaImportSource,
@@ -232,6 +263,8 @@ async function main() {
         sourceType: PhotoSourceType.IMPORT_CONDITION,
         sourceLabel: "Classic Imports Ltd — demo intake",
         takenAt: new Date("2015-09-08"),
+        provenanceType: ProvenanceType.IMPORTER,
+        confidenceLevel: ConfidenceLevel.LOW,
       },
     ],
   );

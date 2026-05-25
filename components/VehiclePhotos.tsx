@@ -1,4 +1,5 @@
 import type { VehiclePhoto } from "@prisma/client";
+import { EvidenceBadges } from "@/components/EvidenceBadges";
 import { normalizeDemoPhotoSrc } from "@/lib/demo-photo-urls";
 import { formatPhotoSource } from "@/lib/photo-source";
 
@@ -20,9 +21,15 @@ export function VehiclePhotos({ photos }: Props) {
       <h3 id="photos-heading" className="report-section-title">
         Visual evidence
       </h3>
+      <p className="evidence-confidence-notice">
+        Evidence confidence reflects the estimated reliability and origin of submitted records. Demonstration
+        placeholders and user-submitted materials are not equivalent to official DVLA, police, insurer, or
+        government records.
+      </p>
       <p className="report-section-lead">
-        Sample photos linked to this local GhanaCarSpecs record. These are demonstration placeholders only — not
-        DVLA, police, insurer, or other official Ghana evidence.
+        Sample photos linked to this local GhanaCarSpecs record. Each item shows provenance and confidence badges —
+        not DVLA, police, insurer, or other official Ghana evidence unless explicitly labeled and integrated in the
+        future.
       </p>
 
       {items.length === 0 ? (
@@ -47,10 +54,13 @@ export function VehiclePhotos({ photos }: Props) {
                   />
                 </div>
                 <div className="photo-card-body">
+                  <EvidenceBadges
+                    provenanceType={photo.provenanceType}
+                    confidenceLevel={photo.confidenceLevel}
+                  />
                   <p className="photo-caption">{photo.caption}</p>
                   <p className="photo-source">{formatPhotoSource(photo.sourceType, photo.sourceLabel)}</p>
                   {taken ? <p className="photo-meta">Taken {taken}</p> : null}
-                  <p className="photo-demo-tag">Sample / demo visual evidence</p>
                 </div>
               </li>
             );
