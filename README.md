@@ -239,7 +239,9 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
 - `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
 - `app/api/admin/vehicles/[id]/photos/route.ts` — Add `VehiclePhoto` (admin)  
+- `app/api/admin/uploads/route.ts` — Admin image upload to Vercel Blob  
 - `app/api/admin/vehicles/[id]/events/route.ts` — Add `VehicleEvent` (admin)  
+- `lib/admin-upload.ts` — Upload validation and filename sanitization  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
@@ -253,7 +255,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 
 ### Vehicle photos (demo)
 
-Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Each photo and timeline event shows **provenance** (e.g. importer, auction, internal) and **confidence** (LOW through VERIFIED) badges so users can judge trust at a glance. Seeded examples use placeholder SVGs — **not** DVLA, police, insurer, or official Ghana records unless a future integration says otherwise. Admins set provenance and confidence when adding photo URLs or events on `/admin/vehicles/[id]` (no file upload yet). See [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md).
+Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Each photo and timeline event shows **provenance** (e.g. importer, auction, internal) and **confidence** (LOW through VERIFIED) badges so users can judge trust at a glance. Seeded examples use placeholder SVGs — **not** DVLA, police, insurer, or official Ghana records unless a future integration says otherwise. Admins **upload images** (Vercel Blob) or paste URLs on `/admin/vehicles/[id]`, then set provenance and confidence before save. See [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) and [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md).
 
 After pulling schema changes (including `VehiclePhoto`):
 
@@ -305,6 +307,8 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md) | Neon production seed & VehiclePhoto runbook |
 | [`docs/admin_record_management.md`](docs/admin_record_management.md) | Admin manage page: events & visual evidence URLs |
 | [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) | Trust model, enums, badges, future official feeds |
+| [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |
+| [`docs/project_handoff_master.md`](docs/project_handoff_master.md) | Master handoff — architecture, env, commands, recovery |
 | [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
@@ -313,4 +317,4 @@ Copy [`.env.example`](.env.example) to `.env`. **Admin routes require** `ADMIN_A
 
 ## Out of scope (not implemented)
 
-Azure hosting, Terraform, payments, per-user accounts, OAuth, dealer/partner dashboards, automated production ingestion, and **vehicle photo upload** (schema and read-only UI only for now). Admin uses a **single shared secret** (not user accounts). Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.
+Azure hosting, Terraform, payments, per-user accounts, OAuth, dealer/partner dashboards, and automated production ingestion. Admin uses a **single shared secret** (not user accounts). Image upload requires Vercel Blob (`BLOB_READ_WRITE_TOKEN`). Deployment is **documented only** in Phase 7 (`docs/deployment_plan.md`); nothing is deployed from this repo yet.

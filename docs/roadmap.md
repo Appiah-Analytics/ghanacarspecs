@@ -113,3 +113,12 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] `docs/evidence_confidence_and_provenance.md`
 - [ ] Automated confidence scoring (out of scope)
 - [ ] Official DVLA/police/insurer API integration (future)
+
+## Phase 14 — Admin image upload (Vercel Blob)
+
+- [x] `@vercel/blob` storage under `vehicle-evidence/{vehicleId}/…`
+- [x] `POST /api/admin/uploads` (admin auth, image MIME, 10 MB max, sanitized filenames)
+- [x] Admin form: drag/drop, file picker, preview, manual URL fallback
+- [x] Auto-fill photo URL → existing `VehiclePhoto` create flow (provenance/confidence unchanged)
+- [x] `docs/vercel_blob_setup.md`
+- [ ] Image moderation / virus scanning (future)

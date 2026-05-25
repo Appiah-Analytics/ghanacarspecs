@@ -1040,6 +1040,128 @@ main.page {
   color: var(--muted);
 }
 
+.admin-url-mode {
+  border: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.admin-url-mode-legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.admin-url-mode-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.admin-upload-dropzone {
+  position: relative;
+  margin-bottom: 1rem;
+  padding: 1.5rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.admin-upload-dropzone.is-uploading {
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.admin-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.admin-upload-dropzone-title {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.admin-upload-dropzone-hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.admin-upload-browse {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-upload-browse:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.admin-upload-browse:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-upload-preview {
+  margin-bottom: 1rem;
+}
+
+.admin-upload-preview-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.admin-upload-preview-img {
+  display: block;
+  max-width: 100%;
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  object-fit: contain;
+  background: #f1f5f9;
+}
+
+.admin-url-readonly {
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.admin-upload-hint {
+  margin: 0 0 1rem;
+  font-size: 0.88rem;
+  color: #166534;
+}
+
 .csv-upload-form {
   display: flex;
   flex-direction: column;

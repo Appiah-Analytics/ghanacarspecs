@@ -507,6 +507,45 @@ DATABASE_URL="postgresql://..." npm run db:seed
 
 ---
 
+## Phase 14 — Admin image upload (Vercel Blob)
+
+### Goal
+
+Let admins upload visual evidence images directly instead of pasting URLs only, using Vercel Blob storage.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Dependency | `@vercel/blob` |
+| API | `app/api/admin/uploads/route.ts` |
+| Lib | `lib/admin-upload.ts` |
+| UI | `components/AdminAddPhotoForm.tsx`, `app/admin/vehicles/[id]/page.tsx`, `app/globals.css` |
+| Env | `.env.example` (`BLOB_READ_WRITE_TOKEN`) |
+| Docs | `docs/vercel_blob_setup.md`, `README.md`, `docs/roadmap.md`, `docs/admin_record_management.md` |
+
+### Behavior implemented
+
+- `POST /api/admin/uploads`: admin auth, image MIME only, 10 MB max, sanitized filenames, path `vehicle-evidence/{vehicleId}/{timestamp}-{name}`.
+- Admin form: drag/drop, file picker, preview, auto-fill URL; **Manual URL** fallback for `/demo-photos/` and HTTPS.
+- Save still uses `POST /api/admin/vehicles/[id]/photos` with provenance/confidence (no Prisma or public report UI changes).
+
+### Configuration
+
+- Local / Vercel: `BLOB_READ_WRITE_TOKEN` from Vercel Blob store (see `docs/vercel_blob_setup.md`).
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+
+### Known limitations
+
+- No virus scanning or moderation queue.
+- Upload requires Blob token (503 without it).
+- SVG uploads not accepted (security).
+
+---
+
 ## Production Neon seed & VehiclePhoto debugging
 
 ### Goal

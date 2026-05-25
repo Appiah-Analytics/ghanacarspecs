@@ -2,7 +2,7 @@
 
 How operators add **timeline events** and **visual evidence URLs** to existing vehicles after CSV ingestion or seed data.
 
-**Related:** [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md), [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md), [`postgresql.md`](postgresql.md), [`sample_data.md`](sample_data.md)
+**Related:** [`vercel_blob_setup.md`](vercel_blob_setup.md), [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md), [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md), [`postgresql.md`](postgresql.md), [`sample_data.md`](sample_data.md)
 
 ---
 
@@ -26,23 +26,40 @@ Public reports remain demo-safe; do not imply official Ghana records.
 
 ---
 
-## Add visual evidence (photo URL)
+## Add visual evidence (upload or URL)
 
-**Form fields:**
+### Upload workflow (preferred)
+
+1. On `/admin/vehicles/[id]`, choose **Upload file**.
+2. Drag/drop or browse an image (JPEG, PNG, WebP, GIF, AVIF, HEIC — max 10 MB).
+3. `POST /api/admin/uploads` stores the file in Vercel Blob and returns a public HTTPS URL (auto-fills **Stored URL**).
+4. Set provenance, confidence, source type, caption, etc.
+5. Click **Add visual evidence** → `POST /api/admin/vehicles/[id]/photos` creates the `VehiclePhoto` row.
+
+Requires `BLOB_READ_WRITE_TOKEN` in `.env` (local) or Vercel project env. See [`vercel_blob_setup.md`](vercel_blob_setup.md).
+
+### Manual URL fallback
+
+Choose **Manual URL** and paste `/demo-photos/…`, `http://`, or `https://` (including Blob URLs from a previous upload).
+
+**Form fields (save step):**
 
 | Field | Required | Notes |
 |--------|----------|--------|
-| Photo URL | Yes | Must start with `/demo-photos/`, `http://`, or `https://` |
-| Source type | Yes | `PhotoSourceType` enum (import, inspection, accident/repair, auction, other) |
-| Provenance | Yes | `ProvenanceType` enum (demo, importer, dealer, government, etc.) |
-| Confidence | Yes | `ConfidenceLevel` enum (LOW, MEDIUM, HIGH, VERIFIED) |
+| Photo URL | Yes | From upload or manual entry |
+| Source type | Yes | `PhotoSourceType` enum |
+| Provenance | Yes | `ProvenanceType` enum |
+| Confidence | Yes | `ConfidenceLevel` enum |
 | Caption | No | Defaults to a generic admin caption if empty |
 | Source label | No | e.g. “Partner intake (sample)” |
 | Taken at | No | Date picker |
 
-**Demo tip:** Use an existing asset, e.g. `/demo-photos/toyota-tema-port-import.svg`.
+**APIs:**
 
-**API:** `POST /api/admin/vehicles/[id]/photos` (JSON body, admin auth required).
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/admin/uploads` | Multipart upload (`file`, `vehicleId`) → `{ url }` |
+| `POST /api/admin/vehicles/[id]/photos` | JSON create `VehiclePhoto` (unchanged) |
 
 After success, the page refreshes and shows a confirmation banner.
 

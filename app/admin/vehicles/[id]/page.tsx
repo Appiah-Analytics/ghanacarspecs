@@ -135,9 +135,10 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
       </section>
 
       <section className="admin-card" aria-labelledby="add-photo-heading">
-        <h2 id="add-photo-heading">Add visual evidence URL</h2>
+        <h2 id="add-photo-heading">Add visual evidence</h2>
         <p className="admin-help">
-          Link to a hosted image path. For demos, use placeholders under <span className="mono">/demo-photos/</span>.
+          Upload an image (Vercel Blob) or paste a manual URL. Demo placeholders live under{" "}
+          <span className="mono">/demo-photos/</span>. Set provenance and confidence before saving.
         </p>
         <AdminAddPhotoForm vehicleId={vehicle.id} />
       </section>
