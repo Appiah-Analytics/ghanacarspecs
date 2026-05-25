@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminNav } from "@/components/AdminNav";
 import { AdminSignOut } from "@/components/AdminSignOut";
 import { getAdminDashboardSummary, getAdminVehicleRows } from "@/lib/admin-dashboard";
 
@@ -31,11 +32,7 @@ export default async function AdminDashboardPage() {
   return (
     <main className="page">
       <div className="back-row">
-        <Link href="/">Back to lookup</Link>
-        <span className="back-row-sep" aria-hidden="true">
-          ·
-        </span>
-        <Link href="/admin/ingest">CSV ingestion</Link>
+        <AdminNav current="dashboard" />
         <span className="back-row-sep" aria-hidden="true">
           ·
         </span>
@@ -44,7 +41,10 @@ export default async function AdminDashboardPage() {
 
       <section className="hero">
         <h1>Admin dashboard</h1>
-        <p>Local overview of GhanaCarSpecs SQLite records. Access is limited to holders of the deployment admin secret.</p>
+        <p>
+          Overview of GhanaCarSpecs records. Manage vehicles, ingest CSV data, and attach events or visual evidence
+          URLs. Access requires the deployment admin secret.
+        </p>
       </section>
 
       <section className="admin-stats" aria-labelledby="admin-stats-heading">
@@ -82,9 +82,7 @@ export default async function AdminDashboardPage() {
                   <th scope="col">Plate</th>
                   <th scope="col">Events</th>
                   <th scope="col">Latest event</th>
-                  <th scope="col">
-                    <span className="sr-only">Report</span>
-                  </th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,7 +96,8 @@ export default async function AdminDashboardPage() {
                     <td className="mono">{displayOptional(vehicle.plateNumber)}</td>
                     <td>{vehicle.eventCount}</td>
                     <td>{formatDate(vehicle.latestEventDate)}</td>
-                    <td>
+                    <td className="admin-table-actions">
+                      <Link href={`/admin/vehicles/${vehicle.id}`}>Manage</Link>
                       <Link href={`/vehicles/${vehicle.id}`}>View report</Link>
                     </td>
                   </tr>

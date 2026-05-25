@@ -1,6 +1,6 @@
 # GhanaCarSpecs (local MVP + VIN decode fallback + CSV ingestion)
 
-Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN**, **plate number**, or **chassis number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can import vehicle/event rows from CSV and view records on a simple **admin dashboard**.
+Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN**, **plate number**, or **chassis number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can import vehicle/event rows from CSV, **manage individual vehicles** (add events and visual evidence URLs), and view records on an **admin dashboard**.
 
 Canonical test values: [`docs/sample_data.md`](docs/sample_data.md).
 
@@ -103,9 +103,18 @@ Use this 17-character VIN (not in the seed database):
 http://localhost:3000/admin
 ```
 
-**Expected:** Summary cards and a vehicle table with links to `/vehicles/{id}`. Unauthenticated requests redirect to `/admin/login`.
+**Expected:** Summary cards and a vehicle table with **Manage** and **View report** links. Unauthenticated requests redirect to `/admin/login`.
 
-### F. Local CSV ingestion
+### F. Admin vehicle management (Phase 12)
+
+1. Sign in at `/admin/login`.
+2. On the dashboard, click **Manage** for a seeded vehicle (or one created via CSV).
+3. Add a visual evidence URL (e.g. `/demo-photos/toyota-inspection-walkaround.svg`) and one timeline event.
+4. Open **Public report** and confirm the new photo and event appear.
+
+See [`docs/admin_record_management.md`](docs/admin_record_management.md).
+
+### G. Local CSV ingestion
 
 Sign in at `/admin/login` first, then open:
 
@@ -219,12 +228,15 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
 - `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
+- `app/admin/vehicles/[id]/page.tsx` — Manage vehicle (add events, photo URLs)  
 - `lib/admin-dashboard.ts` — Admin summary queries and vehicle list  
 - `lib/admin-auth.ts` — Admin secret verification and session cookie  
 - `middleware.ts` — Protects `/admin` and `/api/admin/*`  
 - `app/admin/login/page.tsx` — Admin sign-in  
 - `app/api/v1/lookup/route.ts` — `POST` JSON `{ "vinOrPlate": "..." }`  
 - `app/api/admin/ingest/route.ts` — CSV upload API (`multipart/form-data`)  
+- `app/api/admin/vehicles/[id]/photos/route.ts` — Add `VehiclePhoto` (admin)  
+- `app/api/admin/vehicles/[id]/events/route.ts` — Add `VehicleEvent` (admin)  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
@@ -238,7 +250,7 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 
 ### Vehicle photos (demo)
 
-Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Seeded examples use placeholder SVGs with captions such as import condition, inspection, and accident/repair evidence. These are **sample/demo visual evidence only** — not DVLA, police, insurer, or official Ghana records. **Photo upload is not implemented yet** (future admin work).
+Local reports include a **Visual evidence** section when the database has `VehiclePhoto` rows. Seeded examples use placeholder SVGs with captions such as import condition, inspection, and accident/repair evidence. These are **sample/demo visual evidence only** — not DVLA, police, insurer, or official Ghana records. Admins can attach **photo URLs** on `/admin/vehicles/[id]` (no file upload yet).
 
 After pulling schema changes (including `VehiclePhoto`):
 
@@ -284,6 +296,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
 | [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
 | [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md) | Neon production seed & VehiclePhoto runbook |
+| [`docs/admin_record_management.md`](docs/admin_record_management.md) | Admin manage page: events & visual evidence URLs |
 | [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |

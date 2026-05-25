@@ -15,6 +15,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 9 | PostgreSQL readiness | Done |
 | 10 | Public demo readiness | Done |
 | 11 | Vehicle photos / visual evidence (foundation) | Done |
+| 12 | Admin record management v1 | Done |
 
 ---
 
@@ -88,5 +89,15 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Seed sample photos (placeholder assets under `public/demo-photos/`)
 - [x] **Visual evidence** section on local vehicle reports (`VehiclePhotos`)
 - [x] External decode page: labeled “no local photos” notice (not a gallery)
-- [ ] Admin photo upload (future)
+- [ ] Admin photo file upload (future — URLs only in v1)
 - [ ] Public user upload (out of scope)
+
+## Phase 12 — Admin record management v1
+
+- [x] Admin navigation (dashboard, CSV ingestion, public lookup)
+- [x] `/admin/vehicles/[id]` manage page (identity, events, photos)
+- [x] Add visual evidence URL form (`VehiclePhoto`)
+- [x] Add timeline event form (`VehicleEvent`)
+- [x] Provenance notice on admin manage page
+- [x] Protected APIs: `POST /api/admin/vehicles/[id]/photos|events`
+- [x] `docs/admin_record_management.md`

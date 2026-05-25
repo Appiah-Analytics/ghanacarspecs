@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AdminNav } from "@/components/AdminNav";
 import { AdminSignOut } from "@/components/AdminSignOut";
 import { CsvUploadForm } from "@/components/CsvUploadForm";
 
@@ -10,11 +10,7 @@ export default function AdminIngestPage() {
   return (
     <main className="page">
       <div className="back-row">
-        <Link href="/admin">Back to admin</Link>
-        <span className="back-row-sep" aria-hidden="true">
-          ·
-        </span>
-        <Link href="/">Back to lookup</Link>
+        <AdminNav current="ingest" />
         <span className="back-row-sep" aria-hidden="true">
           ·
         </span>

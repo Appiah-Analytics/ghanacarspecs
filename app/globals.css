@@ -868,6 +868,121 @@ main.page {
   font-size: 0.95rem;
 }
 
+.admin-nav {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.admin-nav-current {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.admin-provenance-note {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: #eff6ff;
+  color: #1e3a5f;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+}
+
+.admin-record-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.85rem 1rem;
+}
+
+.admin-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-form-grid input,
+.admin-form-grid select,
+.admin-form-grid textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.admin-form-span {
+  grid-column: 1 / -1;
+}
+
+.admin-field-hint {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.admin-required {
+  color: var(--danger);
+}
+
+.admin-record-form button {
+  align-self: flex-start;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-record-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-record-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-record-list li:last-child {
+  border-bottom: none;
+}
+
+.admin-record-list-title {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.admin-record-list-meta {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
 .csv-upload-form {
   display: flex;
   flex-direction: column;

@@ -173,7 +173,7 @@ When editing Prisma models:
 
 ## Vercel + Neon
 
-**Troubleshooting empty Visual evidence on production:** see [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) (Neon seed, `VehiclePhoto` counts, `DATABASE_URL` resolution).
+**Troubleshooting empty Visual evidence on production:** see [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) (Neon seed, `VehiclePhoto` counts, `DATABASE_URL` resolution). **Adding records in production:** [`admin_record_management.md`](admin_record_management.md).
 
 | Vercel setting | Value |
 |----------------|--------|

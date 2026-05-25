@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-20 (Neon seed / photos postmortem)  
+**Last updated:** 2026-05-20 (Phase 12 — admin record management)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -410,6 +410,47 @@ Prepare a **credible public demo** of GhanaCarSpecs as a vehicle intelligence an
 
 - Optional public deploy to Vercel + Neon using `public_demo_plan.md` §6.
 - Azure production path remains Phase 7 when ready.
+
+---
+
+## Phase 12 — Admin record management v1
+
+### Goal
+
+Make admin operational for growing records beyond seed/CSV: manage a vehicle, attach photo URLs and timeline events with clear provenance.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Admin UI | `app/admin/page.tsx`, `app/admin/ingest/page.tsx`, `app/admin/vehicles/[id]/page.tsx` |
+| Components | `AdminNav.tsx`, `AdminAddPhotoForm.tsx`, `AdminAddEventForm.tsx` |
+| API | `app/api/admin/vehicles/[id]/photos/route.ts`, `app/api/admin/vehicles/[id]/events/route.ts` |
+| Lib | `lib/admin-vehicle-manage.ts`, `lib/admin-record-mutations.ts`, `lib/admin-api.ts`, `lib/admin-form-options-client.ts` |
+| Styles | `app/globals.css` |
+| Docs | `docs/admin_record_management.md`, `README.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- Dashboard **Manage** + **View report** links; shared admin nav.
+- Manage page: identity summary, current photos/events, provenance note.
+- Photo URL validation (`/demo-photos/`, `http://`, `https://`); creates `VehiclePhoto`.
+- Event form creates `VehicleEvent` with `sourceSystem`, optional mileage/description.
+- Middleware protects new routes; public lookup unchanged.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual: login → manage → add photo URL + event → verify public report
+
+### Known limitations
+
+- URL-only evidence (no multipart upload).
+- No edit/delete for photos or events in v1.
+
+### Next recommended step
+
+- Optional edit/delete admin actions; bulk photo import for partners.
 
 ---
 
