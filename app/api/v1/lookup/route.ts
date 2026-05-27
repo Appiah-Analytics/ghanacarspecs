@@ -5,23 +5,28 @@ import {
   getLocalNotFoundMessage,
   getLookupUnavailableMessage,
 } from "@/lib/lookup-messages";
+import { loggerForRequest } from "@/lib/logger";
 import { RECORD_SOURCE_LABEL } from "@/lib/record-source";
 import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 
 export async function POST(request: Request) {
+  const requestLogger = loggerForRequest(request, { route: "/api/v1/lookup" });
   let body: unknown;
   try {
     body = await request.json();
   } catch {
+    requestLogger.warn("lookup rejected invalid json body");
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   if (!body || typeof body !== "object") {
+    requestLogger.warn("lookup rejected non-object payload");
     return NextResponse.json({ error: "Expected JSON object" }, { status: 400 });
   }
 
   const vinOrPlate = (body as { vinOrPlate?: unknown }).vinOrPlate;
   if (typeof vinOrPlate !== "string") {
+    requestLogger.warn("lookup rejected missing vinOrPlate");
     return NextResponse.json({ error: "Missing or invalid vinOrPlate" }, { status: 400 });
   }
 
@@ -29,6 +34,7 @@ export async function POST(request: Request) {
     const resolved = await resolveLookupWithExternalVin(vinOrPlate);
 
     if (resolved.result === "not_found") {
+      requestLogger.info("lookup not found", { vinOrPlate });
       const notFound = getLocalNotFoundMessage(vinOrPlate);
       return NextResponse.json(
         { found: false, title: notFound.title, message: notFound.message },
@@ -37,6 +43,7 @@ export async function POST(request: Request) {
     }
 
     if (resolved.result === "external_failed") {
+      requestLogger.warn("lookup external decode failed", { detail: resolved.reason, vinOrPlate });
       const failed = getExternalDecodeFailedMessage(resolved.reason);
       return NextResponse.json(
         {
@@ -50,6 +57,7 @@ export async function POST(request: Request) {
     }
 
     if (resolved.result === "local") {
+      requestLogger.info("lookup resolved local record", { vehicleId: resolved.vehicle.id });
       const vehicle = resolved.vehicle;
       return NextResponse.json({
         found: true,
@@ -87,6 +95,7 @@ export async function POST(request: Request) {
       });
     }
 
+    requestLogger.info("lookup resolved external record", { provider: resolved.provider, vin: resolved.vin });
     return NextResponse.json({
       found: true,
       recordSource: "external",
@@ -97,7 +106,9 @@ export async function POST(request: Request) {
       events: [],
     });
   } catch (e) {
-    console.error(e);
+    requestLogger.error("lookup failed unexpectedly", {
+      error: e instanceof Error ? e.message : "unknown error",
+    });
     const unavailable = getLookupUnavailableMessage();
     return NextResponse.json(
       {

@@ -9,8 +9,16 @@ import {
 import { DEMO_PHOTO_URLS } from "../lib/demo-photo-urls";
 import { formatDatabaseUrlForLog, resolvePrismaDatabaseUrl } from "../lib/prisma-datasource";
 
+const databaseUrl = (() => {
+  const value = process.env.DATABASE_URL?.trim();
+  if (!value) {
+    throw new Error("[seed] DATABASE_URL is required before running prisma seed.");
+  }
+  return value;
+})();
+
 const prisma = new PrismaClient({
-  datasources: { db: { url: resolvePrismaDatabaseUrl() } },
+  datasources: { db: { url: resolvePrismaDatabaseUrl(databaseUrl) } },
 });
 
 const SEED_VINS = ["4T1BE46K37U123456", "WVWZZZ3CZWE123456", "1HGBH41JXMN109186"] as const;
@@ -76,8 +84,7 @@ async function assertSeedPhotoCounts(): Promise<void> {
 }
 
 async function main() {
-  const databaseUrl = resolvePrismaDatabaseUrl();
-  console.info("[seed] database:", formatDatabaseUrlForLog(databaseUrl));
+  console.info("[seed] database:", formatDatabaseUrlForLog(resolvePrismaDatabaseUrl(databaseUrl)));
 
   // Clear all demo photos/events so nothing is orphaned on stale vehicle IDs.
   await prisma.vehiclePhoto.deleteMany();

@@ -5,6 +5,7 @@ import {
   ProvenanceType,
   type Prisma,
 } from "@prisma/client";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 
 export type AdminMutationError = { field?: string; message: string };
@@ -100,8 +101,10 @@ export async function createAdminVehiclePhoto(
   vehicleId: string,
   input: CreatePhotoInput,
 ): Promise<{ ok: true; photoId: string } | { ok: false; error: AdminMutationError }> {
+  logger.debug("create admin vehicle photo invoked", { vehicleId });
   const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId }, select: { id: true } });
   if (!vehicle) {
+    logger.warn("create admin vehicle photo vehicle not found", { vehicleId });
     return { ok: false, error: { message: "Vehicle not found." } };
   }
 
@@ -121,6 +124,7 @@ export async function createAdminVehiclePhoto(
     },
   });
 
+  logger.info("create admin vehicle photo succeeded", { vehicleId, photoId: photo.id });
   return { ok: true, photoId: photo.id };
 }
 
@@ -138,13 +142,16 @@ export async function createAdminVehicleEvent(
   vehicleId: string,
   input: CreateEventInput,
 ): Promise<{ ok: true; eventId: string } | { ok: false; error: AdminMutationError }> {
+  logger.debug("create admin vehicle event invoked", { vehicleId });
   const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId }, select: { id: true } });
   if (!vehicle) {
+    logger.warn("create admin vehicle event vehicle not found", { vehicleId });
     return { ok: false, error: { message: "Vehicle not found." } };
   }
 
   const sourceSystem = input.sourceSystem.trim();
   if (!sourceSystem) {
+    logger.warn("create admin vehicle event rejected blank sourceSystem", { vehicleId });
     return { ok: false, error: { field: "sourceSystem", message: "Source system is required." } };
   }
 
@@ -166,5 +173,6 @@ export async function createAdminVehicleEvent(
     },
   });
 
+  logger.info("create admin vehicle event succeeded", { vehicleId, eventId: event.id });
   return { ok: true, eventId: event.id };
 }

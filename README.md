@@ -200,6 +200,16 @@ Response includes `"recordSource":"external"`, `"recordSourceLabel":"External VI
 
 On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted JSON.
 
+## Health endpoint
+
+Use this endpoint for runtime diagnostics:
+
+```bash
+curl -s "http://localhost:3000/api/health"
+```
+
+It returns deployment environment, database status, blob configuration status, timestamp, and app version.
+
 ## Scripts
 
 | Command | Description |
@@ -220,6 +230,13 @@ On macOS/Linux, use `\` line breaks or a single-line `curl` with single-quoted J
 | `npm run db:setup:postgres` | Postgres generate + migrate + seed (staging/production) |
 | `npm run db:export:sqlite` | Export SQLite data to JSON |
 | `npm run report:docx` | Regenerate Word progress report in `docs/` |
+
+## Deployment overview
+
+- Production env validation and startup safeguards are implemented in `lib/env.ts`.
+- Runtime deployment diagnostics are available at `GET /api/health`.
+- Follow [`docs/production_deployment.md`](docs/production_deployment.md) for local, Neon, and Vercel workflow.
+- Use [`docs/production_checklist.md`](docs/production_checklist.md) before production release.
 
 ## Project layout (main pieces)
 
@@ -310,6 +327,8 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |
 | [`docs/project_handoff_master.md`](docs/project_handoff_master.md) | Master handoff — architecture, env, commands, recovery |
 | [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
+| [`docs/production_deployment.md`](docs/production_deployment.md) | Production deployment runbook (env, Neon, Vercel, health, rollback) |
+| [`docs/production_checklist.md`](docs/production_checklist.md) | Release readiness checklist for production cutover |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
 

@@ -1,3 +1,6 @@
+import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
+
 /** HttpOnly session cookie set after a successful browser login. */
 export const ADMIN_SESSION_COOKIE = "gcs_admin_session";
 
@@ -12,10 +15,7 @@ type CookieReader = {
 
 /** Non-empty trimmed env value, or null if missing/blank. */
 export function readAdminEnv(name: "ADMIN_API_KEY" | "ADMIN_PASSWORD"): string | null {
-  const raw = process.env[name];
-  if (raw == null) return null;
-  const trimmed = raw.trim();
-  return trimmed.length > 0 ? trimmed : null;
+  return env[name];
 }
 
 /**
@@ -107,21 +107,25 @@ export async function verifyAdminRequest(request: Request, cookieReader?: Cookie
   if (!isAdminConfigured()) return false;
 
   if (verifyAdminAuthorizationHeader(request.headers.get("authorization"))) {
+    logger.debug("admin auth via bearer token");
     return true;
   }
 
   const headerKey = request.headers.get("x-admin-key");
   if (headerKey && verifyAdminCredential(headerKey)) {
+    logger.debug("admin auth via x-admin-key");
     return true;
   }
 
   if (cookieReader) {
     const session = cookieReader.get(ADMIN_SESSION_COOKIE)?.value;
     if (await hasValidAdminSession(session)) {
+      logger.debug("admin auth via session cookie");
       return true;
     }
   }
 
+  logger.warn("admin auth rejected");
   return false;
 }
 
@@ -134,7 +138,7 @@ export function adminSessionCookieOptions(): {
 } {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: ADMIN_SESSION_MAX_AGE_SEC,

@@ -8,10 +8,12 @@ import {
   parseProvenanceType,
   validatePhotoUrl,
 } from "@/lib/admin-record-mutations";
+import { loggerForRequest } from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
+  const requestLogger = loggerForRequest(request, { route: "/api/admin/vehicles/[id]/photos" });
   const unauthorized = await requireAdminApi(request);
   if (unauthorized) return unauthorized;
 
@@ -21,10 +23,12 @@ export async function POST(request: Request, context: RouteContext) {
   try {
     body = await request.json();
   } catch {
+    requestLogger.warn("photo mutation rejected invalid json body");
     return NextResponse.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
 
   if (!body || typeof body !== "object") {
+    requestLogger.warn("photo mutation rejected non-object payload", { vehicleId });
     return NextResponse.json({ ok: false, error: "Expected JSON object." }, { status: 400 });
   }
 
@@ -34,11 +38,13 @@ export async function POST(request: Request, context: RouteContext) {
 
   const urlError = validatePhotoUrl(url);
   if (urlError) {
+    requestLogger.warn("photo mutation rejected invalid url", { vehicleId });
     return NextResponse.json({ ok: false, error: urlError.message, field: urlError.field }, { status: 400 });
   }
 
   const sourceType = parsePhotoSourceType(sourceTypeRaw);
   if (typeof sourceType !== "string") {
+    requestLogger.warn("photo mutation rejected invalid sourceType", { vehicleId });
     return NextResponse.json(
       { ok: false, error: sourceType.message, field: "sourceType" },
       { status: 400 },
@@ -48,12 +54,14 @@ export async function POST(request: Request, context: RouteContext) {
   const takenAtRaw = typeof data.takenAt === "string" ? data.takenAt : "";
   const takenAt = parseOptionalDate(takenAtRaw);
   if (takenAt && typeof takenAt === "object" && "message" in takenAt) {
+    requestLogger.warn("photo mutation rejected invalid takenAt", { vehicleId });
     return NextResponse.json({ ok: false, error: takenAt.message, field: takenAt.field }, { status: 400 });
   }
 
   const confidenceRaw = typeof data.confidenceLevel === "string" ? data.confidenceLevel : "";
   const confidenceLevel = parseConfidenceLevel(confidenceRaw);
   if (typeof confidenceLevel !== "string") {
+    requestLogger.warn("photo mutation rejected invalid confidenceLevel", { vehicleId });
     return NextResponse.json(
       { ok: false, error: confidenceLevel.message, field: "confidenceLevel" },
       { status: 400 },
@@ -63,6 +71,7 @@ export async function POST(request: Request, context: RouteContext) {
   const provenanceRaw = typeof data.provenanceType === "string" ? data.provenanceType : "";
   const provenanceType = parseProvenanceType(provenanceRaw);
   if (typeof provenanceType !== "string") {
+    requestLogger.warn("photo mutation rejected invalid provenanceType", { vehicleId });
     return NextResponse.json(
       { ok: false, error: provenanceType.message, field: "provenanceType" },
       { status: 400 },
@@ -80,11 +89,13 @@ export async function POST(request: Request, context: RouteContext) {
   });
 
   if (!result.ok) {
+    requestLogger.warn("photo mutation failed", { vehicleId, error: result.error.message });
     return NextResponse.json(
       { ok: false, error: result.error.message, field: result.error.field },
       { status: result.error.message === "Vehicle not found." ? 404 : 400 },
     );
   }
 
+  requestLogger.info("photo mutation succeeded", { vehicleId, photoId: result.photoId });
   return NextResponse.json({ ok: true, photoId: result.photoId });
 }

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { env } from "@/lib/env";
 import "./globals.css";
+
+void env;
 
 export const metadata: Metadata = {
   title: {
