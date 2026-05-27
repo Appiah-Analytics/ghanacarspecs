@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-20 (Phase 12 — admin record management)  
+**Last updated:** 2026-05-27 (runtime/environment debugging documentation update)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,13 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Runtime/environment documentation update
+
+- Runtime/environment debugging documentation added after Linux + Prisma + Neon + Blob validation.
+- New runbook: [`debugging_runtime_and_environment.md`](debugging_runtime_and_environment.md).
 
 ---
 

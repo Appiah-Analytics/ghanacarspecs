@@ -2,6 +2,8 @@
 
 Run this checklist before each production release.
 
+Companion runbook: [`debugging_runtime_and_environment.md`](./debugging_runtime_and_environment.md).
+
 ## Environment variables
 
 - [ ] `DATABASE_URL` is set and valid.

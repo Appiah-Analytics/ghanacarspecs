@@ -237,6 +237,7 @@ It returns deployment environment, database status, blob configuration status, t
 - Runtime deployment diagnostics are available at `GET /api/health`.
 - Follow [`docs/production_deployment.md`](docs/production_deployment.md) for local, Neon, and Vercel workflow.
 - Use [`docs/production_checklist.md`](docs/production_checklist.md) before production release.
+- Use [`docs/debugging_runtime_and_environment.md`](docs/debugging_runtime_and_environment.md) for fast runtime/env recovery.
 
 ## Project layout (main pieces)
 
@@ -329,6 +330,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/public_demo_plan.md`](docs/public_demo_plan.md) | Public demo scope and Vercel/Neon deploy checklist (not deployed) |
 | [`docs/production_deployment.md`](docs/production_deployment.md) | Production deployment runbook (env, Neon, Vercel, health, rollback) |
 | [`docs/production_checklist.md`](docs/production_checklist.md) | Release readiness checklist for production cutover |
+| [`docs/debugging_runtime_and_environment.md`](docs/debugging_runtime_and_environment.md) | Runtime and environment debugging lessons and recovery checklist |
 | [`docs/sample_data.md`](docs/sample_data.md) | Canonical VINs, plates, chassis for QA |
 | [`docs/project.md`](docs/project.md) | Scope and MVP definition |
 

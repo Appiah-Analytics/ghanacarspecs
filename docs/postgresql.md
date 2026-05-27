@@ -2,7 +2,7 @@
 
 GhanaCarSpecs uses **SQLite locally** and is prepared for **PostgreSQL in staging/production** via a dual-schema Prisma setup. Nothing is deployed from this document.
 
-Related: [`deployment_plan.md`](deployment_plan.md), [`roadmap.md`](roadmap.md), [`.env.example`](../.env.example).
+Related: [`deployment_plan.md`](deployment_plan.md), [`roadmap.md`](roadmap.md), [`.env.example`](../.env.example), [`debugging_runtime_and_environment.md`](debugging_runtime_and_environment.md).
 
 ---
 

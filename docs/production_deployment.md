@@ -2,6 +2,8 @@
 
 This guide hardens GhanaCarSpecs deployment for repeatable production releases.
 
+For incident recovery and cross-platform runtime debugging, see [`debugging_runtime_and_environment.md`](./debugging_runtime_and_environment.md).
+
 ## 1) Local development workflow
 
 1. Install dependencies: `npm install`
