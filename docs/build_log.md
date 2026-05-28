@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-27 (runtime/environment debugging documentation update)  
+**Last updated:** 2026-05-28 (comprehensive project handoff and operational architecture documentation update)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -25,6 +25,13 @@ When you ship a meaningful feature:
 
 - Runtime/environment debugging documentation added after Linux + Prisma + Neon + Blob validation.
 - New runbook: [`debugging_runtime_and_environment.md`](debugging_runtime_and_environment.md).
+
+---
+
+## Project handoff master documentation update
+
+- Comprehensive project handoff and operational architecture documentation added.
+- `docs/project_handoff_master.md` expanded as the primary operational memory reference for architecture, workflows, debugging, deployment, and recovery.
 
 ---
 

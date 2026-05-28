@@ -1,21 +1,8 @@
-# GhanaCarSpecs — Project Handoff (Master Reference)
+# GhanaCarSpecs — Project Handoff Master
 
-**Purpose:** Single operational reference for continuing development, onboarding, or recovering context after a break.  
-**Status:** Operational MVP / public demo (Vercel + Neon + Vercel Blob).  
-**Last updated:** Phase 14 (admin Blob uploads, evidence confidence/provenance).
-
-Cross-reference deeper docs rather than duplicating them:
-
-| Topic | Doc |
-|-------|-----|
-| Neon seed / empty photos | [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) |
-| Dual-schema PostgreSQL | [`postgresql.md`](postgresql.md) |
-| Blob uploads | [`vercel_blob_setup.md`](vercel_blob_setup.md) |
-| Trust badges | [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md) |
-| Admin CRUD | [`admin_record_management.md`](admin_record_management.md) |
-| Engineering history | [`build_log.md`](build_log.md) |
-| Phases | [`roadmap.md`](roadmap.md) |
-| QA VINs | [`sample_data.md`](sample_data.md) |
+**Purpose:** Primary operational memory document for architecture, workflows, debugging history, deployment, and roadmap continuity.  
+**Status:** Operational MVP / early production-ready platform.  
+**Scope:** Documentation-only reference (no runtime behavior changes).
 
 ---
 
@@ -23,83 +10,189 @@ Cross-reference deeper docs rather than duplicating them:
 
 ### What GhanaCarSpecs is
 
-**GhanaCarSpecs** is a vehicle history, specs, and **trust/provenance** platform focused on Ghana (with room to expand). It lets users look up a vehicle by **VIN**, **plate**, or **chassis** and view a structured report: identity, timeline events, visual evidence, and (where applicable) risk/intelligence signals from local data.
+GhanaCarSpecs is a Ghana-focused vehicle intelligence platform that combines:
 
-### Core mission
+- local history records
+- event timelines
+- visual evidence
+- provenance and confidence metadata
 
-Build a **credible, explainable record** of what is known about a vehicle in Ghana — who reported it, how confident the platform is, and what is **not** official government or insurer data — before buyers, insurers, or partners rely on it.
+The system is built to answer operational trust questions around a vehicle, not only static specs.
+
+### Mission and trust philosophy
+
+The mission is to help users make safer, clearer vehicle decisions by showing what evidence exists, where it came from, and how reliable it appears.
+
+Core trust principle:
+
+- provenance and confidence are decision aids, not legal adjudication
 
 ### Current stage
 
-**Operational MVP / demo:** deployable on Vercel with Neon PostgreSQL, seeded demo vehicles, admin ingestion, and admin image uploads. Not a full commercial product (no payments, no public user accounts, no live DVLA feed).
+The platform is in an operational MVP / early production-ready stage with:
+
+- Vercel deployment support
+- Neon PostgreSQL production workflow
+- local SQLite developer workflow
+- admin ingestion and upload tools
+- health diagnostics and structured runtime checks
+
+### Why provenance and confidence matter
+
+In vehicle trust systems, false confidence can create real financial/legal harm. GhanaCarSpecs explicitly marks:
+
+- **provenance** (source type/origin)
+- **confidence** (estimated evidence reliability)
+
+so users can reason about uncertainty rather than assume truth.
+
+### Ghana-specific fraud and insurance context
+
+The Ghana market has practical trust gaps around imported vehicles, accident/repair history, and fragmented records. GhanaCarSpecs is designed to reduce ambiguity in this context by making evidence auditable and attributable at a metadata level.
 
 ### Key use cases
 
-| Use case | How the product supports it today |
-|----------|-----------------------------------|
-| **Fraud awareness** | Timeline + visual evidence with provenance/confidence badges; clear disclaimers vs official records |
-| **Salvage / rebuild visibility** | Demo accident/repair photos and events (e.g. VW sample) |
-| **Insurance risk** | Mileage updates, accident events (sample narratives; no live insurer API) |
-| **Trust / provenance** | `ProvenanceType` + `ConfidenceLevel` on photos and events; admin-controlled entry |
-| **Imported vehicle intelligence** | Import events, port/importer-style demo evidence (Toyota/Honda samples) |
+| Use case | Platform relevance |
+|---|---|
+| Salvage/rebuild awareness | Event timeline + visual evidence can expose repair history patterns |
+| Accident history visibility | Admin-entered events and photos show known incident indicators |
+| Insurance fraud reduction | Better evidence lineage helps detect unsupported claims |
+| Imported vehicle intelligence | Import events + source-labeled photos provide context before purchase |
+| Trust/provenance verification | Badges and metadata show source class and confidence tier |
 
 ---
 
-## 2. Current Architecture
+## 2. Current Technology Stack
 
 ### Frontend
 
-| Layer | Technology |
-|-------|------------|
-| Framework | **Next.js 15** (App Router) |
-| Language | **TypeScript** |
-| UI | **React 19**, **global CSS** (`app/globals.css`) — *Tailwind is not used in this repo* |
-| Dev server | `npm run dev` (Turbopack default; `dev:webpack` fallback) |
-
-Key routes:
-
-- `/` — lookup form
-- `/vehicles/[id]` — local vehicle report
-- `/decoded` — external NHTSA decode (sessionStorage)
-- `/admin/*` — dashboard, CSV ingest, vehicle manage
+- Next.js 15 App Router
+- TypeScript
+- TailwindCSS-style utility workflow is part of the intended frontend approach; current implementation is primarily via `app/globals.css`
 
 ### Backend
 
-- **Next.js Route Handlers** under `app/api/`
-- **Public:** `POST /api/v1/lookup`
-- **Admin (middleware + session or Bearer):** ingest, login/logout, vehicle photos/events, Blob uploads
+- Next.js API routes (`app/api/*`)
+- Prisma ORM
+- structured logging (`lib/logger.ts`)
+- environment validation and startup checks (`lib/env.ts`)
 
-Shared logic lives in `lib/` (lookup, Prisma, admin auth, CSV ingest, evidence metadata, upload validation).
+### Storage
 
-### Databases
+- SQLite for local development
+- Neon PostgreSQL for production/staging workflows
+- Vercel Blob for admin evidence image storage
 
-| Environment | Provider | Schema file |
-|-------------|----------|-------------|
-| **Local dev (default)** | SQLite `prisma/dev.db` | `prisma/schema.prisma` |
-| **Production (Vercel)** | **Neon PostgreSQL** | `prisma/schema.postgresql.prisma` |
+### Infrastructure
 
-Migrations in `prisma/migrations/` apply to **PostgreSQL only**. Local SQLite uses `db:push`.
-
-### Hosting & storage
-
-| Service | Role |
-|---------|------|
-| **Vercel** | Next.js hosting, build, env secrets |
-| **Neon** | Production PostgreSQL |
-| **Vercel Blob** | Admin-uploaded visual evidence (`vehicle-evidence/{vehicleId}/…`) |
-
-Static demo assets: `public/demo-photos/*.svg`.
+- Vercel hosting/runtime
+- Neon database infrastructure
+- Vercel Blob object storage
 
 ---
 
-## 3. Environment Model
+## 3. Architecture Overview
 
-### Local SQLite workflow (default)
+### Public lookup flow
 
-1. Copy [`.env.example`](../.env.example) → `.env`
-2. Set **`ADMIN_API_KEY`** or **`ADMIN_PASSWORD`** (required for `/admin`)
-3. **Leave `DATABASE_URL` unset** (or non-Postgres) so the app and `db:seed` use `file:…/prisma/dev.db`
-4. Run:
+```text
+User input (VIN/plate/chassis)
+  -> POST /api/v1/lookup
+    -> Local DB lookup first (Prisma)
+      -> If found: local record response (/vehicles/[id])
+      -> If not found and input is 17-char VIN: NHTSA decode fallback (/decoded)
+      -> Else: no-local-record error UX
+```
+
+### Admin workflow
+
+```text
+Admin login (/admin/login)
+  -> session cookie (or Bearer/X-Admin-Key)
+  -> protected /admin routes + /api/admin/*
+  -> dashboard -> manage vehicle -> add events/photos
+```
+
+### Upload flow
+
+```text
+Admin picks image -> POST /api/admin/uploads (multipart)
+  -> auth check
+  -> MIME + size + filename validation
+  -> put() to Vercel Blob path vehicle-evidence/{vehicleId}/{timestamp}-{filename}
+  -> returns public URL
+  -> URL stored as VehiclePhoto via /api/admin/vehicles/[id]/photos
+```
+
+### Evidence rendering flow
+
+```text
+Vehicle page query includes photos + events
+  -> render gallery/timeline
+  -> render provenance + confidence badges per item
+  -> show trust explanation block under visual evidence
+```
+
+### Neon + Blob relationship
+
+- Neon stores metadata (`VehiclePhoto.url`, provenance/confidence, events).
+- Blob stores binary image objects.
+- Public report reads URL from Neon and serves image directly from Blob CDN URL.
+
+### Prisma client generation strategy
+
+- SQLite client: `npm run db:generate`
+- PostgreSQL client: `npm run db:generate:postgres`
+- Vercel build generates PostgreSQL client using `schema.postgresql.prisma`
+
+### Why SQLite and PostgreSQL schemas are separated
+
+Prisma client generation is provider-bound. SQLite and PostgreSQL require different datasource providers at build/generate time, so both schema files are maintained in parallel.
+
+---
+
+## 4. Environment Model
+
+### Modes
+
+| Mode | Database behavior | Typical use |
+|---|---|---|
+| Local SQLite mode | `schema.prisma` + `prisma/dev.db` | Default local development |
+| Neon PostgreSQL mode | `schema.postgresql.prisma` + `DATABASE_URL=postgres...` | Staging/prod-like workflows |
+| Vercel production mode | Postgres client generation at build/runtime | Hosted production |
+
+### Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Selects PostgreSQL target when using `postgres://`/`postgresql://` |
+| `BLOB_READ_WRITE_TOKEN` | Required for admin image upload route |
+| `ADMIN_API_KEY` / `ADMIN_PASSWORD` | Admin authentication |
+| `VERCEL` | Build/runtime mode flag in hosted environment |
+
+### `DATABASE_URL` behavior
+
+- If PostgreSQL protocol is detected, app/seed use PostgreSQL path.
+- Otherwise local development falls back to SQLite file path.
+- `db:seed` is SQLite-oriented; `db:seed:postgres` is mandatory for Neon seeding.
+
+### Env validation system
+
+`lib/env.ts` centralizes runtime checks and supports safer startup diagnostics and health reporting.
+
+### Why `.env.example` exists
+
+It provides a safe template for required variables and prevents guesswork when onboarding.
+
+### Why real `.env` must never be committed
+
+It can contain secrets (`ADMIN_API_KEY`, Blob token, connection strings). Committing it is a direct security risk.
+
+---
+
+## 5. Important Commands
+
+### Local SQLite workflow
 
 ```bash
 npm install
@@ -109,396 +202,360 @@ npm run db:seed
 npm run dev
 ```
 
-`lib/prisma-datasource.ts` resolves SQLite when `DATABASE_URL` is missing or not a `postgres://` / `postgresql://` URL.
-
-### Neon production workflow
-
-1. Set **`DATABASE_URL`** to Neon connection string (in Vercel **and** locally when seeding Neon)
-2. Use **PostgreSQL-specific** scripts (different Prisma schema + client):
+### Neon PostgreSQL workflow
 
 ```bash
+export DATABASE_URL="postgresql://..."
 npm run db:generate:postgres
 npm run db:migrate:postgres
 npm run db:seed:postgres
+npm run dev
 ```
 
-3. Deploy app on Vercel; run migrations **manually** when schema changes (not during Vercel build)
-
-### Why two Prisma schemas?
-
-Prisma binds one generated client to **one provider**. SQLite and PostgreSQL cannot share a single `schema.prisma` at generate time. Both schema files must stay **model-identical**; change both when adding fields.
-
-### Why `db:seed` vs `db:seed:postgres`?
-
-| Command | Prisma schema | Typical target |
-|---------|---------------|----------------|
-| `npm run db:seed` | `schema.prisma` (SQLite) | Local `dev.db` |
-| `npm run db:seed:postgres` | `schema.postgresql.prisma` | Neon when `DATABASE_URL` is Postgres |
-
-Running **`db:seed`** while `DATABASE_URL` points at Neon causes **schema/provider mismatch** or seeds the wrong database. Always use **`db:seed:postgres`** for Neon. See [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md).
-
-### `.env` expectations
-
-| Variable | Required | Notes |
-|----------|----------|--------|
-| `ADMIN_API_KEY` or `ADMIN_PASSWORD` | Yes (admin) | Uncommented line in `.env`; restart dev after change |
-| `DATABASE_URL` | Production / Neon seed | `postgresql://…` or `postgres://…` |
-| `BLOB_READ_WRITE_TOKEN` | Blob uploads | From Vercel Blob store; optional locally until testing uploads |
-| `VERCEL` | Set by Vercel | `VERCEL=1` → build uses Postgres client; runtime requires `DATABASE_URL` |
-
-### `DATABASE_URL` behavior
-
-- **App + seed** (`prisma/seed.ts`): `resolvePrismaDatabaseUrl()` — Postgres if URL is postgres protocol; else SQLite file path
-- **Vercel runtime:** Postgres required; missing URL → lookup failures
-- **Seed log:** `[seed] database: postgresql://…` (masked) on Neon; `file:…/dev.db` locally
-
-### `VERCEL` behavior
-
-- **`scripts/production-build.mjs`:** if `VERCEL=1`, runs `prisma generate --schema prisma/schema.postgresql.prisma` then `next build`
-- **Does not** run `prisma migrate deploy` on build (Neon advisory lock / timeout lessons)
-
----
-
-## 4. Important Commands
-
-### Local development
+### Runtime recovery workflow
 
 ```bash
-npm install
-npm run dev              # http://localhost:3000
-npm run db:generate      # SQLite Prisma client
-npm run db:push          # Apply schema to dev.db
-npm run db:seed          # Reseed demo data (SQLite only)
-npm run db:setup         # db:push + db:seed
-```
-
-### Neon / PostgreSQL
-
-```bash
-# DATABASE_URL must be set in shell or .env
+rm -rf .next
+rm -rf node_modules/.prisma
 npm run db:generate:postgres
-npm run db:migrate:postgres
-npm run db:seed:postgres
-npm run db:setup:postgres   # generate + migrate + seed:postgres
+npm run dev
 ```
 
-### Deployment (git)
+### Build/testing
 
 ```bash
+npm run lint
+npm run build
+```
+
+### Git workflow
+
+```bash
+git status
 git add .
-git commit -m "Describe change"
-git push
-```
-
-After schema migrations, run **`db:migrate:postgres`** against Neon before or after deploy (see [`postgresql.md`](postgresql.md)).
-
-### Build / testing
-
-```bash
-npm run lint             # tsc --noEmit
-npm run build            # production-build.mjs + next build
-npm run build:local      # db:generate (SQLite) + next build
+git commit
+git push origin main
 ```
 
 ---
 
-## 5. Current Major Features
+## 6. Current Major Features
 
 ### Public
 
-| Feature | Notes |
-|---------|--------|
-| **VIN lookup** | 17-char VIN; local DB first, NHTSA fallback for unknown VINs |
-| **Plate / chassis** | Normalized matching on seeded vehicles |
-| **External VIN decode** | NHTSA vPIC → `/decoded` (no local photos) |
-| **Visual evidence** | `VehiclePhoto` grid; demo SVGs + Blob HTTPS URLs |
-| **Confidence / provenance badges** | Per photo and timeline event |
-| **Timeline events** | `VehicleEvent` cards with type, date, mileage, source |
-| **Risk / intelligence** | Derived signals from local events (not official scoring) |
+- VIN lookup
+- Plate/chassis support
+- External VIN decoding fallback
+- Visual evidence gallery
+- Timeline events
+- Provenance badges
+- Confidence badges
+- Improved error UX
+- `/api/health` endpoint
 
 ### Admin
 
-| Feature | Route / API |
-|---------|-------------|
-| **Login** | `/admin/login`, session cookie |
-| **Dashboard** | `/admin` — vehicle table |
-| **Vehicle manage** | `/admin/vehicles/[id]` — photos, events |
-| **CSV ingestion** | `/admin/ingest` → `POST /api/admin/ingest` |
-| **Add photo (URL)** | Manual `/demo-photos/`, `http://`, `https://` |
-| **Add photo (upload)** | `POST /api/admin/uploads` → Blob → save `VehiclePhoto` |
-| **Add event** | Form + `POST /api/admin/vehicles/[id]/events` |
-
-Auth: middleware on `/admin/*` and `/api/admin/*`; Bearer / `X-Admin-Key` for API scripts.
+- Admin login/session
+- CSV ingestion
+- Vehicle management page
+- Add photos
+- Add events
+- Blob uploads
+- Provenance/confidence assignment
 
 ---
 
-## 6. Production Infrastructure
+## 7. Current Data Model
 
-### Vercel
+### Core entities
 
-- Build: `vercel-build` → `scripts/production-build.mjs`
-- Generates **PostgreSQL** Prisma client only on Vercel
-- Env: `DATABASE_URL`, `ADMIN_API_KEY` or `ADMIN_PASSWORD`, `BLOB_READ_WRITE_TOKEN` (uploads)
+| Model | Purpose |
+|---|---|
+| `Vehicle` | Canonical record for identity/specs/import context |
+| `VehiclePhoto` | Visual evidence URL + metadata + trust indicators |
+| `VehicleEvent` | Timeline evidence event + metadata + trust indicators |
 
-### Neon
+### Trust enums
 
-- Authoritative production data
-- Migrations applied via `npm run db:migrate:postgres` **outside** the build
+| Enum | Values |
+|---|---|
+| `ConfidenceLevel` | `LOW`, `MEDIUM`, `HIGH`, `VERIFIED` |
+| `ProvenanceType` | `DEMO`, `USER_SUBMITTED`, `DEALER`, `IMPORTER`, `AUCTION`, `INTERNAL`, `GOVERNMENT`, `INSURER`, `POLICE`, `OTHER` |
 
-### Vercel Blob
+### Trust philosophy guardrails
 
-- Public blobs for admin evidence images
-- Path: `vehicle-evidence/{vehicleId}/{timestamp}-{filename}`
-- Setup: [`vercel_blob_setup.md`](vercel_blob_setup.md)
-
-### Why `prisma migrate deploy` is NOT run during Vercel build
-
-Concurrent deploys against Neon caused **P1002 advisory lock timeouts** when migrate ran on every build. Current policy:
-
-1. Build = `prisma generate` (postgres) + `next build`
-2. Operator runs **`db:migrate:postgres`** manually when `prisma/migrations/` changes
-3. Optional **`db:seed:postgres`** for demo rows (not automatic on deploy)
+- `VERIFIED` does **not** mean legally certified by the state.
+- Provenance is **not** equivalent to factual truth.
+- Confidence reflects evidence trust level, not court-grade certainty.
+- UI and docs should avoid defamatory or accusatory language.
 
 ---
 
-## 7. Important Debugging History
+## 8. Production Infrastructure
 
-Lessons already paid for — details in linked runbooks.
+### Vercel deployment flow
 
-| Issue | Lesson | Reference |
-|-------|--------|-----------|
-| **Neon advisory lock (P1002)** | Do not `migrate deploy` on every Vercel build | [`postgresql.md`](postgresql.md), [`build_log.md`](build_log.md) |
-| **SQLite vs Postgres schema** | Two schema files; two generate/seed commands | [`postgresql.md`](postgresql.md) |
-| **Production seeding confusion** | `db:seed` ≠ Neon; use `db:seed:postgres`; check `[seed] database:` log | [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) |
-| **Stable demo vehicle IDs** | VIN-based upsert in seed; fresh lookup after reseed | [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) |
-| **Empty visual evidence on prod** | Often wrong DB or zero `vehicle_photos` rows on Neon | [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) |
-| **Photo rendering** | Use native `<img>` for SVGs; `normalizeDemoPhotoSrc()` for `/demo-photos/` | [`build_log.md`](build_log.md) |
-| **Admin URL field `type="url"`** | Browsers reject relative `/demo-photos/…` paths → use `type="text"` | [`build_log.md`](build_log.md) |
-| **Windows EPERM on `prisma generate`** | Stop `npm run dev` if query engine DLL locked; rerun generate | Local dev note |
-| **Seed importing `server-only`** | `prisma/seed.ts` uses direct `PrismaClient`, not `lib/prisma.ts` | [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md) |
+1. Code pushed to repository
+2. Vercel runs production build script
+3. Postgres Prisma client generated in build
+4. Next.js build produced and deployed
 
----
+### Neon migration workflow
 
-## 8. Current Data Model
+Migrations are applied manually via:
 
-### Entities (high level)
+```bash
+npm run db:migrate:postgres
+```
 
-**Vehicle**
+### Why `prisma migrate deploy` is NOT run in Vercel build
 
-- Identity: `vin` (unique), optional `plateNumber`, `chassisNumber`
-- Specs: make, model, year, trim, engine, fuel, import metadata
-- Relations: `photos[]`, `events[]`
+To avoid advisory lock contention and deployment instability (especially Neon lock timeout scenarios). Decoupling migration from build improves reliability.
 
-**VehiclePhoto**
+### Manual migration workflow
 
-- `url`, `caption`, `sourceType` (import / inspection / accident / auction / other)
-- `sourceLabel`, `takenAt`
-- **`confidenceLevel`**, **`provenanceType`** (trust metadata)
+```bash
+npm run db:generate:postgres
+npm run db:migrate:postgres
+```
 
-**VehicleEvent**
+### Manual seed workflow
 
-- `eventType`, `eventDate`, `mileage`, `sourceSystem`, `rawPayload` (JSON)
-- **`confidenceLevel`**, **`provenanceType`**
+```bash
+npm run db:seed:postgres
+```
 
-### Enums (trust)
+### Blob setup workflow
 
-**ConfidenceLevel:** `LOW` | `MEDIUM` | `HIGH` | `VERIFIED`  
-**ProvenanceType:** `DEMO`, `USER_SUBMITTED`, `DEALER`, `IMPORTER`, `AUCTION`, `INTERNAL`, `GOVERNMENT`, `INSURER`, `POLICE`, `OTHER`
+1. Create/connect Vercel Blob store
+2. Set `BLOB_READ_WRITE_TOKEN`
+3. Use `/api/admin/uploads` to store evidence images
+4. Save returned URL into `VehiclePhoto`
 
-Defaults: `LOW` + `OTHER`.
+### Production env requirements
 
-### Trust philosophy
-
-- Every evidence item should answer: **who said this** (provenance) and **how much we trust it** (confidence).
-- Demo seed uses importer/auction/internal-style provenance with **LOW** confidence — explicitly not DVLA/police/insurer-official.
-- High provenance labels (e.g. `GOVERNMENT`) are **vocabulary for the future**, not live integrations.
-
-Full definitions: [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md).
+- `DATABASE_URL`
+- `ADMIN_API_KEY` or `ADMIN_PASSWORD`
+- `BLOB_READ_WRITE_TOKEN` (if uploads required)
 
 ---
 
-## 9. Product Philosophy
+## 9. Health & Diagnostics
 
-1. **GhanaCarSpecs is a trust and provenance platform**, not only a specs lookup site.
-2. **Evidence confidence** is shown in the UI; we do not imply official verification without integration.
-3. **Avoid fake accusations** — sample narratives are labeled demo; badges and copy state limitations.
-4. **Admin-controlled ingestion first** — CSV, manual events, Blob uploads; no public submission queue yet.
-5. **Official integrations later** — DVLA, police, insurers require authorization and separate phases.
+### Endpoint
+
+- `GET /api/health`
+
+### Expected response (high-level)
+
+- service status
+- environment mode
+- database connectivity check
+- blob configuration status
+- timestamp/version metadata
+
+### Diagnostic layers
+
+- Structured logging for operational events/errors
+- Environment validation to surface misconfiguration early
+- Production-safe error responses (avoid leaking sensitive internals)
+
+### What health should confirm
+
+- database connected
+- blob configured (or explicitly missing)
+- environment mode recognized (local vs hosted)
 
 ---
 
-## 10. Current Demo VINs
+## 10. Major Debugging History
 
-Canonical QA values: [`sample_data.md`](sample_data.md).
+### SQLite/Postgres Prisma mismatch
+
+- **Symptoms:** seed/build behavior inconsistent between local and Neon
+- **Root cause:** provider/schema mismatch and command misuse
+- **Fix:** dual schema strategy + explicit postgres scripts
+- **Prevention:** always use `db:seed:postgres` for Neon
+
+### Neon `photo_count` issue
+
+- **Symptoms:** reports rendered but no photo cards in production
+- **Root cause:** seeding wrong database or no `vehicle_photos` rows in Neon
+- **Fix:** seed against correct `DATABASE_URL`, verify SQL counts
+- **Prevention:** use Neon runbook and `[seed] database:` log check
+
+### Stale `.next` runtime cache
+
+- **Symptoms:** behavior/code changes not reflected accurately
+- **Root cause:** stale build artifacts
+- **Fix:** clear `.next` and regenerate client
+- **Prevention:** use runtime recovery workflow during environment drift
+
+### Blob token missing
+
+- **Symptoms:** upload API returns config error
+- **Root cause:** `BLOB_READ_WRITE_TOKEN` unset
+- **Fix:** set token in local/Vercel env
+- **Prevention:** include token in deployment checklist
+
+### `type="url"` vs `type="text"`
+
+- **Symptoms:** browser rejected valid relative demo paths
+- **Root cause:** HTML URL input strictness
+- **Fix:** switched to `type="text"` while backend validation enforces allowed prefixes
+- **Prevention:** avoid client validators that conflict with accepted backend formats
+
+### Windows Prisma EPERM lock
+
+- **Symptoms:** `prisma generate` rename EPERM on query engine DLL
+- **Root cause:** file lock by running dev process/OS scanner
+- **Fix:** stop dev server, rerun generate
+- **Prevention:** regenerate when process lock is released
+
+### Linux `tsc` missing
+
+- **Symptoms:** lint/typecheck failure in environment without dependencies
+- **Root cause:** node_modules/dev dependencies missing
+- **Fix:** `npm install` before lint
+- **Prevention:** treat dependency install as required first-step in fresh environments
+
+### Node version warning
+
+- **Symptoms:** tooling/runtime warnings or incompatibility hints
+- **Root cause:** non-target Node version
+- **Fix:** align to Node 20+ LTS
+- **Prevention:** enforce runtime version in team onboarding docs
+
+### Production build verification
+
+- **Symptoms:** uncertainty about deploy readiness
+- **Root cause:** environment drift and schema generation ambiguity
+- **Fix:** standardized `npm run build` + production runbooks + health endpoint checks
+- **Prevention:** pre-release checklist and build log discipline
+
+---
+
+## 11. Important Existing Docs
+
+| Document | Purpose |
+|---|---|
+| `docs/postgresql.md` | Dual-schema and PostgreSQL operational workflow |
+| `docs/debugging_neon_seed_photos.md` | Neon seeding/photo diagnostics runbook |
+| `docs/debugging_runtime_and_environment.md` | Runtime/env troubleshooting and recovery |
+| `docs/vercel_blob_setup.md` | Blob setup and upload workflow |
+| `docs/admin_record_management.md` | Admin vehicle operations (events/photos) |
+| `docs/production_deployment.md` | End-to-end production deployment runbook |
+| `docs/production_checklist.md` | Pre-release and cutover checklist |
+| `docs/evidence_confidence_and_provenance.md` | Trust model and badge semantics |
+
+---
+
+## 12. Current Demo VINs
 
 ### Toyota — `4T1BE46K37U123456`
 
-| Field | Value |
-|-------|--------|
-| Vehicle | 2007 Toyota Camry |
-| Plate | `GR-1234-21` |
-| Chassis | `BE46K37U123456` |
+Demonstrates:
 
-**Demonstrates:** import → registration → service → mileage timeline; Tema Port import + inspection **photos**; provenance **IMPORTER** / **INTERNAL**, confidence **LOW**.
+- import/registration/service timeline depth
+- importer/internal provenance examples
+- low-confidence demo evidence handling
 
-### Volkswagen — `WVWZZZ3CZWE123456`
+### VW — `WVWZZZ3CZWE123456`
 
-| Field | Value |
-|-------|--------|
-| Vehicle | 2014 VW Golf |
-| Plate | `GT 5678-22` |
+Demonstrates:
 
-**Demonstrates:** import + **accident** event; accident/repair **visual evidence**; provenance **OTHER**, confidence **LOW** (salvage/repair narrative without insurer file).
+- accident/repair narrative visibility
+- salvage/rebuild awareness style use case
+- evidence with non-official source framing
 
 ### Honda — `1HGBH41JXMN109186`
 
-| Field | Value |
-|-------|--------|
-| Vehicle | 1991 Honda Accord |
-| Plate | *(none)* — use VIN or chassis `BH41JXMN109186` |
+Demonstrates:
 
-**Demonstrates:** US **auction** photo + import-source trail; **AUCTION** / **IMPORTER** provenance; classic import storyline.
-
-**External decode test (not in seed):** `1HGCM82633A004352` → NHTSA `/decoded` flow.
+- auction/import intelligence path
+- imported vehicle storyline with source labels
+- VIN/chassis lookup support when plate is absent
 
 ---
 
-## 11. Current Open Risks / Limitations
+## 13. Current Limitations
 
-| Limitation | Impact |
-|------------|--------|
-| No official **DVLA** API | Registration events are samples only |
-| No **insurer** / **police** feeds | Cannot verify claims automatically |
-| No **moderation** workflow | Admin entries go live on save |
-| No **public submissions** | End users cannot upload evidence |
-| **Demo placeholders** still in seed | Must not be mistaken for real investigations |
-| No **automated confidence scoring** | Badges are operator-selected |
-| Single **shared admin secret** | Not multi-user RBAC |
-| Blob uploads need **token** | 503 without `BLOB_READ_WRITE_TOKEN` |
-| CSV ingest does not set provenance per row | Defaults `LOW` / `OTHER` |
+- no official DVLA integration
+- no insurer integration
+- no moderation workflow yet
+- no edit/delete evidence yet
+- no audit history yet
+- no public submission moderation yet
+- demo/sample evidence still exists
+- no automated confidence scoring
+- no fraud scoring yet
 
 ---
 
-## 12. Recommended Next Milestones
+## 14. Recommended Next Milestones
 
-Suggested order (align with [`roadmap.md`](roadmap.md)):
-
-1. **Production stabilization** — migrate/seed runbooks, monitoring, env parity Preview/Production  
-2. **Admin operational UX** — edit/delete evidence, bulk tools, audit log  
-3. **Moderation workflow** — review queue before public visibility  
-4. **Public submissions** — authenticated or verified uploads with default LOW confidence  
-5. **Dealer tools** — partner ingest, API keys, dashboards  
-6. **Insurance partnerships** — authorized claim/loss feeds → provenance `INSURER`  
-7. **Fraud scoring** — rules/ML on top of provenance (never replace human labels initially)  
-8. **Government / official integrations** — DVLA etc. with legal basis and `VERIFIED` workflow  
-
----
-
-## 13. Recovery Checklist
-
-Fresh clone → working local demo:
-
-- [ ] `git clone` + `cd` repo  
-- [ ] `npm install`  
-- [ ] Copy `.env.example` → `.env`; set **uncommented** `ADMIN_API_KEY=…`  
-- [ ] `npm run db:generate && npm run db:push && npm run db:seed`  
-- [ ] `npm run dev` → open `/`  
-- [ ] Lookup Toyota VIN `4T1BE46K37U123456` → report with photos, badges, events  
-- [ ] `/admin/login` → dashboard → **Manage** → add event or photo  
-- [ ] (Optional) Set `BLOB_READ_WRITE_TOKEN` → upload image on manage page → save → verify on public report  
-- [ ] `npm run lint && npm run build`  
-
-Production Neon sanity:
-
-- [ ] `DATABASE_URL` in Vercel matches target branch  
-- [ ] `npm run db:generate:postgres && npm run db:migrate:postgres && npm run db:seed:postgres` (from machine with env)  
-- [ ] SQL: 2 photos per seed VIN ([`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md))  
-- [ ] Fresh lookup on production URL (not stale `/vehicles/[id]` bookmark)  
+1. Production verification
+2. Evidence management (edit/delete/moderation)
+3. Audit logging
+4. Mobile optimization
+5. Bulk ingestion workflows
+6. Dealer workflows
+7. Insurance workflows
+8. Public submissions
+9. Fraud/risk scoring
+10. Official integrations
 
 ---
 
-## 14. File Map
+## 15. Recovery Checklist
 
-```
-prisma/
-  schema.prisma              # SQLite (local)
-  schema.postgresql.prisma   # PostgreSQL (Neon / Vercel)
-  seed.ts                    # Demo vehicles (VIN upsert)
-  migrations/                # Postgres-only SQL migrations
-  dev.db                     # Local SQLite (gitignored)
+Fresh clone recovery path:
 
-app/
-  page.tsx                   # Home lookup
-  vehicles/[id]/page.tsx     # Local report
-  decoded/page.tsx           # NHTSA decode view
-  admin/                     # Dashboard, ingest, manage, login
-  api/
-    v1/lookup/               # Public lookup API
-    admin/                   # Ingest, login, uploads, photos, events
-  globals.css                # All UI styles
-  layout.tsx
+1. Install dependencies (`npm install`)
+2. Configure env from `.env.example` (`ADMIN_API_KEY`/`ADMIN_PASSWORD`; optional Blob token)
+3. Generate Prisma client (`npm run db:generate`)
+4. Setup DB (`npm run db:push && npm run db:seed`)
+5. Verify health endpoint (`/api/health`)
+6. Test lookup (Toyota VIN and unknown VIN fallback)
+7. Test admin login (`/admin/login`)
+8. Test upload flow (if Blob token configured)
+9. Test public evidence rendering (`/vehicles/[id]`)
 
-components/
-  VehicleReport.tsx          # Report shell
-  VehiclePhotos.tsx          # Visual evidence + trust copy
-  EventTimeline.tsx          # Events + badges
-  EvidenceBadges.tsx
-  AdminAddPhotoForm.tsx      # Upload + manual URL
-  AdminAddEventForm.tsx
-  AdminNav.tsx, AdminLoginForm.tsx, …
+Neon production sanity:
 
-lib/
-  prisma.ts                  # App DB client (server-only)
-  prisma-datasource.ts       # URL resolution for app + seed
-  lookup.ts, lookup-messages.ts
-  nhtsa-vin.ts               # External decode
-  admin-auth.ts, admin-api.ts, admin-record-mutations.ts
-  admin-upload.ts            # Blob upload validation
-  csv-ingest.ts
-  vehicle-report.ts, vehicle-intelligence.ts
-  evidence-metadata.ts, demo-photo-urls.ts, photo-source.ts
-
-docs/                        # All operational + product docs (keep)
-public/demo-photos/          # Seeded SVG placeholders
-
-scripts/
-  production-build.mjs       # Vercel vs local build
-  prisma-generate.mjs        # postinstall generate
-  export-sqlite-data.ts, import-postgres-data.ts
-
-middleware.ts                # Admin route protection
-vercel.json                  # vercel-build command
-```
+1. Set `DATABASE_URL`
+2. Run `db:generate:postgres`, `db:migrate:postgres`, `db:seed:postgres`
+3. Verify health and lookup behavior
 
 ---
 
-## 15. Recommended Future Chat Context
+## 16. Recommended Future Chat Context
 
-Paste this block into a new Cursor / ChatGPT session to restore context quickly:
+Use this context seed in future ChatGPT/Cursor sessions:
 
 ```text
-Project: GhanaCarSpecs (Next.js 15 App Router, TypeScript, global CSS).
-Mission: Vehicle history + trust/provenance for Ghana — not just specs.
-Stack: Local SQLite (prisma/schema.prisma, db:seed); production Neon PostgreSQL
-(prisma/schema.postgresql.prisma, db:generate:postgres, db:migrate:postgres,
-db:seed:postgres). Hosted on Vercel; admin uploads via Vercel Blob
-(BLOB_READ_WRITE_TOKEN). Admin: ADMIN_API_KEY or ADMIN_PASSWORD.
-Public: POST /api/v1/lookup (VIN/plate/chassis), reports at /vehicles/[id] with
-VehiclePhoto + VehicleEvent + ConfidenceLevel/ProvenanceType badges.
-External 17-char VIN fallback: NHTSA → /decoded. Demo VINs: Toyota 4T1BE46K37U123456,
-VW WVWZZZ3CZWE123456, Honda 1HGBH41JXMN109186. Vercel build does NOT run migrate
-(manual db:migrate:postgres). Master handoff: docs/project_handoff_master.md.
-Deep dives: docs/debugging_neon_seed_photos.md, docs/postgresql.md,
-docs/vercel_blob_setup.md, docs/evidence_confidence_and_provenance.md.
-Do not use db:seed against Neon — use db:seed:postgres. Prisma models must stay
-in sync across both schema files.
+GhanaCarSpecs is a Next.js App Router + TypeScript vehicle trust platform for Ghana with local SQLite dev and Neon PostgreSQL production. Public lookup uses local-first VIN/plate/chassis matching with NHTSA VIN fallback for unknown 17-char VINs. Admin routes are protected by ADMIN_API_KEY/ADMIN_PASSWORD and support CSV ingest, event/photo creation, and Vercel Blob uploads. VehiclePhoto and VehicleEvent include provenance and confidence metadata; badges are rendered publicly to communicate trust level. Use db:seed for SQLite and db:seed:postgres for Neon. Vercel build generates Postgres Prisma client but does not run migrate deploy; migrations are manual via db:migrate:postgres. Core runbooks: docs/postgresql.md, docs/debugging_neon_seed_photos.md, docs/debugging_runtime_and_environment.md, docs/vercel_blob_setup.md, docs/project_handoff_master.md.
 ```
 
 ---
 
-## Quick links (repo root)
+## 17. Operational Philosophy
 
-- [README.md](../README.md) — setup and command table  
-- [.env.example](../.env.example) — required env vars  
+1. Prioritize trust over hype
+2. Avoid false accusations and unsupported claims
+3. Evidence must be attributable and source-labeled
+4. Provenance matters for decision context
+5. Operational stability comes before aggressive scaling
+6. Documentation is part of engineering, not an afterthought
 
-When in doubt, prefer **operational docs** in `docs/` over chat memory.
+This philosophy governs feature scope, language, and release discipline.
+
+---
+
+## Handoff Revision History
+
+| Date | Version / Phase | Summary | Verification |
+|---|---|---|---|
+| 2026-05-28 | Production hardening + operational documentation | Added production diagnostics, health endpoint, structured logging, runtime/environment debugging documentation, and comprehensive project handoff architecture reference. | `npm run lint` passed; `npm run build` passed. |
+
+Future sessions should append to this table instead of rewriting the whole handoff document unless the architecture changes significantly.
