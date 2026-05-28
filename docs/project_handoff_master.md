@@ -262,6 +262,9 @@ git push origin main
 - Add events
 - Blob uploads
 - Provenance/confidence assignment
+- Evidence edit and archive (soft delete)
+- Moderation status controls (`DRAFT`/`REVIEWED`/`PUBLISHED`/`REJECTED`/`ARCHIVED`)
+- Recent admin activity feed on manage page
 
 ---
 
@@ -447,6 +450,7 @@ npm run db:seed:postgres
 | `docs/production_deployment.md` | End-to-end production deployment runbook |
 | `docs/production_checklist.md` | Pre-release and cutover checklist |
 | `docs/evidence_confidence_and_provenance.md` | Trust model and badge semantics |
+| `docs/evidence_lifecycle_management.md` | Moderation lifecycle, soft delete rules, audit logging |
 
 ---
 
@@ -482,8 +486,7 @@ Demonstrates:
 
 - no official DVLA integration
 - no insurer integration
-- no moderation workflow yet
-- no edit/delete evidence yet
+- no advanced moderation queue yet (review workflow is basic)
 - no audit history yet
 - no public submission moderation yet
 - demo/sample evidence still exists

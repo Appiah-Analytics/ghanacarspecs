@@ -16,6 +16,9 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 10 | Public demo readiness | Done |
 | 11 | Vehicle photos / visual evidence (foundation) | Done |
 | 12 | Admin record management v1 | Done |
+| 13 | Evidence confidence/provenance presentation | Done |
+| 14 | Admin image upload (Vercel Blob) | Done |
+| 16 | Evidence lifecycle + moderation controls | Done |
 
 ---
 
@@ -122,3 +125,16 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Auto-fill photo URL → existing `VehiclePhoto` create flow (provenance/confidence unchanged)
 - [x] `docs/vercel_blob_setup.md`
 - [ ] Image moderation / virus scanning (future)
+
+## Phase 16 — Evidence lifecycle management and moderation controls
+
+- [x] `EvidenceStatus` on `VehiclePhoto` + `VehicleEvent`
+- [x] Soft delete fields (`deletedAt`, `deletedBy`) on photos/events
+- [x] Admin edit flows for photos/events
+- [x] Admin archive (soft delete) actions for photos/events
+- [x] Admin moderation status badges
+- [x] Public filter: only non-deleted `PUBLISHED` evidence
+- [x] Structured audit logging (`lib/audit-log.ts`)
+- [x] Admin recent activity section on vehicle manage page
+- [x] Moderation guidance copy on admin page
+- [x] `docs/evidence_lifecycle_management.md`

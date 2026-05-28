@@ -3,8 +3,14 @@ import { prisma } from "@/lib/prisma";
 
 /** Include for local vehicle report pages — relation name must match `Vehicle.photos` in schema. */
 export const vehicleReportInclude = {
-  events: { orderBy: { eventDate: "desc" as const } },
-  photos: { orderBy: { createdAt: "desc" as const } },
+  events: {
+    where: { deletedAt: null, status: "PUBLISHED" as const },
+    orderBy: { eventDate: "desc" as const },
+  },
+  photos: {
+    where: { deletedAt: null, status: "PUBLISHED" as const },
+    orderBy: { createdAt: "desc" as const },
+  },
 } satisfies Prisma.VehicleInclude;
 
 export type VehicleReportData = Prisma.VehicleGetPayload<{ include: typeof vehicleReportInclude }>;

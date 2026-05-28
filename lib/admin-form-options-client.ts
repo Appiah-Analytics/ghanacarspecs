@@ -40,3 +40,12 @@ export const PROVENANCE_TYPE_OPTIONS = [
   { value: "POLICE", label: "Police" },
   { value: "OTHER", label: "Other" },
 ] as const;
+
+/** Keep in sync with EvidenceStatus enum */
+export const EVIDENCE_STATUS_OPTIONS = [
+  { value: "DRAFT", label: "Draft" },
+  { value: "REVIEWED", label: "Reviewed" },
+  { value: "PUBLISHED", label: "Published" },
+  { value: "REJECTED", label: "Rejected" },
+  { value: "ARCHIVED", label: "Archived" },
+] as const;

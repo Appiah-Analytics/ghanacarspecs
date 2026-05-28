@@ -1,4 +1,4 @@
-import type { ConfidenceLevel, ProvenanceType } from "@prisma/client";
+import type { ConfidenceLevel, EvidenceStatus, ProvenanceType } from "@prisma/client";
 
 export const CONFIDENCE_LEVEL_OPTIONS = [
   { value: "LOW", label: "Low confidence" },
@@ -46,4 +46,25 @@ export function confidenceBadgeClass(confidenceLevel: ConfidenceLevel): string {
 
 export function provenanceBadgeClass(_provenanceType: ProvenanceType): string {
   return "evidence-provenance";
+}
+
+export function formatEvidenceStatus(status: EvidenceStatus): string {
+  return status;
+}
+
+export function evidenceStatusClass(status: EvidenceStatus): string {
+  switch (status) {
+    case "DRAFT":
+      return "evidence-status-draft";
+    case "REVIEWED":
+      return "evidence-status-reviewed";
+    case "PUBLISHED":
+      return "evidence-status-published";
+    case "REJECTED":
+      return "evidence-status-rejected";
+    case "ARCHIVED":
+      return "evidence-status-archived";
+    default:
+      return "evidence-status-draft";
+  }
 }

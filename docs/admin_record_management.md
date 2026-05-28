@@ -2,7 +2,7 @@
 
 How operators add **timeline events** and **visual evidence URLs** to existing vehicles after CSV ingestion or seed data.
 
-**Related:** [`vercel_blob_setup.md`](vercel_blob_setup.md), [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md), [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md), [`postgresql.md`](postgresql.md), [`sample_data.md`](sample_data.md)
+**Related:** [`vercel_blob_setup.md`](vercel_blob_setup.md), [`evidence_confidence_and_provenance.md`](evidence_confidence_and_provenance.md), [`evidence_lifecycle_management.md`](evidence_lifecycle_management.md), [`debugging_neon_seed_photos.md`](debugging_neon_seed_photos.md), [`postgresql.md`](postgresql.md), [`sample_data.md`](sample_data.md)
 
 ---
 
@@ -83,6 +83,25 @@ After success, the page refreshes and shows a confirmation banner.
 
 ---
 
+## Edit and archive evidence (Phase 16)
+
+On `/admin/vehicles/[id]`, each photo and event row now includes **Edit / archive** controls.
+
+- **Edit photo:** caption, source label, provenance, confidence, taken-at, moderation status
+- **Edit event:** event type/date, mileage, source system, description, provenance, confidence, moderation status
+- **Archive photo/event:** soft delete only (`deletedAt`, `deletedBy`, status `ARCHIVED`)
+
+APIs:
+
+- `PATCH /api/admin/vehicles/[id]/photos/[photoId]`
+- `DELETE /api/admin/vehicles/[id]/photos/[photoId]` (archive)
+- `PATCH /api/admin/vehicles/[id]/events/[eventId]`
+- `DELETE /api/admin/vehicles/[id]/events/[eventId]` (archive)
+
+Public reports only show non-deleted `PUBLISHED` evidence; admin pages can still view archived rows.
+
+---
+
 ## Verify on the public report
 
 1. From the manage page, open **Public report** (`/vehicles/[id]`).
@@ -102,7 +121,7 @@ After success, the page refreshes and shows a confirmation banner.
 $env:DATABASE_URL="postgresql://..."
 npm run db:generate:postgres
 npm run db:migrate:postgres
-npm run db:seed
+npm run db:seed:postgres
 ```
 
 Confirm `[seed] database: postgresql://…` (masked), not `file:…/dev.db`.

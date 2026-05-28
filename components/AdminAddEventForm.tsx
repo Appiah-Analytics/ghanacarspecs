@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   CONFIDENCE_LEVEL_OPTIONS,
   EVENT_TYPE_OPTIONS,
+  EVIDENCE_STATUS_OPTIONS,
   PROVENANCE_TYPE_OPTIONS,
 } from "@/lib/admin-form-options-client";
 
@@ -33,6 +34,7 @@ export function AdminAddEventForm({ vehicleId }: Props) {
       description: String(formData.get("description") ?? ""),
       provenanceType: String(formData.get("provenanceType") ?? ""),
       confidenceLevel: String(formData.get("confidenceLevel") ?? ""),
+      status: String(formData.get("status") ?? "PUBLISHED"),
     };
 
     try {
@@ -99,6 +101,16 @@ export function AdminAddEventForm({ vehicleId }: Props) {
           Confidence <span className="admin-required">*</span>
           <select name="confidenceLevel" required defaultValue="LOW">
             {CONFIDENCE_LEVEL_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Moderation status <span className="admin-required">*</span>
+          <select name="status" required defaultValue="PUBLISHED">
+            {EVIDENCE_STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
