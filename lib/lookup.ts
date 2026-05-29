@@ -6,7 +6,10 @@ import { decodeVinNhtsa, type ExternalVinSpecs } from "@/lib/nhtsa-vin";
 export { normalizeChassisKey, normalizePlateKey, normalizeVin } from "@/lib/lookup-normalize";
 
 const vehicleInclude = {
-  events: { orderBy: { eventDate: "desc" as const } },
+  events: {
+    where: { deletedAt: null, status: "PUBLISHED" as const },
+    orderBy: { eventDate: "desc" as const },
+  },
 } satisfies Prisma.VehicleInclude;
 
 export type VehicleWithEvents = Prisma.VehicleGetPayload<{ include: typeof vehicleInclude }>;

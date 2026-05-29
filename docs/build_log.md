@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-27 (runtime/environment debugging documentation update)  
+**Last updated:** 2026-05-28 (phase 16 evidence lifecycle management; runtime/environment debugging documentation)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,54 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 16 — Evidence lifecycle management and moderation controls
+
+### Goal
+
+Extend evidence handling from create-only into controlled lifecycle operations with moderation states, soft delete, and auditability while preserving public lookup behavior.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Schema | `prisma/schema.prisma`, `prisma/schema.postgresql.prisma`, `prisma/migrations/20260528103000_evidence_lifecycle_management/` |
+| API | `app/api/admin/vehicles/[id]/photos/[photoId]/route.ts`, `app/api/admin/vehicles/[id]/events/[eventId]/route.ts`, updates to existing create routes |
+| Lib | `lib/admin-record-mutations.ts`, `lib/audit-log.ts`, `lib/vehicle-report.ts`, `lib/lookup.ts`, `lib/evidence-metadata.ts`, `lib/admin-form-options-client.ts` |
+| Components/UI | `AdminEditPhotoForm.tsx`, `AdminEditEventForm.tsx`, `EvidenceStatusBadge.tsx`, `app/admin/vehicles/[id]/page.tsx`, `components/AdminAddPhotoForm.tsx`, `components/AdminAddEventForm.tsx`, `app/globals.css` |
+| Docs | `docs/evidence_lifecycle_management.md`, `README.md`, `docs/admin_record_management.md`, `docs/roadmap.md`, `docs/project_handoff_master.md` |
+
+### Behavior implemented
+
+- Added `EvidenceStatus` enum and status fields on photos/events (`DRAFT`, `REVIEWED`, `PUBLISHED`, `REJECTED`, `ARCHIVED`) with create default `PUBLISHED`.
+- Added soft delete metadata (`deletedAt`, `deletedBy`) and archive actions for photos/events.
+- Added admin edit forms for photo/event metadata, confidence/provenance, and moderation status.
+- Public report filtering now only renders non-deleted `PUBLISHED` evidence.
+- Added append-only structured audit logging for create/edit/archive/status-change actions.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual flow: create photo/event, edit, archive, verify hidden from public report, verify admin status badges and activity feed.
+
+### Known limitations
+
+- Audit logs are structured runtime logs only (no DB audit table yet).
+- Moderation workflow is stateful but still admin-driven (no queue/assignment workflow).
+- Archive is soft-delete only; no permanent delete in this phase.
+
+### Next recommended step
+
+- Add persistent audit table + moderation queue UI (review assignment + publish approvals).
+
+---
+
+## Project handoff master documentation update
+
+- Comprehensive project handoff and operational architecture documentation added.
+- `docs/project_handoff_master.md` expanded as the primary operational memory reference for architecture, workflows, debugging, deployment, and recovery.
 
 ---
 

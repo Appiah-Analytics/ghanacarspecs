@@ -48,6 +48,14 @@ enum ProvenanceType {
   OTHER
 }
 
+enum EvidenceStatus {
+  DRAFT
+  REVIEWED
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
 model Vehicle {
   id               String          @id @default(cuid())
   vin              String          @unique
@@ -81,6 +89,9 @@ model VehiclePhoto {
   takenAt         DateTime?
   confidenceLevel ConfidenceLevel @default(LOW)
   provenanceType  ProvenanceType  @default(OTHER)
+  status          EvidenceStatus  @default(PUBLISHED)
+  deletedAt       DateTime?
+  deletedBy       String?
   createdAt       DateTime        @default(now())
 
   @@index([vehicleId])
@@ -98,6 +109,9 @@ model VehicleEvent {
   rawPayload      Json?
   confidenceLevel ConfidenceLevel @default(LOW)
   provenanceType  ProvenanceType  @default(OTHER)
+  status          EvidenceStatus  @default(PUBLISHED)
+  deletedAt       DateTime?
+  deletedBy       String?
   createdAt       DateTime        @default(now())
 
   @@index([vehicleId])

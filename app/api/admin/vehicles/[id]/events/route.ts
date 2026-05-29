@@ -3,11 +3,13 @@ import { requireAdminApi } from "@/lib/admin-api";
 import {
   createAdminVehicleEvent,
   parseConfidenceLevel,
+  parseEvidenceStatus,
   parseEventType,
   parseOptionalMileage,
   parseProvenanceType,
   parseRequiredDate,
 } from "@/lib/admin-record-mutations";
+import { getAdminIdentifierFromRequest } from "@/lib/audit-log";
 import { loggerForRequest } from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -82,6 +84,12 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
+  const statusRaw = typeof data.status === "string" ? data.status : "PUBLISHED";
+  const status = parseEvidenceStatus(statusRaw);
+  if (typeof status !== "string") {
+    return NextResponse.json({ ok: false, error: status.message, field: "status" }, { status: 400 });
+  }
+
   const result = await createAdminVehicleEvent(vehicleId, {
     eventType,
     eventDate: eventDate as Date,
@@ -90,6 +98,8 @@ export async function POST(request: Request, context: RouteContext) {
     description: typeof data.description === "string" ? data.description : undefined,
     confidenceLevel,
     provenanceType,
+    status,
+    adminIdentifier: getAdminIdentifierFromRequest(request),
   });
 
   if (!result.ok) {

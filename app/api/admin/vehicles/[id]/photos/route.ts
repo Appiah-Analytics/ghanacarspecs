@@ -3,11 +3,13 @@ import { requireAdminApi } from "@/lib/admin-api";
 import {
   createAdminVehiclePhoto,
   parseConfidenceLevel,
+  parseEvidenceStatus,
   parseOptionalDate,
   parsePhotoSourceType,
   parseProvenanceType,
   validatePhotoUrl,
 } from "@/lib/admin-record-mutations";
+import { getAdminIdentifierFromRequest } from "@/lib/audit-log";
 import { loggerForRequest } from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -78,6 +80,12 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
+  const statusRaw = typeof data.status === "string" ? data.status : "PUBLISHED";
+  const status = parseEvidenceStatus(statusRaw);
+  if (typeof status !== "string") {
+    return NextResponse.json({ ok: false, error: status.message, field: "status" }, { status: 400 });
+  }
+
   const result = await createAdminVehiclePhoto(vehicleId, {
     url,
     caption: typeof data.caption === "string" ? data.caption : undefined,
@@ -86,6 +94,8 @@ export async function POST(request: Request, context: RouteContext) {
     takenAt: takenAt as Date | null,
     confidenceLevel,
     provenanceType,
+    status,
+    adminIdentifier: getAdminIdentifierFromRequest(request),
   });
 
   if (!result.ok) {

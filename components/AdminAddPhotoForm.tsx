@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CONFIDENCE_LEVEL_OPTIONS,
+  EVIDENCE_STATUS_OPTIONS,
   PHOTO_SOURCE_TYPE_OPTIONS,
   PROVENANCE_TYPE_OPTIONS,
 } from "@/lib/admin-form-options-client";
@@ -131,6 +132,7 @@ export function AdminAddPhotoForm({ vehicleId }: Props) {
       takenAt: String(formData.get("takenAt") ?? ""),
       provenanceType: String(formData.get("provenanceType") ?? ""),
       confidenceLevel: String(formData.get("confidenceLevel") ?? ""),
+      status: String(formData.get("status") ?? "PUBLISHED"),
     };
 
     try {
@@ -291,6 +293,16 @@ export function AdminAddPhotoForm({ vehicleId }: Props) {
           Confidence <span className="admin-required">*</span>
           <select name="confidenceLevel" required defaultValue="LOW">
             {CONFIDENCE_LEVEL_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Moderation status <span className="admin-required">*</span>
+          <select name="status" required defaultValue="PUBLISHED">
+            {EVIDENCE_STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>

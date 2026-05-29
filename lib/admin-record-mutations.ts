@@ -1,10 +1,16 @@
 import {
   ConfidenceLevel,
+  EvidenceStatus,
   EventType,
   PhotoSourceType,
   ProvenanceType,
   type Prisma,
 } from "@prisma/client";
+import {
+  pickEventAuditSnapshot,
+  pickPhotoAuditSnapshot,
+  writeAuditLog,
+} from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 
@@ -55,6 +61,13 @@ export function parseProvenanceType(value: string): ProvenanceType | AdminMutati
   return { message: "Invalid provenance type." };
 }
 
+export function parseEvidenceStatus(value: string): EvidenceStatus | AdminMutationError {
+  if (Object.values(EvidenceStatus).includes(value as EvidenceStatus)) {
+    return value as EvidenceStatus;
+  }
+  return { message: "Invalid evidence status." };
+}
+
 export function parseOptionalDate(value: string): Date | null | AdminMutationError {
   const trimmed = value.trim();
   if (!trimmed) return null;
@@ -95,6 +108,8 @@ export type CreatePhotoInput = {
   takenAt?: Date | null;
   confidenceLevel: ConfidenceLevel;
   provenanceType: ProvenanceType;
+  status?: EvidenceStatus;
+  adminIdentifier?: string;
 };
 
 export async function createAdminVehiclePhoto(
@@ -121,7 +136,16 @@ export async function createAdminVehiclePhoto(
       takenAt: input.takenAt ?? null,
       confidenceLevel: input.confidenceLevel,
       provenanceType: input.provenanceType,
+      status: input.status ?? EvidenceStatus.PUBLISHED,
     },
+  });
+
+  writeAuditLog({
+    adminIdentifier: input.adminIdentifier ?? "admin:unknown",
+    entityType: "vehicle_photo",
+    entityId: photo.id,
+    action: "create",
+    after: pickPhotoAuditSnapshot(photo),
   });
 
   logger.info("create admin vehicle photo succeeded", { vehicleId, photoId: photo.id });
@@ -136,6 +160,8 @@ export type CreateEventInput = {
   description?: string;
   confidenceLevel: ConfidenceLevel;
   provenanceType: ProvenanceType;
+  status?: EvidenceStatus;
+  adminIdentifier?: string;
 };
 
 export async function createAdminVehicleEvent(
@@ -170,9 +196,178 @@ export async function createAdminVehicleEvent(
       rawPayload,
       confidenceLevel: input.confidenceLevel,
       provenanceType: input.provenanceType,
+      status: input.status ?? EvidenceStatus.PUBLISHED,
     },
+  });
+
+  writeAuditLog({
+    adminIdentifier: input.adminIdentifier ?? "admin:unknown",
+    entityType: "vehicle_event",
+    entityId: event.id,
+    action: "create",
+    after: pickEventAuditSnapshot(event),
   });
 
   logger.info("create admin vehicle event succeeded", { vehicleId, eventId: event.id });
   return { ok: true, eventId: event.id };
+}
+
+export type UpdatePhotoInput = {
+  caption: string;
+  sourceLabel?: string;
+  takenAt?: Date | null;
+  confidenceLevel: ConfidenceLevel;
+  provenanceType: ProvenanceType;
+  status: EvidenceStatus;
+  adminIdentifier: string;
+};
+
+export async function updateAdminVehiclePhoto(
+  vehicleId: string,
+  photoId: string,
+  input: UpdatePhotoInput,
+): Promise<{ ok: true } | { ok: false; error: AdminMutationError }> {
+  const before = await prisma.vehiclePhoto.findFirst({
+    where: { id: photoId, vehicleId },
+  });
+  if (!before) return { ok: false, error: { message: "Photo not found." } };
+
+  const updated = await prisma.vehiclePhoto.update({
+    where: { id: photoId },
+    data: {
+      caption: input.caption.trim() || before.caption,
+      sourceLabel: input.sourceLabel?.trim() || null,
+      takenAt: input.takenAt ?? null,
+      confidenceLevel: input.confidenceLevel,
+      provenanceType: input.provenanceType,
+      status: input.status,
+    },
+  });
+
+  writeAuditLog({
+    adminIdentifier: input.adminIdentifier,
+    entityType: "vehicle_photo",
+    entityId: updated.id,
+    action: before.status === updated.status ? "edit" : "status_change",
+    before: pickPhotoAuditSnapshot(before),
+    after: pickPhotoAuditSnapshot(updated),
+  });
+  return { ok: true };
+}
+
+export async function archiveAdminVehiclePhoto(
+  vehicleId: string,
+  photoId: string,
+  adminIdentifier: string,
+): Promise<{ ok: true } | { ok: false; error: AdminMutationError }> {
+  const before = await prisma.vehiclePhoto.findFirst({
+    where: { id: photoId, vehicleId },
+  });
+  if (!before) return { ok: false, error: { message: "Photo not found." } };
+
+  const updated = await prisma.vehiclePhoto.update({
+    where: { id: photoId },
+    data: {
+      status: EvidenceStatus.ARCHIVED,
+      deletedAt: new Date(),
+      deletedBy: adminIdentifier,
+    },
+  });
+
+  writeAuditLog({
+    adminIdentifier,
+    entityType: "vehicle_photo",
+    entityId: updated.id,
+    action: "archive",
+    before: pickPhotoAuditSnapshot(before),
+    after: pickPhotoAuditSnapshot(updated),
+  });
+  return { ok: true };
+}
+
+export type UpdateEventInput = {
+  eventType: EventType;
+  eventDate: Date;
+  mileage?: number | null;
+  sourceSystem: string;
+  description?: string;
+  confidenceLevel: ConfidenceLevel;
+  provenanceType: ProvenanceType;
+  status: EvidenceStatus;
+  adminIdentifier: string;
+};
+
+export async function updateAdminVehicleEvent(
+  vehicleId: string,
+  eventId: string,
+  input: UpdateEventInput,
+): Promise<{ ok: true } | { ok: false; error: AdminMutationError }> {
+  const before = await prisma.vehicleEvent.findFirst({
+    where: { id: eventId, vehicleId },
+  });
+  if (!before) return { ok: false, error: { message: "Event not found." } };
+
+  const sourceSystem = input.sourceSystem.trim();
+  if (!sourceSystem) {
+    return { ok: false, error: { field: "sourceSystem", message: "Source system is required." } };
+  }
+
+  const rawPayload: Prisma.InputJsonValue = {
+    addedFrom: "admin",
+    ...(input.description?.trim() ? { description: input.description.trim() } : {}),
+  };
+
+  const updated = await prisma.vehicleEvent.update({
+    where: { id: eventId },
+    data: {
+      eventType: input.eventType,
+      eventDate: input.eventDate,
+      mileage: input.mileage ?? null,
+      sourceSystem,
+      rawPayload,
+      confidenceLevel: input.confidenceLevel,
+      provenanceType: input.provenanceType,
+      status: input.status,
+    },
+  });
+
+  writeAuditLog({
+    adminIdentifier: input.adminIdentifier,
+    entityType: "vehicle_event",
+    entityId: updated.id,
+    action: before.status === updated.status ? "edit" : "status_change",
+    before: pickEventAuditSnapshot(before),
+    after: pickEventAuditSnapshot(updated),
+  });
+  return { ok: true };
+}
+
+export async function archiveAdminVehicleEvent(
+  vehicleId: string,
+  eventId: string,
+  adminIdentifier: string,
+): Promise<{ ok: true } | { ok: false; error: AdminMutationError }> {
+  const before = await prisma.vehicleEvent.findFirst({
+    where: { id: eventId, vehicleId },
+  });
+  if (!before) return { ok: false, error: { message: "Event not found." } };
+
+  const updated = await prisma.vehicleEvent.update({
+    where: { id: eventId },
+    data: {
+      status: EvidenceStatus.ARCHIVED,
+      deletedAt: new Date(),
+      deletedBy: adminIdentifier,
+    },
+  });
+
+  writeAuditLog({
+    adminIdentifier,
+    entityType: "vehicle_event",
+    entityId: updated.id,
+    action: "archive",
+    before: pickEventAuditSnapshot(before),
+    after: pickEventAuditSnapshot(updated),
+  });
+  return { ok: true };
 }
