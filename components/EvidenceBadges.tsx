@@ -1,10 +1,6 @@
 import type { ConfidenceLevel, ProvenanceType } from "@prisma/client";
-import {
-  confidenceBadgeClass,
-  formatConfidenceBadge,
-  formatProvenanceBadge,
-  provenanceBadgeClass,
-} from "@/lib/evidence-metadata";
+import { ConfidenceHelp } from "@/components/ConfidenceHelp";
+import { ProvenanceHelp } from "@/components/ProvenanceHelp";
 
 type Props = {
   provenanceType: ProvenanceType;
@@ -14,10 +10,8 @@ type Props = {
 export function EvidenceBadges({ provenanceType, confidenceLevel }: Props) {
   return (
     <div className="evidence-badge-row" aria-label="Evidence provenance and confidence">
-      <span className={`evidence-badge ${provenanceBadgeClass(provenanceType)}`}>{formatProvenanceBadge(provenanceType)}</span>
-      <span className={`evidence-badge ${confidenceBadgeClass(confidenceLevel)}`}>
-        {formatConfidenceBadge(confidenceLevel)}
-      </span>
+      <ProvenanceHelp provenanceType={provenanceType} />
+      <ConfidenceHelp confidenceLevel={confidenceLevel} />
     </div>
   );
 }

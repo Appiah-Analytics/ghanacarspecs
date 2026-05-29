@@ -325,6 +325,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md) | Neon production seed & VehiclePhoto runbook |
 | [`docs/admin_record_management.md`](docs/admin_record_management.md) | Admin manage page: events & visual evidence URLs |
 | [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) | Trust model, enums, badges, future official feeds |
+| [`docs/public_trust_and_transparency.md`](docs/public_trust_and_transparency.md) | Public trust UX, confidence/provenance help, verification limits |
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |
 | [`docs/evidence_lifecycle_management.md`](docs/evidence_lifecycle_management.md) | Moderation states, soft delete rules, public visibility filters, audit logging |
 | [`docs/project_handoff_master.md`](docs/project_handoff_master.md) | Primary operational memory: architecture, workflows, debugging, deployment, roadmap |

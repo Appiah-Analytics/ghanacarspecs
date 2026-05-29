@@ -587,19 +587,220 @@ main.page {
 .evidence-badge-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 0.35rem 0.5rem;
   margin: 0 0 0.5rem;
+  max-width: 100%;
 }
 
 .evidence-badge {
   display: inline-block;
-  padding: 0.2rem 0.45rem;
+  padding: 0.22rem 0.5rem;
   border-radius: 4px;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  line-height: 1.3;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.badge-help {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+.badge-help > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.badge-help > summary::-webkit-details-marker {
+  display: none;
+}
+
+.badge-help > summary::after {
+  content: " ⓘ";
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.75;
+}
+
+.badge-help > summary:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.badge-help-panel {
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.65rem;
+  max-width: min(20rem, 100%);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.badge-help-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #334155;
+}
+
+.badge-help-text {
+  margin: 0;
+}
+
+.badge-help-note,
+.badge-help-caveat {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.badge-help-caveat strong {
+  color: #475569;
+  font-weight: 600;
+}
+
+.trust-center-block {
+  margin-bottom: 1.25rem;
+}
+
+.trust-center-block:last-child {
+  margin-bottom: 0;
+}
+
+.trust-center-subtitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.trust-center-intro {
+  margin: 0 0 0.65rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.trust-def-list {
+  margin: 0;
+}
+
+.trust-def-item {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.trust-def-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.trust-def-item dt {
+  margin: 0 0 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #334155;
+}
+
+.trust-def-item dd {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.trust-def-note,
+.trust-def-caveat {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.trust-bullet-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.trust-bullet-list li + li {
+  margin-top: 0.35rem;
+}
+
+.verification-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.verification-column-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.verification-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.verification-list li {
+  position: relative;
+  padding-left: 1.35rem;
+  margin-bottom: 0.4rem;
+}
+
+.verification-list-yes li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #166534;
+  font-weight: 700;
+}
+
+.verification-list-no li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.transparency-statement {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.transparency-statement p {
+  margin: 0;
 }
 
 .evidence-provenance {
@@ -1454,4 +1655,23 @@ main.page {
 .intel-card-low {
   border-color: #fecaca;
   background: #fef2f2;
+}
+
+@media (max-width: 520px) {
+  .report {
+    overflow-x: hidden;
+  }
+
+  .timeline-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .badge-help-panel {
+    max-width: 100%;
+  }
+
+  .trust-def-item dt {
+    word-break: break-word;
+  }
 }

@@ -1,5 +1,8 @@
 import { EventTimeline } from "@/components/EventTimeline";
 import { SourceBanner } from "@/components/SourceBanner";
+import { TransparencyStatement } from "@/components/TransparencyStatement";
+import { TrustCenter } from "@/components/TrustCenter";
+import { VerificationStatus } from "@/components/VerificationStatus";
 import { VehicleIntelligencePanel } from "@/components/VehicleIntelligence";
 import { VehiclePhotos } from "@/components/VehiclePhotos";
 import type { VehicleReportData } from "@/lib/vehicle-report";
@@ -120,9 +123,15 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
         <h3 id="history-heading" className="report-section-title">
           Event history
         </h3>
-        <p className="report-section-lead">Newest events first. Each row shows date, mileage, and reporting source.</p>
+        <p className="report-section-lead">
+          Newest events first. Tap provenance or confidence badges on any item for a short explanation.
+        </p>
         <EventTimeline events={vehicle.events} />
       </section>
+
+      <TrustCenter />
+      <VerificationStatus />
+      <TransparencyStatement />
 
       <div className="cta-muted">
         <strong>Request full report</strong> - coming later; this MVP shows free sample data only.

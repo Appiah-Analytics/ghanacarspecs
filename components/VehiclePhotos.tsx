@@ -27,9 +27,8 @@ export function VehiclePhotos({ photos }: Props) {
         government records.
       </p>
       <p className="report-section-lead">
-        Sample photos linked to this local GhanaCarSpecs record. Each item shows provenance and confidence badges —
-        not DVLA, police, insurer, or other official Ghana evidence unless explicitly labeled and integrated in the
-        future.
+        Sample photos linked to this local GhanaCarSpecs record. Tap provenance or confidence badges on each item for
+        what they mean. See the trust center below for full definitions.
       </p>
 
       {items.length === 0 ? (

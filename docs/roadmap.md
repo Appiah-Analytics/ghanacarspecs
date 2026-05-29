@@ -19,6 +19,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 13 | Evidence confidence/provenance presentation | Done |
 | 14 | Admin image upload (Vercel Blob) | Done |
 | 16 | Evidence lifecycle + moderation controls | Done |
+| 17 | Public trust UX and transparency layer | Done |
 
 ---
 
@@ -138,3 +139,12 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Admin recent activity section on vehicle manage page
 - [x] Moderation guidance copy on admin page
 - [x] `docs/evidence_lifecycle_management.md`
+
+## Phase 17 — Public trust UX and transparency layer
+
+- [x] `TrustCenter` on public vehicle reports (confidence, provenance, visibility rules)
+- [x] Expandable `ConfidenceHelp` and `ProvenanceHelp` on evidence badges
+- [x] `VerificationStatus` and `TransparencyStatement` on reports
+- [x] Badge consistency and mobile-friendly layout adjustments
+- [x] `docs/public_trust_and_transparency.md`
+- [ ] Official registry integrations (future — unchanged scope)

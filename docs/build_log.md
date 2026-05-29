@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-28 (phase 16 evidence lifecycle management; runtime/environment debugging documentation)  
+**Last updated:** 2026-05-29 (phase 17 public trust UX and transparency layer)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,51 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 17 — Public trust UX and transparency layer
+
+### Goal
+
+Improve public trust, clarity, and transparency on vehicle reports without changing evidence lifecycle logic, moderation workflow, audit logging, or database schema.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Trust UI | `components/TrustCenter.tsx`, `components/ConfidenceHelp.tsx`, `components/ProvenanceHelp.tsx`, `components/VerificationStatus.tsx`, `components/TransparencyStatement.tsx` |
+| Content | `lib/trust-content.ts` |
+| Integration | `components/VehicleReport.tsx`, `components/EvidenceBadges.tsx`, `components/VehiclePhotos.tsx` |
+| Styles | `app/globals.css` (badge help panels, trust center, verification lists, mobile tweaks) |
+| Docs | `docs/public_trust_and_transparency.md`, `README.md`, `docs/roadmap.md`, `docs/project_handoff_master.md`, `docs/build_log.md` |
+
+### Behavior implemented
+
+- **Trust center** on public reports: confidence levels, provenance categories, visibility rules.
+- **Expandable badges:** tap provenance/confidence on photos and events for plain-language help.
+- **Verification status:** current capabilities vs not-yet-available integrations.
+- **Transparency statement** at bottom of reports.
+- **VERIFIED** explicitly documented as not legal/government certification.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual: vehicle report — trust center, badge help, verification section, transparency copy, mobile layout
+
+### Known limitations
+
+- Help uses native `<details>` (no hover tooltips on desktop).
+- External NHTSA decode page does not include full trust center (local reports only).
+
+### Next recommended step
+
+- Optional link from homepage/demo disclaimer to trust documentation.
+- Partner-specific provenance copy when official feeds are integrated.
+
+---
+
+Phase 17 Public Trust UX and Transparency Layer implemented.
 
 ---
 
