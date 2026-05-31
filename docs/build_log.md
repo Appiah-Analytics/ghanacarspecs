@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 17 public trust UX and transparency layer)  
+**Last updated:** 2026-05-29 (phase 18 CSV shared event write path)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,48 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 18 — Shared vehicle event write path (CSV + admin)
+
+### Goal
+
+Align CSV ingestion with Phase 16 evidence lifecycle and audit architecture using one shared event creation helper — before import preview, duplicate reports, or quality scoring.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Shared write | `lib/vehicle-event-write.ts` |
+| Admin events | `lib/admin-record-mutations.ts` (`createAdminVehicleEvent` delegates to helper) |
+| CSV ingest | `lib/csv-ingest.ts` (per-row helper inside transaction; `adminIdentifier` parameter) |
+| API | `app/api/admin/ingest/route.ts` (passes `getAdminIdentifierFromRequest`) |
+| Docs | `docs/data_acquisition_and_import_quality.md`, `README.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- `createVehicleEventRecord()` supports `importedFrom: "admin" | "csv"`.
+- CSV events: `LOW` / `OTHER` / `PUBLISHED` with row-level audit logs.
+- Admin manual create: unchanged validation; still requires `sourceSystem`; keeps `addedFrom: "admin"` in payload.
+- Replaced `vehicleEvent.createMany` with per-row helper calls in existing transaction.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+
+### Known limitations
+
+- No import preview or duplicate detection yet.
+- Re-uploading the same CSV still inserts duplicate events.
+
+### Next recommended step
+
+- Import preview (dry-run) and duplicate report before commit.
+
+---
+
+Phase 18 foundation: CSV ingestion aligned with shared evidence event write/audit path.
 
 ---
 

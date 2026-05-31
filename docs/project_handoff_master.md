@@ -452,6 +452,7 @@ npm run db:seed:postgres
 | `docs/evidence_confidence_and_provenance.md` | Trust model and badge semantics |
 | `docs/evidence_lifecycle_management.md` | Moderation lifecycle, soft delete rules, audit logging |
 | `docs/public_trust_and_transparency.md` | Public trust UX, transparency principles, verification limits |
+| `docs/data_acquisition_and_import_quality.md` | CSV ingest, shared event write path, import quality principles |
 
 ---
 

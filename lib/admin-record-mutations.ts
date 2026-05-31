@@ -6,13 +6,10 @@ import {
   ProvenanceType,
   type Prisma,
 } from "@prisma/client";
-import {
-  pickEventAuditSnapshot,
-  pickPhotoAuditSnapshot,
-  writeAuditLog,
-} from "@/lib/audit-log";
+import { pickEventAuditSnapshot, pickPhotoAuditSnapshot, writeAuditLog } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { createVehicleEventRecord } from "@/lib/vehicle-event-write";
 
 export type AdminMutationError = { field?: string; message: string };
 
@@ -181,31 +178,18 @@ export async function createAdminVehicleEvent(
     return { ok: false, error: { field: "sourceSystem", message: "Source system is required." } };
   }
 
-  const rawPayload: Prisma.InputJsonValue = {
-    addedFrom: "admin",
-    ...(input.description?.trim() ? { description: input.description.trim() } : {}),
-  };
-
-  const event = await prisma.vehicleEvent.create({
-    data: {
-      vehicleId,
-      eventType: input.eventType,
-      eventDate: input.eventDate,
-      mileage: input.mileage ?? null,
-      sourceSystem,
-      rawPayload,
-      confidenceLevel: input.confidenceLevel,
-      provenanceType: input.provenanceType,
-      status: input.status ?? EvidenceStatus.PUBLISHED,
-    },
-  });
-
-  writeAuditLog({
+  const event = await createVehicleEventRecord(prisma, {
+    vehicleId,
+    eventType: input.eventType,
+    eventDate: input.eventDate,
+    mileage: input.mileage ?? null,
+    sourceSystem,
+    description: input.description,
+    confidenceLevel: input.confidenceLevel,
+    provenanceType: input.provenanceType,
+    status: input.status ?? EvidenceStatus.PUBLISHED,
+    importedFrom: "admin",
     adminIdentifier: input.adminIdentifier ?? "admin:unknown",
-    entityType: "vehicle_event",
-    entityId: event.id,
-    action: "create",
-    after: pickEventAuditSnapshot(event),
   });
 
   logger.info("create admin vehicle event succeeded", { vehicleId, eventId: event.id });

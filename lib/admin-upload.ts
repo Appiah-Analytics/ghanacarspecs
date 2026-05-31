@@ -66,7 +66,32 @@ export function buildEvidenceBlobPath(vehicleId: string, filename: string): stri
 
 export type UploadValidationResult = { ok: true } | { ok: false; error: string };
 
-export function validateImageUpload(file: File): UploadValidationResult {
+export type UploadedImageFile = {
+  name: string;
+  type: string;
+  size: number;
+  arrayBuffer: () => Promise<ArrayBuffer>;
+};
+
+export function getUploadedImageFile(value: FormDataEntryValue | null): UploadedImageFile | null {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+
+  const candidate = value as UploadedImageFile;
+  if (
+    typeof candidate.arrayBuffer !== "function" ||
+    typeof candidate.name !== "string" ||
+    typeof candidate.type !== "string" ||
+    typeof candidate.size !== "number"
+  ) {
+    return null;
+  }
+
+  return candidate;
+}
+
+export function validateImageUpload(file: UploadedImageFile): UploadValidationResult {
   if (!file.size) {
     return { ok: false, error: "File is empty." };
   }

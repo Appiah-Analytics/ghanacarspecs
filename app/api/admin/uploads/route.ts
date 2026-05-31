@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin-api";
 import {
   buildEvidenceBlobPath,
+  getUploadedImageFile,
   sanitizeUploadFilename,
   validateImageUpload,
 } from "@/lib/admin-upload";
@@ -52,8 +53,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Vehicle not found." }, { status: 404 });
   }
 
-  const fileField = formData.get("file");
-  if (!(fileField instanceof File)) {
+  const fileField = getUploadedImageFile(formData.get("file"));
+  if (!fileField) {
     requestLogger.warn("upload rejected missing file");
     return NextResponse.json({ ok: false, error: "Image file is required." }, { status: 400 });
   }
@@ -68,7 +69,8 @@ export async function POST(request: Request) {
   const pathname = buildEvidenceBlobPath(vehicleId, filename);
 
   try {
-    const blob = await put(pathname, fileField, {
+    const fileBody = await fileField.arrayBuffer();
+    const blob = await put(pathname, fileBody, {
       access: "public",
       contentType: fileField.type,
       addRandomSuffix: false,

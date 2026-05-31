@@ -260,7 +260,8 @@ It returns deployment environment, database status, blob configuration status, t
 - `app/api/admin/uploads/route.ts` — Admin image upload to Vercel Blob  
 - `app/api/admin/vehicles/[id]/events/route.ts` — Add `VehicleEvent` (admin)  
 - `lib/admin-upload.ts` — Upload validation and filename sanitization  
-- `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert  
+- `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert (via `lib/vehicle-event-write.ts`)
+- `lib/vehicle-event-write.ts` — shared VehicleEvent create + audit (admin UI and CSV ingest)  
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
@@ -326,6 +327,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/admin_record_management.md`](docs/admin_record_management.md) | Admin manage page: events & visual evidence URLs |
 | [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) | Trust model, enums, badges, future official feeds |
 | [`docs/public_trust_and_transparency.md`](docs/public_trust_and_transparency.md) | Public trust UX, confidence/provenance help, verification limits |
+| [`docs/data_acquisition_and_import_quality.md`](docs/data_acquisition_and_import_quality.md) | CSV ingest, shared event write path, import quality |
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |
 | [`docs/evidence_lifecycle_management.md`](docs/evidence_lifecycle_management.md) | Moderation states, soft delete rules, public visibility filters, audit logging |
 | [`docs/project_handoff_master.md`](docs/project_handoff_master.md) | Primary operational memory: architecture, workflows, debugging, deployment, roadmap |

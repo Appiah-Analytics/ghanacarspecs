@@ -1,5 +1,6 @@
-import { EventType, type Prisma } from "@prisma/client";
+import { ConfidenceLevel, EventType, EvidenceStatus, ProvenanceType, type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { createVehicleEventRecord } from "@/lib/vehicle-event-write";
 
 const REQUIRED_COLUMNS = ["vin", "make", "model", "year", "eventType", "eventDate"] as const;
 const OPTIONAL_COLUMNS = ["plateNumber", "chassisNumber", "mileage", "sourceSystem", "description"] as const;
@@ -297,7 +298,10 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
   return { validRows, errors };
 }
 
-export async function ingestVehicleEventsCsv(csvText: string): Promise<CsvIngestResult> {
+export async function ingestVehicleEventsCsv(
+  csvText: string,
+  adminIdentifier: string,
+): Promise<CsvIngestResult> {
   const rows = parseCsv(csvText);
   if (rows.length < 2) {
     return { ok: false, errors: [{ row: 1, message: "CSV must include a header row and at least one data row." }] };
@@ -369,16 +373,21 @@ export async function ingestVehicleEventsCsv(csvText: string): Promise<CsvIngest
       else vehiclesCreated += 1;
     }
 
-    await tx.vehicleEvent.createMany({
-      data: validRows.map((row) => ({
+    for (const row of validRows) {
+      await createVehicleEventRecord(tx, {
         vehicleId: vehicleIdByVin.get(row.vin) as string,
         eventType: row.eventType,
         eventDate: row.eventDate,
         mileage: row.mileage,
         sourceSystem: row.sourceSystem,
-        rawPayload: row.description ? { description: row.description, importedFrom: "csv" } : { importedFrom: "csv" },
-      })),
-    });
+        description: row.description,
+        confidenceLevel: ConfidenceLevel.LOW,
+        provenanceType: ProvenanceType.OTHER,
+        status: EvidenceStatus.PUBLISHED,
+        importedFrom: "csv",
+        adminIdentifier,
+      });
+    }
 
     return {
       vehiclesCreated,

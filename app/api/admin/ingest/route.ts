@@ -1,8 +1,38 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyAdminRequest } from "@/lib/admin-auth";
+import { getAdminIdentifierFromRequest } from "@/lib/audit-log";
 import { ingestVehicleEventsCsv } from "@/lib/csv-ingest";
 import { loggerForRequest } from "@/lib/logger";
+
+type UploadedCsvFile = {
+  name: string;
+  type?: string;
+  arrayBuffer: () => Promise<ArrayBuffer>;
+  text?: () => Promise<string>;
+};
+
+function getUploadedFile(value: FormDataEntryValue | null): UploadedCsvFile | null {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+
+  const candidate = value as UploadedCsvFile;
+  if (typeof candidate.arrayBuffer !== "function" || typeof candidate.name !== "string") {
+    return null;
+  }
+
+  return candidate;
+}
+
+async function readUploadedFileText(file: UploadedCsvFile): Promise<string> {
+  if (typeof file.text === "function") {
+    return file.text();
+  }
+
+  const buffer = await file.arrayBuffer();
+  return new TextDecoder().decode(buffer);
+}
 
 export async function POST(request: Request) {
   const requestLogger = loggerForRequest(request, { route: "/api/admin/ingest" });
@@ -23,8 +53,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, errors: [{ row: 1, message: "Expected multipart form data." }] }, { status: 400 });
   }
 
-  const file = formData.get("file");
-  if (!(file instanceof File)) {
+  const file = getUploadedFile(formData.get("file"));
+  if (!file) {
     requestLogger.warn("csv ingest missing file");
     return NextResponse.json({ ok: false, errors: [{ row: 1, message: "CSV file is required." }] }, { status: 400 });
   }
@@ -34,8 +64,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, errors: [{ row: 1, message: "Uploaded file must be a .csv file." }] }, { status: 400 });
   }
 
-  const text = await file.text();
-  const result = await ingestVehicleEventsCsv(text);
+  const text = await readUploadedFileText(file);
+  const adminIdentifier = getAdminIdentifierFromRequest(request);
+  const result = await ingestVehicleEventsCsv(text, adminIdentifier);
   requestLogger.info("csv ingest completed", {
     ok: result.ok,
     rowsProcessed: "rowsProcessed" in result ? result.rowsProcessed : undefined,

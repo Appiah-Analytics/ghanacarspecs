@@ -20,6 +20,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 14 | Admin image upload (Vercel Blob) | Done |
 | 16 | Evidence lifecycle + moderation controls | Done |
 | 17 | Public trust UX and transparency layer | Done |
+| 18 | Shared vehicle event write path (CSV + admin audit alignment) | Done |
 
 ---
 
@@ -148,3 +149,12 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Badge consistency and mobile-friendly layout adjustments
 - [x] `docs/public_trust_and_transparency.md`
 - [ ] Official registry integrations (future — unchanged scope)
+
+## Phase 18 — Shared vehicle event write path
+
+- [x] `lib/vehicle-event-write.ts` — shared `createVehicleEventRecord()`
+- [x] Admin event create uses shared helper (audit preserved)
+- [x] CSV ingest uses shared helper per row (LOW / OTHER / PUBLISHED, audit per event)
+- [x] Ingest API passes admin identifier into CSV pipeline
+- [x] `docs/data_acquisition_and_import_quality.md`
+- [ ] Import preview / duplicate detection (Phase 19+)
