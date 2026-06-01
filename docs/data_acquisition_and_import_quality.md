@@ -39,14 +39,63 @@ Admin identifier for CSV rows comes from `getAdminIdentifierFromRequest()` on th
 
 ---
 
-## CSV validation (unchanged contract)
+## CSV validation
 
-- All-or-nothing: any row error → no database writes.
+- Hard row errors still block import (all-or-nothing).
 - Required columns: `vin`, `make`, `model`, `year`, `eventType`, `eventDate`.
 - Optional: `plateNumber`, `chassisNumber`, `mileage`, `sourceSystem`, `description`.
-- In-file VIN profile consistency and duplicate chassis checks within the upload file.
+- In-file VIN profile consistency (make/model/year/plate/chassis conflicts remain errors).
+- Cross-VIN plate/chassis duplicates in-file or in DB are **warnings only** (import proceeds).
 
-Upload UI and JSON response shape are unchanged.
+### API response (Phase 18.2)
+
+Successful and failed ingest responses include:
+
+- `report` — `{ rowsProcessed, imported, skipped, warnings[], errors[] }`
+- `quality` — `{ score: 0–100, status: Excellent | Good | Needs Review | Poor }`
+- `summary` — unchanged on success (`vehiclesCreated`, `vehiclesUpdated`, `eventsInserted`, `rowsProcessed`)
+
+---
+
+## Duplicate detection (`lib/duplicate-detection.ts`)
+
+| Confidence | Rule |
+|------------|------|
+| **High** | VIN in upload already exists in database |
+| **Possible** | Plate or chassis in upload matches a different VIN in DB |
+| **Possible** | Same plate or chassis on different VINs within the upload file |
+
+Imports are **not blocked** by duplicate warnings. No automatic merge or deduplication.
+
+---
+
+## Import quality score (`lib/import-quality-score.ts`)
+
+Score starts at 100 and applies penalties (normalized per data row):
+
+| Signal | Penalty weight |
+|--------|----------------|
+| Missing chassis (per row) | 3 |
+| Missing make/model (per row) | 15 |
+| Invalid/skipped row | 20 |
+| High-confidence duplicate VIN (unique value) | 12 |
+| Possible duplicate plate (unique value) | 6 |
+| Possible duplicate chassis (unique value) | 6 |
+
+| Score | Status |
+|-------|--------|
+| 90–100 | Excellent |
+| 75–89 | Good |
+| 50–74 | Needs Review |
+| &lt; 50 | Poor |
+
+---
+
+## Import history (`lib/import-history.ts`)
+
+- Stored at `prisma/data/import-history.json` (gitignored with `prisma/data/`).
+- Appends on **successful** imports only; keeps last 50 entries, UI shows last 10.
+- Fields: timestamp, filename, rowsProcessed, imported, skipped, warning count, qualityScore.
 
 ---
 
@@ -56,16 +105,15 @@ Upload UI and JSON response shape are unchanged.
 2. **Transactional vehicle upsert** — vehicles upserted once per VIN profile, then events created via shared helper inside the same transaction.
 3. **Auditable creates** — each CSV event is individually logged (not a silent bulk insert).
 4. **Explicit trust metadata** — CSV rows do not inherit ambiguous defaults without audit trail.
+5. **Warn on duplicates** — operators see duplicate signals without blocking legitimate multi-event files.
 
 ---
 
 ## Not implemented yet (planned follow-ups)
 
 - Import preview (dry-run UI before commit)
-- Duplicate detection / idempotent re-import
-- Import quality scoring or row-level warnings report
+- Idempotent re-import / automatic deduplication
 - Optional CSV columns for `provenanceType` / `confidenceLevel`
-- Pre-flight DB chassis/plate conflict checks before transaction
 
 ---
 

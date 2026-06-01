@@ -115,6 +115,8 @@ Admin login (/admin/login)
 
 **Dashboard data health (Phase 18.1):** `getAdminDataHealth()` in `lib/admin-dashboard.ts` reports vehicle/event/photo totals, vehicles with plate or chassis populated, and published/draft/archived evidence counts (sum of `VehicleEvent` + `VehiclePhoto` by `status`). Vehicle search uses server-side `contains` filters on `vin`, `plateNumber`, and `chassisNumber` via `/admin?q=`.
 
+**CSV import quality (Phase 18.2):** `ingestVehicleEventsCsv()` runs `detectImportDuplicates()` before commit (warnings only), returns `report` + `quality` in the API JSON, and appends successful runs to `prisma/data/import-history.json`. See [`docs/data_acquisition_and_import_quality.md`](data_acquisition_and_import_quality.md).
+
 ### Upload flow
 
 ```text

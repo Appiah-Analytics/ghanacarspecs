@@ -16,20 +16,50 @@ type IngestSummary = {
   rowsProcessed: number;
 };
 
+type ImportValidationReport = {
+  rowsProcessed: number;
+  imported: number;
+  skipped: number;
+  warnings: IngestError[];
+  errors: IngestError[];
+};
+
+type ImportQualityResult = {
+  score: number;
+  status: "Excellent" | "Good" | "Needs Review" | "Poor";
+};
+
 type IngestResponse =
-  | { ok: true; summary: IngestSummary }
-  | { ok: false; errors: IngestError[] };
+  | { ok: true; summary: IngestSummary; report: ImportValidationReport; quality: ImportQualityResult }
+  | { ok: false; errors: IngestError[]; report: ImportValidationReport; quality: ImportQualityResult };
+
+function qualityClassName(status: ImportQualityResult["status"]): string {
+  switch (status) {
+    case "Excellent":
+      return "import-quality-excellent";
+    case "Good":
+      return "import-quality-good";
+    case "Needs Review":
+      return "import-quality-review";
+    default:
+      return "import-quality-poor";
+  }
+}
 
 export function CsvUploadForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<IngestSummary | null>(null);
+  const [report, setReport] = useState<ImportValidationReport | null>(null);
+  const [quality, setQuality] = useState<ImportQualityResult | null>(null);
   const [errors, setErrors] = useState<IngestError[]>([]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setSummary(null);
+    setReport(null);
+    setQuality(null);
     setErrors([]);
 
     const form = e.currentTarget;
@@ -53,9 +83,13 @@ export function CsvUploadForm() {
         return;
       }
 
+      setReport(data.report);
+      setQuality(data.quality);
+
       if (data.ok) {
         setSummary(data.summary);
         form.reset();
+        router.refresh();
         return;
       }
 
@@ -71,8 +105,8 @@ export function CsvUploadForm() {
     <section className="admin-card" aria-labelledby="csv-upload-heading">
       <h2 id="csv-upload-heading">Upload CSV</h2>
       <p className="admin-help">
-        Requires an admin session (sign in at /admin/login). The file is validated first; if any row has an error, no
-        records are written.
+        Requires an admin session (sign in at /admin/login). Rows are validated first; hard errors block the import.
+        Duplicate plate/chassis signals are reported as warnings and do not block import.
       </p>
 
       <form className="csv-upload-form" onSubmit={onSubmit}>
@@ -85,27 +119,76 @@ export function CsvUploadForm() {
         </button>
       </form>
 
-      {summary ? (
-        <div className="alert alert-success" role="status">
-          <p className="alert-title">CSV imported successfully</p>
+      {report ? (
+        <div className="import-results-panel" role="status">
+          <h3 className="import-results-title">Import summary</h3>
           <dl className="summary-grid">
             <div>
-              <dt>Vehicles created</dt>
-              <dd>{summary.vehiclesCreated}</dd>
-            </div>
-            <div>
-              <dt>Vehicles updated</dt>
-              <dd>{summary.vehiclesUpdated}</dd>
-            </div>
-            <div>
-              <dt>Events inserted</dt>
-              <dd>{summary.eventsInserted}</dd>
-            </div>
-            <div>
               <dt>Rows processed</dt>
-              <dd>{summary.rowsProcessed}</dd>
+              <dd>{report.rowsProcessed}</dd>
+            </div>
+            <div>
+              <dt>Imported</dt>
+              <dd>{report.imported}</dd>
+            </div>
+            <div>
+              <dt>Skipped</dt>
+              <dd>{report.skipped}</dd>
+            </div>
+            <div>
+              <dt>Warnings</dt>
+              <dd>{report.warnings.length}</dd>
+            </div>
+            <div>
+              <dt>Errors</dt>
+              <dd>{report.errors.length}</dd>
             </div>
           </dl>
+
+          {quality ? (
+            <div className={`import-quality ${qualityClassName(quality.status)}`}>
+              <p className="import-quality-score">
+                Quality score: <strong>{quality.score}</strong>
+              </p>
+              <p className="import-quality-status">Status: {quality.status}</p>
+            </div>
+          ) : null}
+
+          {summary ? (
+            <dl className="summary-grid import-vehicle-summary">
+              <div>
+                <dt>Vehicles created</dt>
+                <dd>{summary.vehiclesCreated}</dd>
+              </div>
+              <div>
+                <dt>Vehicles updated</dt>
+                <dd>{summary.vehiclesUpdated}</dd>
+              </div>
+              <div>
+                <dt>Events inserted</dt>
+                <dd>{summary.eventsInserted}</dd>
+              </div>
+            </dl>
+          ) : null}
+
+          {report.warnings.length > 0 ? (
+            <div className="alert alert-warning" role="status">
+              <p className="alert-title">Warnings</p>
+              <ul className="error-list">
+                {report.warnings.map((warning, index) => (
+                  <li key={`warn-${warning.row}-${warning.field ?? "row"}-${index}`}>
+                    {warning.row > 0 ? (
+                      <>
+                        <strong>Row {warning.row}</strong>
+                        {warning.field ? ` (${warning.field})` : ""}:{" "}
+                      </>
+                    ) : null}
+                    {warning.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -121,6 +204,13 @@ export function CsvUploadForm() {
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {summary ? (
+        <div className="alert alert-success" role="status">
+          <p className="alert-title">CSV imported successfully</p>
+          <p className="alert-body">Review warnings above if any duplicate signals were detected.</p>
         </div>
       ) : null}
     </section>

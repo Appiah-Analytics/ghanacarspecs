@@ -134,12 +134,7 @@ JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,IMPORT,2024-01-
 JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Hybrid battery inspected
 ```
 
-**Expected:** The upload page shows a success summary:
-
-- Vehicles created
-- Vehicles updated
-- Events inserted
-- Rows processed
+**Expected:** The upload page shows an **import summary** (rows processed, imported, skipped, warnings, errors), an **import quality score** (0–100 with status), vehicle/event counts, duplicate **warnings** when applicable, and **recent import history** (last 10 uploads). Hard validation errors still block the import; duplicate plate/chassis signals are warnings only.
 
 Then test the imported record from the frontend lookup:
 
@@ -164,7 +159,8 @@ You should see a **Local GhanaCarSpecs record** with the imported vehicle specs 
 - `eventDate` must be a valid date, for example `2024-05-03`.
 - `mileage` is optional, but when present must be a whole number.
 - If the same VIN appears in multiple rows, `make`, `model`, `year`, and non-empty `plateNumber` must not conflict.
-- Validation is all-or-nothing: if any row has an error, no database records are written.
+- Validation is all-or-nothing for **errors**: if any row has a hard error, no database records are written.
+- Duplicate VIN (already in DB), plate, or chassis matches produce **warnings**; the import still runs when there are no errors.
 
 Example conflict to test validation:
 
@@ -261,6 +257,10 @@ It returns deployment environment, database status, blob configuration status, t
 - `app/api/admin/vehicles/[id]/events/route.ts` — Add `VehicleEvent` (admin)  
 - `lib/admin-upload.ts` — Upload validation and filename sanitization  
 - `lib/csv-ingest.ts` — CSV parsing, validation, vehicle upsert, event insert (via `lib/vehicle-event-write.ts`)
+- `lib/duplicate-detection.ts` — CSV/DB duplicate warnings (VIN, plate, chassis)
+- `lib/import-validation.ts` — structured import report (`rowsProcessed`, `imported`, `skipped`, warnings, errors)
+- `lib/import-quality-score.ts` — 0–100 import quality score and status label
+- `lib/import-history.ts` — append/read recent imports (`prisma/data/import-history.json`)
 - `lib/vehicle-event-write.ts` — shared VehicleEvent create + audit (admin UI and CSV ingest)  
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  

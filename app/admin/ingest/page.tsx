@@ -1,12 +1,18 @@
 import { AdminNav } from "@/components/AdminNav";
 import { AdminSignOut } from "@/components/AdminSignOut";
 import { CsvUploadForm } from "@/components/CsvUploadForm";
+import { ImportHistoryPanel } from "@/components/ImportHistoryPanel";
+import { getRecentImportHistory } from "@/lib/import-history";
+
+export const dynamic = "force-dynamic";
 
 const CSV_TEMPLATE = `vin,plateNumber,chassisNumber,make,model,year,eventType,eventDate,mileage,sourceSystem,description
 JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,IMPORT,2024-01-12,87000,Tema Port,Imported from Japan
 JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Hybrid battery inspected`;
 
-export default function AdminIngestPage() {
+export default async function AdminIngestPage() {
+  const importHistory = await getRecentImportHistory(10);
+
   return (
     <main className="page">
       <div className="back-row">
@@ -23,6 +29,8 @@ export default function AdminIngestPage() {
       </section>
 
       <CsvUploadForm />
+
+      <ImportHistoryPanel entries={importHistory} />
 
       <section className="admin-card" aria-labelledby="csv-template-heading">
         <h2 id="csv-template-heading">CSV template</h2>
@@ -48,7 +56,11 @@ export default function AdminIngestPage() {
           <li>Event date must be a valid date, for example <span className="mono">2024-05-03</span>.</li>
           <li>Mileage is optional, but when present must be a whole number.</li>
           <li>Rows with the same VIN must not conflict on make, model, year, plate, or chassis number.</li>
-          <li>The same chassis number cannot appear on two different VINs in one file.</li>
+          <li>
+            The same plate or chassis on different VINs in one file produces a <strong>warning</strong> (import still
+            proceeds).
+          </li>
+          <li>Existing VIN, plate, or chassis matches in the database are reported as duplicate warnings.</li>
         </ul>
       </section>
     </main>

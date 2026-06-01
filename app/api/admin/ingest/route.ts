@@ -66,10 +66,13 @@ export async function POST(request: Request) {
 
   const text = await readUploadedFileText(file);
   const adminIdentifier = getAdminIdentifierFromRequest(request);
-  const result = await ingestVehicleEventsCsv(text, adminIdentifier);
+  const result = await ingestVehicleEventsCsv(text, adminIdentifier, { filename: file.name });
   requestLogger.info("csv ingest completed", {
     ok: result.ok,
-    rowsProcessed: "rowsProcessed" in result ? result.rowsProcessed : undefined,
+    rowsProcessed: result.report.rowsProcessed,
+    imported: result.report.imported,
+    warnings: result.report.warnings.length,
+    qualityScore: result.quality.score,
   });
   return NextResponse.json(result, { status: result.ok ? 200 : 400 });
 }

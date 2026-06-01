@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 18.1 admin search and data health)  
+**Last updated:** 2026-05-29 (phase 18.2 import quality and duplicate detection)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,52 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 18.2 — Import quality, duplicate detection, and import history
+
+### Goal
+
+Improve CSV import operational visibility with duplicate warnings, structured validation reports, quality scoring, and lightweight import history — without schema migrations or import preview.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Duplicate detection | `lib/duplicate-detection.ts` |
+| Validation report | `lib/import-validation.ts` |
+| Quality score | `lib/import-quality-score.ts` |
+| Import history | `lib/import-history.ts` (`prisma/data/import-history.json`) |
+| Ingest | `lib/csv-ingest.ts`, `app/api/admin/ingest/route.ts` |
+| UI | `components/CsvUploadForm.tsx`, `components/ImportHistoryPanel.tsx`, `app/admin/ingest/page.tsx`, `app/globals.css` |
+| Docs | `README.md`, `docs/data_acquisition_and_import_quality.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- Pre-import duplicate scan (DB + in-file plate/chassis); warnings only, import proceeds.
+- API returns `report` + `quality` on success and validation failure.
+- Successful imports append to JSON import history (last 10 shown on ingest page).
+- Cross-VIN chassis conflict downgraded from hard error to warning.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual CSV uploads (valid, duplicate VIN, duplicate plate/chassis)
+
+### Known limitations
+
+- No import preview / dry-run UI.
+- Re-uploading the same CSV still inserts duplicate events.
+- Import history is local JSON (not shared across serverless instances).
+
+### Next recommended step
+
+- Import preview (dry-run) before commit.
+
+---
+
+Phase 18.2: duplicate detection, import quality scoring, validation reporting, and import history implemented.
 
 ---
 

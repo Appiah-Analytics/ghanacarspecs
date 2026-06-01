@@ -1,4 +1,12 @@
 import { ConfidenceLevel, EventType, EvidenceStatus, ProvenanceType, type Prisma } from "@prisma/client";
+import { detectImportDuplicates } from "@/lib/duplicate-detection";
+import { appendImportHistory } from "@/lib/import-history";
+import {
+  buildImportValidationReport,
+  duplicateFindingsToWarnings,
+  type ImportValidationReport,
+} from "@/lib/import-validation";
+import { calculateImportQualityScore, type ImportQualityResult } from "@/lib/import-quality-score";
 import { prisma } from "@/lib/prisma";
 import { createVehicleEventRecord } from "@/lib/vehicle-event-write";
 
@@ -20,8 +28,8 @@ export type CsvIngestSummary = {
 };
 
 export type CsvIngestResult =
-  | { ok: true; summary: CsvIngestSummary }
-  | { ok: false; errors: CsvIngestError[] };
+  | { ok: true; summary: CsvIngestSummary; report: ImportValidationReport; quality: ImportQualityResult }
+  | { ok: false; errors: CsvIngestError[]; report: ImportValidationReport; quality: ImportQualityResult };
 
 type CanonicalColumn = (typeof ALL_COLUMNS)[number];
 
@@ -267,18 +275,6 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
       });
     }
 
-    if (chassisNumber) {
-      for (const [otherVin, profile] of profileByVin) {
-        if (otherVin !== vin && profile.chassisNumber === chassisNumber) {
-          errors.push({
-            row: rowNumber,
-            field: "chassisNumber",
-            message: `Chassis number ${chassisNumber} is already used for VIN ${otherVin} in this file.`,
-          });
-        }
-      }
-    }
-
     validRows.push({
       rowNumber,
       vin,
@@ -298,17 +294,82 @@ function validateRows(rows: string[][]): { validRows: ValidatedCsvRow[]; errors:
   return { validRows, errors };
 }
 
+function countRowsWithErrors(errors: CsvIngestError[]): number {
+  const rows = new Set<number>();
+  for (const error of errors) {
+    if (error.row > 1) rows.add(error.row);
+  }
+  return rows.size;
+}
+
+function toValidationErrors(errors: CsvIngestError[]) {
+  return errors.map((error) => ({
+    row: error.row,
+    field: error.field,
+    message: error.message,
+  }));
+}
+
 export async function ingestVehicleEventsCsv(
   csvText: string,
   adminIdentifier: string,
+  options?: { filename?: string },
 ): Promise<CsvIngestResult> {
   const rows = parseCsv(csvText);
+  const totalDataRows = Math.max(0, rows.length - 1);
+  const filename = options?.filename?.trim() || "upload.csv";
+
   if (rows.length < 2) {
-    return { ok: false, errors: [{ row: 1, message: "CSV must include a header row and at least one data row." }] };
+    const errors = [{ row: 1, message: "CSV must include a header row and at least one data row." }];
+    const report = buildImportValidationReport({
+      totalDataRows: 0,
+      imported: 0,
+      skipped: 0,
+      warnings: [],
+      errors: toValidationErrors(errors),
+    });
+    const quality = calculateImportQualityScore({
+      totalDataRows: 0,
+      rows: [],
+      duplicateFindings: [],
+      invalidRowCount: 1,
+    });
+    return { ok: false, errors, report, quality };
   }
 
   const { validRows, errors } = validateRows(rows);
-  if (errors.length > 0) return { ok: false, errors };
+  const skipped = countRowsWithErrors(errors);
+  const duplicateFindings = await detectImportDuplicates(
+    validRows.map((row) => ({
+      rowNumber: row.rowNumber,
+      vin: row.vin,
+      plateNumber: row.plateNumber,
+      chassisNumber: row.chassisNumber,
+    })),
+    prisma,
+  );
+  const warnings = duplicateFindingsToWarnings(duplicateFindings);
+  const quality = calculateImportQualityScore({
+    totalDataRows,
+    rows: validRows,
+    duplicateFindings,
+    invalidRowCount: skipped,
+  });
+
+  if (errors.length > 0) {
+    return {
+      ok: false,
+      errors,
+      report: buildImportValidationReport({
+        totalDataRows,
+        imported: 0,
+        skipped,
+        warnings,
+        errors: toValidationErrors(errors),
+      }),
+      quality,
+    };
+  }
 
   const profiles = new Map<string, VehicleProfile>();
   for (const row of validRows) {
@@ -397,5 +458,22 @@ export async function ingestVehicleEventsCsv(
     };
   });
 
-  return { ok: true, summary };
+  const report = buildImportValidationReport({
+    totalDataRows,
+    imported: summary.eventsInserted,
+    skipped: 0,
+    warnings,
+    errors: [],
+  });
+
+  await appendImportHistory({
+    filename,
+    rowsProcessed: report.rowsProcessed,
+    imported: report.imported,
+    skipped: report.skipped,
+    warnings: report.warnings.length,
+    qualityScore: quality.score,
+  });
+
+  return { ok: true, summary, report, quality };
 }
