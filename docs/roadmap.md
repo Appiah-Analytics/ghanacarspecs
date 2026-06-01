@@ -21,6 +21,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 16 | Evidence lifecycle + moderation controls | Done |
 | 17 | Public trust UX and transparency layer | Done |
 | 18 | Shared vehicle event write path (CSV + admin audit alignment) | Done |
+| 18.1 | Admin search and data health dashboard | Done |
 
 ---
 

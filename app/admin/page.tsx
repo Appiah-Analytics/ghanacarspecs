@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { AdminNav } from "@/components/AdminNav";
 import { AdminSignOut } from "@/components/AdminSignOut";
-import { getAdminDashboardSummary, getAdminVehicleRows } from "@/lib/admin-dashboard";
+import {
+  getAdminDashboardSummary,
+  getAdminDataHealth,
+  getAdminVehicleRows,
+} from "@/lib/admin-dashboard";
 
 export const dynamic = "force-dynamic";
+
+type AdminDashboardPageProps = {
+  searchParams: Promise<{ q?: string | string[] }>;
+};
 
 function formatDate(date: Date | null): string {
   if (!date) return "—";
@@ -18,8 +26,17 @@ function displayOptional(value: string | null): string {
   return value?.trim() ? value : "—";
 }
 
-export default async function AdminDashboardPage() {
-  const [summary, vehicles] = await Promise.all([getAdminDashboardSummary(), getAdminVehicleRows()]);
+export default async function AdminDashboardPage({ searchParams }: AdminDashboardPageProps) {
+  const params = await searchParams;
+  const rawQuery = params.q;
+  const searchQuery =
+    typeof rawQuery === "string" ? rawQuery.trim() : Array.isArray(rawQuery) ? rawQuery[0]?.trim() ?? "" : "";
+
+  const [summary, health, vehicles] = await Promise.all([
+    getAdminDashboardSummary(),
+    getAdminDataHealth(),
+    getAdminVehicleRows(searchQuery || undefined),
+  ]);
 
   const statCards = [
     { label: "Total vehicles", value: summary.totalVehicles },
@@ -61,12 +78,82 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
+      <section className="admin-stats" aria-labelledby="data-health-heading">
+        <h2 id="data-health-heading" className="admin-section-title">
+          Data health
+        </h2>
+        <div className="admin-stats-grid">
+          <article className="admin-stat-card">
+            <h3>Vehicles</h3>
+            <p className="admin-stat-value">{health.vehicles.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Events</h3>
+            <p className="admin-stat-value">{health.events.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Photos</h3>
+            <p className="admin-stat-value">{health.photos.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Vehicles with VIN</h3>
+            <p className="admin-stat-value">{health.vehiclesWithVin.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Vehicles with plate</h3>
+            <p className="admin-stat-value">{health.vehiclesWithPlateNumber.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Vehicles with chassis</h3>
+            <p className="admin-stat-value">{health.vehiclesWithChassisNumber.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Published evidence</h3>
+            <p className="admin-stat-value">{health.publishedEvidence.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Draft evidence</h3>
+            <p className="admin-stat-value">{health.draftEvidence.toLocaleString()}</p>
+          </article>
+          <article className="admin-stat-card">
+            <h3>Archived evidence</h3>
+            <p className="admin-stat-value">{health.archivedEvidence.toLocaleString()}</p>
+          </article>
+        </div>
+      </section>
+
       <section className="admin-card" aria-labelledby="vehicles-heading">
         <h2 id="vehicles-heading">Vehicles</h2>
+        <form className="admin-search" method="get" role="search">
+          <label htmlFor="admin-vehicle-search">Search by VIN, plate, or chassis</label>
+          <div className="admin-search-row">
+            <input
+              id="admin-vehicle-search"
+              type="search"
+              name="q"
+              defaultValue={searchQuery}
+              placeholder="Partial match, case insensitive"
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <button type="submit" className="btn btn-primary">
+              Search
+            </button>
+            {searchQuery ? (
+              <Link href="/admin" className="btn btn-secondary">
+                Clear
+              </Link>
+            ) : null}
+          </div>
+        </form>
         <p className="admin-help">
           {vehicles.length === 0
-            ? "No vehicles in the database yet. Use CSV ingestion to add records."
-            : `${vehicles.length} vehicle(s) in the local database. Select a row to open the full report.`}
+            ? searchQuery
+              ? `No vehicles match “${searchQuery}”. Try a shorter or different term.`
+              : "No vehicles in the database yet. Use CSV ingestion to add records."
+            : searchQuery
+              ? `${vehicles.length} vehicle(s) matching “${searchQuery}”. Select a row to open the full report.`
+              : `${vehicles.length} vehicle(s) in the local database. Select a row to open the full report.`}
         </p>
 
         {vehicles.length > 0 ? (

@@ -110,8 +110,10 @@ User input (VIN/plate/chassis)
 Admin login (/admin/login)
   -> session cookie (or Bearer/X-Admin-Key)
   -> protected /admin routes + /api/admin/*
-  -> dashboard -> manage vehicle -> add events/photos
+  -> dashboard (summary, data health, VIN/plate/chassis search) -> manage vehicle -> add events/photos
 ```
+
+**Dashboard data health (Phase 18.1):** `getAdminDataHealth()` in `lib/admin-dashboard.ts` reports vehicle/event/photo totals, vehicles with plate or chassis populated, and published/draft/archived evidence counts (sum of `VehicleEvent` + `VehiclePhoto` by `status`). Vehicle search uses server-side `contains` filters on `vin`, `plateNumber`, and `chassisNumber` via `/admin?q=`.
 
 ### Upload flow
 

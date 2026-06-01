@@ -103,7 +103,7 @@ Use this 17-character VIN (not in the seed database):
 http://localhost:3000/admin
 ```
 
-**Expected:** Summary cards and a vehicle table with **Manage** and **View report** links. Unauthenticated requests redirect to `/admin/login`.
+**Expected:** Summary cards, a **Data health** panel (record totals and evidence lifecycle counts), server-side search by VIN/plate/chassis (`?q=`), and a vehicle table with **Manage** and **View report** links. Unauthenticated requests redirect to `/admin/login`.
 
 ### F. Admin vehicle management (Phase 12)
 
@@ -247,10 +247,10 @@ It returns deployment environment, database status, blob configuration status, t
 - `components/EvidenceBadges.tsx` — Provenance and confidence badges on reports  
 - `lib/evidence-metadata.ts` — Badge labels and styling helpers  
 - `app/decoded/page.tsx` — External NHTSA decode report (fed via `sessionStorage` after lookup)  
-- `app/admin/page.tsx` — Local admin dashboard (summary + vehicle table)  
+- `app/admin/page.tsx` — Local admin dashboard (summary, data health, search, vehicle table)  
 - `app/admin/ingest/page.tsx` — Local admin CSV upload page  
 - `app/admin/vehicles/[id]/page.tsx` — Manage vehicle (add events, photo URLs)  
-- `lib/admin-dashboard.ts` — Admin summary queries and vehicle list  
+- `lib/admin-dashboard.ts` — Admin summary, data health counts, searchable vehicle list  
 - `lib/admin-auth.ts` — Admin secret verification and session cookie  
 - `middleware.ts` — Protects `/admin` and `/api/admin/*`  
 - `app/admin/login/page.tsx` — Admin sign-in  

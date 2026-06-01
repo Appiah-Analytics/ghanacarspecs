@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 18 CSV shared event write path)  
+**Last updated:** 2026-05-29 (phase 18.1 admin search and data health)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,47 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 18.1 — Admin search and data health
+
+### Goal
+
+Improve operator visibility and navigation of growing vehicle datasets with server-side search and a data health panel on the admin dashboard.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Data layer | `lib/admin-dashboard.ts` (`getAdminDataHealth`, search filter on `getAdminVehicleRows`) |
+| UI | `app/admin/page.tsx` (search form, data health section) |
+| Styles | `app/globals.css` (admin search layout) |
+| Docs | `README.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- GET search on `/admin?q=` filters vehicles by VIN, plate number, or chassis number (case-insensitive partial match).
+- Data health panel shows totals for vehicles, events, photos; vehicles with VIN/plate/chassis; and published/draft/archived evidence counts (events + photos by `status`).
+- No changes to lookup, trust center, moderation, auth, CSV import, or Prisma schema.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual search by VIN, plate, and chassis; count verification against database
+
+### Known limitations
+
+- Search does not normalize chassis spacing; matches stored values only.
+- Evidence counts are by lifecycle `status`, not soft-delete (`deletedAt`).
+
+### Next recommended step
+
+- Import preview and duplicate detection for CSV ingestion (Phase 18 follow-on).
+
+---
+
+Phase 18.1 Admin Search and Data Health dashboard implemented.
 
 ---
 

@@ -1077,6 +1077,35 @@ main.page {
   font-weight: 700;
 }
 
+.admin-search {
+  margin-top: 0.75rem;
+}
+
+.admin-search label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.admin-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  align-items: center;
+}
+
+.admin-search-row input[type="search"] {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
 .admin-table-wrap {
   margin-top: 0.75rem;
   overflow-x: auto;
