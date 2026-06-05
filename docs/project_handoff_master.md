@@ -119,6 +119,8 @@ Admin login (/admin/login)
 
 **Event idempotency + preview (Phase 19):** `planEventIdempotency()` skips duplicate events by fingerprint; `mode=preview` performs zero writes; `mode=commit` inserts only new events and audits creates. Import history excludes preview runs. See [`docs/event_idempotency_and_import_preview.md`](event_idempotency_and_import_preview.md).
 
+**Vehicle Trust Score (Phase 20):** `calculateVehicleTrustScore()` in `lib/vehicle-trust-score.ts` produces an explainable 0–100 score from published evidence completeness, confidence/provenance, and risk signals. Shown on public reports and admin manage pages. See [`docs/vehicle_trust_score.md`](vehicle_trust_score.md).
+
 ### Upload flow
 
 ```text

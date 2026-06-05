@@ -66,7 +66,7 @@ Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](d
 
 Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case ignored for plate and chassis).
 
-**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, full specs, a **Vehicle intelligence** section (mileage checks, accident flag, import indicator, service continuity, timeline summary, confidence score), and event timeline (mileage, source, dates per event).
+**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Trust score** (0–100 with reasons/cautions), full specs, **Vehicle intelligence**, visual evidence, and event timeline.
 
 ### B. External VIN decoded record (NHTSA vPIC)
 
@@ -267,6 +267,8 @@ It returns deployment environment, database status, blob configuration status, t
 - `docs/event_idempotency_and_import_preview.md` — preview/commit workflow and idempotency rules
 - `lib/vehicle-event-write.ts` — shared VehicleEvent create + audit (admin UI and CSV ingest)  
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
+- `lib/vehicle-trust-score.ts` — Explainable 0–100 vehicle trust score (published evidence only)
+- `components/VehicleTrustScore.tsx` — Trust score panel on public reports and admin manage page
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  
@@ -331,6 +333,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/admin_record_management.md`](docs/admin_record_management.md) | Admin manage page: events & visual evidence URLs |
 | [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) | Trust model, enums, badges, future official feeds |
 | [`docs/public_trust_and_transparency.md`](docs/public_trust_and_transparency.md) | Public trust UX, confidence/provenance help, verification limits |
+| [`docs/vehicle_trust_score.md`](docs/vehicle_trust_score.md) | Vehicle Trust Score formula, bands, limitations |
 | [`docs/data_acquisition_and_import_quality.md`](docs/data_acquisition_and_import_quality.md) | CSV ingest, shared event write path, import quality |
 | [`docs/event_idempotency_and_import_preview.md`](docs/event_idempotency_and_import_preview.md) | Event fingerprint, preview/commit, idempotent re-import |
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |

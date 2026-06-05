@@ -24,6 +24,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 18.1 | Admin search and data health dashboard | Done |
 | 18.2 | Import quality, duplicate detection, import history | Done |
 | 19 | Event idempotency and import preview | Done |
+| 20 | Vehicle trust score (explainable completeness signal) | Done |
 
 ---
 

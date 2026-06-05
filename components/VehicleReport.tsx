@@ -5,8 +5,10 @@ import { TrustCenter } from "@/components/TrustCenter";
 import { VerificationStatus } from "@/components/VerificationStatus";
 import { VehicleIntelligencePanel } from "@/components/VehicleIntelligence";
 import { VehiclePhotos } from "@/components/VehiclePhotos";
+import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
 import type { VehicleReportData } from "@/lib/vehicle-report";
 import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
+import { calculateVehicleTrustScore } from "@/lib/vehicle-trust-score";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -20,6 +22,19 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
     countryOfOrigin: vehicle.countryOfOrigin,
     importDate: vehicle.importDate,
     events: vehicle.events,
+  });
+
+  const trustScore = calculateVehicleTrustScore({
+    vin: vehicle.vin,
+    plateNumber: vehicle.plateNumber,
+    chassisNumber: vehicle.chassisNumber,
+    make: vehicle.make,
+    model: vehicle.model,
+    year: vehicle.year,
+    countryOfOrigin: vehicle.countryOfOrigin,
+    importDate: vehicle.importDate,
+    events: vehicle.events,
+    photos: vehicle.photos,
   });
 
   const lastMileage = vehicle.events.reduce<number | null>((max, ev) => {
@@ -54,6 +69,8 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
           )}
         </p>
       </header>
+
+      <VehicleTrustScorePanel trustScore={trustScore} />
 
       <section className="report-section" aria-labelledby="specs-heading">
         <h3 id="specs-heading" className="report-section-title">

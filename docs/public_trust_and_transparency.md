@@ -14,6 +14,17 @@ Related: [`evidence_confidence_and_provenance.md`](./evidence_confidence_and_pro
 
 ---
 
+## Vehicle Trust Score (Phase 20)
+
+Public reports and admin vehicle pages show a **0–100 Trust Score** with band, reasons, and cautions.
+
+- Rule-based (not AI); see [`vehicle_trust_score.md`](./vehicle_trust_score.md).
+- Only **published, non-deleted** evidence counts positively.
+- Accident/claim/theft and mileage inconsistency signals appear as cautions and modest score adjustments.
+- Always includes: *"GhanaCarSpecs Trust Score is an internal evidence completeness and traceability signal…"*
+
+---
+
 ## Confidence model
 
 | Level | Meaning |

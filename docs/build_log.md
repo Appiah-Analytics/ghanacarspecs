@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 19 event idempotency and import preview)  
+**Last updated:** 2026-05-29 (phase 20 vehicle trust score)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,49 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 20 — Vehicle trust score
+
+### Goal
+
+Add an explainable 0–100 Vehicle Trust Score to public reports and admin vehicle pages as a completeness/traceability signal.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Scoring engine | `lib/vehicle-trust-score.ts` |
+| UI | `components/VehicleTrustScore.tsx` |
+| Public report | `components/VehicleReport.tsx` |
+| Admin manage | `app/admin/vehicles/[id]/page.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/vehicle_trust_score.md`, `README.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md`, `docs/public_trust_and_transparency.md` |
+
+### Behavior implemented
+
+- Rule-based score from published evidence volume/quality, record completeness, provenance diversity, and risk/mileage adjustments.
+- Bands: Strong / Moderate / Limited / Weak with reasons and cautions.
+- Standard non-certification disclaimer on every display.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Seeded Toyota, VW, and Honda trust score spot checks
+
+### Known limitations
+
+- No external registry integration; score is not legal proof.
+- Admin dashboard list filtering by score not implemented.
+
+### Next recommended step
+
+- Admin dashboard sort/filter by trust band for records needing stronger evidence.
+
+---
+
+Phase 20 Vehicle Trust Score implemented.
 
 ---
 
