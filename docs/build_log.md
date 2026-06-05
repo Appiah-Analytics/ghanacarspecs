@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 18.2 import quality and duplicate detection)  
+**Last updated:** 2026-05-29 (phase 19 event idempotency and import preview)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,52 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 19 — Event idempotency and import preview
+
+### Goal
+
+Prevent duplicate event inserts on CSV re-import and add a preview-before-commit workflow for admins.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Event idempotency | `lib/event-idempotency.ts` |
+| Ingest | `lib/csv-ingest.ts` (`mode: preview \| commit`, idempotent event inserts) |
+| Validation report | `lib/import-validation.ts` (events/vehicles breakdown) |
+| Import history | `lib/import-history.ts` (eventsInserted, eventsSkipped, duplicateEventsSkipped) |
+| API | `app/api/admin/ingest/route.ts` (`mode` form/query param) |
+| UI | `components/CsvUploadForm.tsx`, `components/ImportHistoryPanel.tsx`, `app/admin/ingest/page.tsx` |
+| Docs | `docs/event_idempotency_and_import_preview.md`, `README.md`, `docs/data_acquisition_and_import_quality.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- Event fingerprint: vehicleId + eventType + eventDate + mileage + sourceSystem.
+- Duplicate events skipped (DB + in-file) with warnings; no create audit logs for skips.
+- Preview mode performs zero DB writes; commit uses shared plan then upserts vehicles and inserts new events only.
+- Import history records committed imports only.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Manual preview/commit and re-commit idempotency checks
+
+### Known limitations
+
+- Commit re-uploads file (no server-side preview cache).
+- Description excluded from fingerprint.
+- Import history remains local JSON.
+
+### Next recommended step
+
+- Optional server-side staged import token if operators need preview/commit without re-selecting file.
+
+---
+
+Phase 19 Event Idempotency and Import Preview implemented.
 
 ---
 

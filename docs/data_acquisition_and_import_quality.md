@@ -109,10 +109,23 @@ Score starts at 100 and applies penalties (normalized per data row):
 
 ---
 
+## Event idempotency (Phase 19)
+
+See [`event_idempotency_and_import_preview.md`](./event_idempotency_and_import_preview.md).
+
+- Fingerprint: `vehicleId`, `eventType`, `eventDate`, `mileage`, `sourceSystem` (not `description`).
+- Duplicate events skipped with warning `Duplicate event skipped`; no create audit for skips.
+- Re-uploading the same CSV after commit does not insert duplicate event rows.
+
+## Import preview (Phase 19)
+
+- `POST /api/admin/ingest?mode=preview` or form field `mode=preview` — zero DB writes.
+- `mode=commit` (default) applies vehicle upserts and idempotent event inserts.
+- Admin UI: Preview import → review → Commit import (re-select same file).
+
 ## Not implemented yet (planned follow-ups)
 
-- Import preview (dry-run UI before commit)
-- Idempotent re-import / automatic deduplication
+- Server-side staged import token (avoid re-selecting file on commit)
 - Optional CSV columns for `provenanceType` / `confidenceLevel`
 
 ---

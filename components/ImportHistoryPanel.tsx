@@ -20,10 +20,13 @@ export function ImportHistoryPanel({ entries }: ImportHistoryPanelProps) {
   return (
     <section className="admin-card" aria-labelledby="import-history-heading">
       <h2 id="import-history-heading">Recent import history</h2>
-      <p className="admin-help">Last 10 CSV imports recorded on this server (stored in prisma/data/import-history.json).</p>
+      <p className="admin-help">
+        Last 10 committed CSV imports on this server (preview runs are not recorded). Stored in
+        prisma/data/import-history.json.
+      </p>
 
       {entries.length === 0 ? (
-        <p className="admin-help">No imports recorded yet.</p>
+        <p className="admin-help">No committed imports recorded yet.</p>
       ) : (
         <div className="admin-table-wrap">
           <table className="admin-table">
@@ -32,8 +35,8 @@ export function ImportHistoryPanel({ entries }: ImportHistoryPanelProps) {
                 <th scope="col">When</th>
                 <th scope="col">File</th>
                 <th scope="col">Rows</th>
-                <th scope="col">Imported</th>
-                <th scope="col">Skipped</th>
+                <th scope="col">Events in</th>
+                <th scope="col">Dup skip</th>
                 <th scope="col">Warnings</th>
                 <th scope="col">Quality</th>
               </tr>
@@ -44,8 +47,8 @@ export function ImportHistoryPanel({ entries }: ImportHistoryPanelProps) {
                   <td>{formatTimestamp(entry.timestamp)}</td>
                   <td>{entry.filename}</td>
                   <td>{entry.rowsProcessed}</td>
-                  <td>{entry.imported}</td>
-                  <td>{entry.skipped}</td>
+                  <td>{entry.eventsInserted}</td>
+                  <td>{entry.duplicateEventsSkipped}</td>
                   <td>{entry.warnings}</td>
                   <td>{entry.qualityScore}</td>
                 </tr>

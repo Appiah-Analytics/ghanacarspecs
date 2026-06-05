@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyAdminRequest } from "@/lib/admin-auth";
 import { getAdminIdentifierFromRequest } from "@/lib/audit-log";
-import { ingestVehicleEventsCsv } from "@/lib/csv-ingest";
+import { ingestVehicleEventsCsv, type CsvIngestMode } from "@/lib/csv-ingest";
 import { loggerForRequest } from "@/lib/logger";
 
 type UploadedCsvFile = {
@@ -64,13 +64,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, errors: [{ row: 1, message: "Uploaded file must be a .csv file." }] }, { status: 400 });
   }
 
+  const modeField = formData.get("mode");
+  const queryMode = new URL(request.url).searchParams.get("mode");
+  const mode: CsvIngestMode =
+    modeField === "preview" || queryMode === "preview"
+      ? "preview"
+      : "commit";
+
   const text = await readUploadedFileText(file);
   const adminIdentifier = getAdminIdentifierFromRequest(request);
-  const result = await ingestVehicleEventsCsv(text, adminIdentifier, { filename: file.name });
+  const result = await ingestVehicleEventsCsv(text, adminIdentifier, { filename: file.name, mode });
   requestLogger.info("csv ingest completed", {
     ok: result.ok,
+    mode,
+    preview: "preview" in result ? result.preview : false,
     rowsProcessed: result.report.rowsProcessed,
     imported: result.report.imported,
+    eventsSkipped: result.report.eventsSkipped,
+    duplicateEventsSkipped: result.report.duplicateEventsSkipped,
     warnings: result.report.warnings.length,
     qualityScore: result.quality.score,
   });

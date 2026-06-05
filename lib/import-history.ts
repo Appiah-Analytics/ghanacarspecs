@@ -15,6 +15,9 @@ export type ImportHistoryEntry = {
   skipped: number;
   warnings: number;
   qualityScore: number;
+  eventsInserted: number;
+  eventsSkipped: number;
+  duplicateEventsSkipped: number;
 };
 
 type ImportHistoryFile = {
@@ -59,5 +62,10 @@ export async function appendImportHistory(entry: Omit<ImportHistoryEntry, "id" |
 
 export async function getRecentImportHistory(limit = 10): Promise<ImportHistoryEntry[]> {
   const file = await readHistoryFile();
-  return file.entries.slice(0, limit);
+  return file.entries.map((entry) => ({
+    ...entry,
+    eventsInserted: entry.eventsInserted ?? entry.imported ?? 0,
+    eventsSkipped: entry.eventsSkipped ?? 0,
+    duplicateEventsSkipped: entry.duplicateEventsSkipped ?? 0,
+  })).slice(0, limit);
 }

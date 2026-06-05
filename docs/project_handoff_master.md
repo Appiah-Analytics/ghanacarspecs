@@ -117,6 +117,8 @@ Admin login (/admin/login)
 
 **CSV import quality (Phase 18.2):** `ingestVehicleEventsCsv()` runs `detectImportDuplicates()` before commit (warnings only), returns `report` + `quality` in the API JSON, and appends successful runs to `prisma/data/import-history.json`. See [`docs/data_acquisition_and_import_quality.md`](data_acquisition_and_import_quality.md).
 
+**Event idempotency + preview (Phase 19):** `planEventIdempotency()` skips duplicate events by fingerprint; `mode=preview` performs zero writes; `mode=commit` inserts only new events and audits creates. Import history excludes preview runs. See [`docs/event_idempotency_and_import_preview.md`](event_idempotency_and_import_preview.md).
+
 ### Upload flow
 
 ```text

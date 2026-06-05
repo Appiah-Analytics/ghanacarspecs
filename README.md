@@ -134,7 +134,7 @@ JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,IMPORT,2024-01-
 JTDKN3DU0A0123456,GR-9000-24,JTDKN3DU0A0123456,Toyota,Prius,2010,SERVICE,2024-05-03,90120,Accra Hybrid Care,Hybrid battery inspected
 ```
 
-**Expected:** The upload page shows an **import summary** (rows processed, imported, skipped, warnings, errors), an **import quality score** (0–100 with status), vehicle/event counts, duplicate **warnings** when applicable, and **recent import history** (last 10 uploads). Hard validation errors still block the import; duplicate plate/chassis signals are warnings only.
+**Expected:** **Preview import** first (no DB writes), then **Commit import** after review. The page shows import summary (rows, vehicles to create/update, events to insert/skip, duplicate events skipped), quality score, warnings, and **recent import history** (committed imports only). Hard validation errors block commit; duplicate plate/chassis and duplicate events are warnings/skips only.
 
 Then test the imported record from the frontend lookup:
 
@@ -160,7 +160,9 @@ You should see a **Local GhanaCarSpecs record** with the imported vehicle specs 
 - `mileage` is optional, but when present must be a whole number.
 - If the same VIN appears in multiple rows, `make`, `model`, `year`, and non-empty `plateNumber` must not conflict.
 - Validation is all-or-nothing for **errors**: if any row has a hard error, no database records are written.
-- Duplicate VIN (already in DB), plate, or chassis matches produce **warnings**; the import still runs when there are no errors.
+- Duplicate VIN (already in DB), plate, or chassis matches produce **warnings**; commit still runs when there are no errors.
+- Duplicate events (same fingerprint in DB or file) are **skipped** on commit; re-uploading the same CSV does not duplicate events.
+- Use **Preview import** before **Commit import** (`mode=preview` / `mode=commit` on `POST /api/admin/ingest`).
 
 Example conflict to test validation:
 
@@ -261,6 +263,8 @@ It returns deployment environment, database status, blob configuration status, t
 - `lib/import-validation.ts` — structured import report (`rowsProcessed`, `imported`, `skipped`, warnings, errors)
 - `lib/import-quality-score.ts` — 0–100 import quality score and status label
 - `lib/import-history.ts` — append/read recent imports (`prisma/data/import-history.json`)
+- `lib/event-idempotency.ts` — event fingerprint and duplicate skip planning
+- `docs/event_idempotency_and_import_preview.md` — preview/commit workflow and idempotency rules
 - `lib/vehicle-event-write.ts` — shared VehicleEvent create + audit (admin UI and CSV ingest)  
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
@@ -328,6 +332,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/evidence_confidence_and_provenance.md`](docs/evidence_confidence_and_provenance.md) | Trust model, enums, badges, future official feeds |
 | [`docs/public_trust_and_transparency.md`](docs/public_trust_and_transparency.md) | Public trust UX, confidence/provenance help, verification limits |
 | [`docs/data_acquisition_and_import_quality.md`](docs/data_acquisition_and_import_quality.md) | CSV ingest, shared event write path, import quality |
+| [`docs/event_idempotency_and_import_preview.md`](docs/event_idempotency_and_import_preview.md) | Event fingerprint, preview/commit, idempotent re-import |
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |
 | [`docs/evidence_lifecycle_management.md`](docs/evidence_lifecycle_management.md) | Moderation states, soft delete rules, public visibility filters, audit logging |
 | [`docs/project_handoff_master.md`](docs/project_handoff_master.md) | Primary operational memory: architecture, workflows, debugging, deployment, roadmap |

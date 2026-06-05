@@ -10,8 +10,14 @@ export type ImportValidationReport = {
   rowsProcessed: number;
   imported: number;
   skipped: number;
+  eventsInserted: number;
+  eventsSkipped: number;
+  duplicateEventsSkipped: number;
+  vehiclesCreated: number;
+  vehiclesUpdated: number;
   warnings: ImportValidationIssue[];
   errors: ImportValidationIssue[];
+  mode: "preview" | "commit";
 };
 
 export function duplicateFindingsToWarnings(findings: DuplicateFinding[]): ImportValidationIssue[] {
@@ -26,14 +32,26 @@ export function buildImportValidationReport(params: {
   totalDataRows: number;
   imported: number;
   skipped: number;
+  eventsInserted: number;
+  eventsSkipped: number;
+  duplicateEventsSkipped: number;
+  vehiclesCreated: number;
+  vehiclesUpdated: number;
   warnings: ImportValidationIssue[];
   errors: ImportValidationIssue[];
+  mode: "preview" | "commit";
 }): ImportValidationReport {
   return {
     rowsProcessed: params.totalDataRows,
     imported: params.imported,
     skipped: params.skipped,
+    eventsInserted: params.eventsInserted,
+    eventsSkipped: params.eventsSkipped,
+    duplicateEventsSkipped: params.duplicateEventsSkipped,
+    vehiclesCreated: params.vehiclesCreated,
+    vehiclesUpdated: params.vehiclesUpdated,
     warnings: params.warnings,
     errors: params.errors,
+    mode: params.mode,
   };
 }

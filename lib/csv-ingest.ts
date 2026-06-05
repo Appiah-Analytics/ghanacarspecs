@@ -1,5 +1,6 @@
 import { ConfidenceLevel, EventType, EvidenceStatus, ProvenanceType, type Prisma } from "@prisma/client";
 import { detectImportDuplicates } from "@/lib/duplicate-detection";
+import { planEventIdempotency, resolveVehicleIdsByVin } from "@/lib/event-idempotency";
 import { appendImportHistory } from "@/lib/import-history";
 import {
   buildImportValidationReport,
@@ -9,6 +10,8 @@ import {
 import { calculateImportQualityScore, type ImportQualityResult } from "@/lib/import-quality-score";
 import { prisma } from "@/lib/prisma";
 import { createVehicleEventRecord } from "@/lib/vehicle-event-write";
+
+export type CsvIngestMode = "preview" | "commit";
 
 const REQUIRED_COLUMNS = ["vin", "make", "model", "year", "eventType", "eventDate"] as const;
 const OPTIONAL_COLUMNS = ["plateNumber", "chassisNumber", "mileage", "sourceSystem", "description"] as const;
@@ -24,11 +27,13 @@ export type CsvIngestSummary = {
   vehiclesCreated: number;
   vehiclesUpdated: number;
   eventsInserted: number;
+  eventsSkipped: number;
+  duplicateEventsSkipped: number;
   rowsProcessed: number;
 };
 
 export type CsvIngestResult =
-  | { ok: true; summary: CsvIngestSummary; report: ImportValidationReport; quality: ImportQualityResult }
+  | { ok: true; summary: CsvIngestSummary; report: ImportValidationReport; quality: ImportQualityResult; preview?: boolean }
   | { ok: false; errors: CsvIngestError[]; report: ImportValidationReport; quality: ImportQualityResult };
 
 type CanonicalColumn = (typeof ALL_COLUMNS)[number];
@@ -310,11 +315,71 @@ function toValidationErrors(errors: CsvIngestError[]) {
   }));
 }
 
+function buildVehicleProfiles(validRows: ValidatedCsvRow[]): Map<string, VehicleProfile> {
+  const profiles = new Map<string, VehicleProfile>();
+
+  for (const row of validRows) {
+    const existing = profiles.get(row.vin);
+    if (existing) {
+      if (!existing.plateNumber && row.plateNumber) existing.plateNumber = row.plateNumber;
+      if (!existing.chassisNumber && row.chassisNumber) existing.chassisNumber = row.chassisNumber;
+      if (row.eventType === EventType.IMPORT && (!existing.importDate || row.eventDate < existing.importDate)) {
+        existing.importDate = row.eventDate;
+      }
+      continue;
+    }
+
+    profiles.set(row.vin, {
+      vin: row.vin,
+      plateNumber: row.plateNumber,
+      chassisNumber: row.chassisNumber,
+      make: row.make,
+      model: row.model,
+      year: row.year,
+      importDate: row.eventType === EventType.IMPORT ? row.eventDate : null,
+    });
+  }
+
+  return profiles;
+}
+
+function countVehicleChanges(profiles: Map<string, VehicleProfile>, existingVins: Set<string>): {
+  vehiclesCreated: number;
+  vehiclesUpdated: number;
+} {
+  let vehiclesCreated = 0;
+  let vehiclesUpdated = 0;
+
+  for (const vin of profiles.keys()) {
+    if (existingVins.has(vin)) vehiclesUpdated += 1;
+    else vehiclesCreated += 1;
+  }
+
+  return { vehiclesCreated, vehiclesUpdated };
+}
+
+function emptyFailureReport(totalDataRows: number, skipped: number, mode: CsvIngestMode) {
+  return {
+    totalDataRows,
+    imported: 0,
+    skipped,
+    eventsInserted: 0,
+    eventsSkipped: 0,
+    duplicateEventsSkipped: 0,
+    vehiclesCreated: 0,
+    vehiclesUpdated: 0,
+    warnings: [] as ImportValidationReport["warnings"],
+    errors: [] as ImportValidationReport["errors"],
+    mode,
+  };
+}
+
 export async function ingestVehicleEventsCsv(
   csvText: string,
   adminIdentifier: string,
-  options?: { filename?: string },
+  options?: { filename?: string; mode?: CsvIngestMode },
 ): Promise<CsvIngestResult> {
+  const mode = options?.mode ?? "commit";
   const rows = parseCsv(csvText);
   const totalDataRows = Math.max(0, rows.length - 1);
   const filename = options?.filename?.trim() || "upload.csv";
@@ -322,10 +387,7 @@ export async function ingestVehicleEventsCsv(
   if (rows.length < 2) {
     const errors = [{ row: 1, message: "CSV must include a header row and at least one data row." }];
     const report = buildImportValidationReport({
-      totalDataRows: 0,
-      imported: 0,
-      skipped: 0,
-      warnings: [],
+      ...emptyFailureReport(0, 0, mode),
       errors: toValidationErrors(errors),
     });
     const quality = calculateImportQualityScore({
@@ -338,7 +400,7 @@ export async function ingestVehicleEventsCsv(
   }
 
   const { validRows, errors } = validateRows(rows);
-  const skipped = countRowsWithErrors(errors);
+  const validationSkipped = countRowsWithErrors(errors);
   const duplicateFindings = await detectImportDuplicates(
     validRows.map((row) => ({
       rowNumber: row.rowNumber,
@@ -348,12 +410,12 @@ export async function ingestVehicleEventsCsv(
     })),
     prisma,
   );
-  const warnings = duplicateFindingsToWarnings(duplicateFindings);
+  const vehicleWarnings = duplicateFindingsToWarnings(duplicateFindings);
   const quality = calculateImportQualityScore({
     totalDataRows,
     rows: validRows,
     duplicateFindings,
-    invalidRowCount: skipped,
+    invalidRowCount: validationSkipped,
   });
 
   if (errors.length > 0) {
@@ -361,48 +423,69 @@ export async function ingestVehicleEventsCsv(
       ok: false,
       errors,
       report: buildImportValidationReport({
-        totalDataRows,
-        imported: 0,
-        skipped,
-        warnings,
+        ...emptyFailureReport(totalDataRows, validationSkipped, mode),
+        warnings: vehicleWarnings,
         errors: toValidationErrors(errors),
       }),
       quality,
     };
   }
 
-  const profiles = new Map<string, VehicleProfile>();
-  for (const row of validRows) {
-    const existing = profiles.get(row.vin);
-    if (existing) {
-      if (!existing.plateNumber && row.plateNumber) existing.plateNumber = row.plateNumber;
-      if (!existing.chassisNumber && row.chassisNumber) existing.chassisNumber = row.chassisNumber;
-      if (row.eventType === EventType.IMPORT && (!existing.importDate || row.eventDate < existing.importDate)) {
-        existing.importDate = row.eventDate;
-      }
-      continue;
-    }
-    profiles.set(row.vin, {
-      vin: row.vin,
-      plateNumber: row.plateNumber,
-      chassisNumber: row.chassisNumber,
-      make: row.make,
-      model: row.model,
-      year: row.year,
-      importDate: row.eventType === EventType.IMPORT ? row.eventDate : null,
-    });
-  }
-
+  const profiles = buildVehicleProfiles(validRows);
   const existingVehicles = await prisma.vehicle.findMany({
     where: { vin: { in: [...profiles.keys()] } },
     select: { vin: true },
   });
-  const existingVins = new Set(existingVehicles.map((v) => v.vin));
+  const existingVins = new Set(existingVehicles.map((vehicle) => vehicle.vin));
+  const { vehiclesCreated, vehiclesUpdated } = countVehicleChanges(profiles, existingVins);
+
+  const vehicleIdByVin = await resolveVehicleIdsByVin(prisma, [...profiles.keys()]);
+  const idempotencyPlan = await planEventIdempotency(
+    validRows.map((row) => ({
+      rowNumber: row.rowNumber,
+      vin: row.vin,
+      eventType: row.eventType,
+      eventDate: row.eventDate,
+      mileage: row.mileage,
+      sourceSystem: row.sourceSystem,
+      description: row.description,
+    })),
+    vehicleIdByVin,
+    prisma,
+  );
+
+  const warnings = [...vehicleWarnings, ...idempotencyPlan.warnings];
+  const plannedSummary: CsvIngestSummary = {
+    vehiclesCreated,
+    vehiclesUpdated,
+    eventsInserted: idempotencyPlan.eventsToInsert.length,
+    eventsSkipped: idempotencyPlan.eventsSkipped,
+    duplicateEventsSkipped: idempotencyPlan.duplicateEventsSkipped,
+    rowsProcessed: validRows.length,
+  };
+
+  const report = buildImportValidationReport({
+    totalDataRows,
+    imported: plannedSummary.eventsInserted,
+    skipped: validationSkipped,
+    eventsInserted: plannedSummary.eventsInserted,
+    eventsSkipped: plannedSummary.eventsSkipped,
+    duplicateEventsSkipped: plannedSummary.duplicateEventsSkipped,
+    vehiclesCreated,
+    vehiclesUpdated,
+    warnings,
+    errors: [],
+    mode,
+  });
+
+  if (mode === "preview") {
+    return { ok: true, preview: true, summary: plannedSummary, report, quality };
+  }
 
   const summary = await prisma.$transaction(async (tx) => {
-    const vehicleIdByVin = new Map<string, string>();
-    let vehiclesCreated = 0;
-    let vehiclesUpdated = 0;
+    const vehicleIdByVinCommitted = new Map<string, string>();
+    let created = 0;
+    let updated = 0;
 
     for (const profile of profiles.values()) {
       const updateData: Prisma.VehicleUpdateInput = {
@@ -429,14 +512,14 @@ export async function ingestVehicleEventsCsv(
         select: { id: true, vin: true },
       });
 
-      vehicleIdByVin.set(vehicle.vin, vehicle.id);
-      if (existingVins.has(vehicle.vin)) vehiclesUpdated += 1;
-      else vehiclesCreated += 1;
+      vehicleIdByVinCommitted.set(vehicle.vin, vehicle.id);
+      if (existingVins.has(vehicle.vin)) updated += 1;
+      else created += 1;
     }
 
-    for (const row of validRows) {
+    for (const row of idempotencyPlan.eventsToInsert) {
       await createVehicleEventRecord(tx, {
-        vehicleId: vehicleIdByVin.get(row.vin) as string,
+        vehicleId: vehicleIdByVinCommitted.get(row.vin) as string,
         eventType: row.eventType,
         eventDate: row.eventDate,
         mileage: row.mileage,
@@ -451,29 +534,40 @@ export async function ingestVehicleEventsCsv(
     }
 
     return {
-      vehiclesCreated,
-      vehiclesUpdated,
-      eventsInserted: validRows.length,
+      vehiclesCreated: created,
+      vehiclesUpdated: updated,
+      eventsInserted: idempotencyPlan.eventsToInsert.length,
+      eventsSkipped: idempotencyPlan.eventsSkipped,
+      duplicateEventsSkipped: idempotencyPlan.duplicateEventsSkipped,
       rowsProcessed: validRows.length,
     };
   });
 
-  const report = buildImportValidationReport({
+  const commitReport = buildImportValidationReport({
     totalDataRows,
     imported: summary.eventsInserted,
-    skipped: 0,
+    skipped: validationSkipped,
+    eventsInserted: summary.eventsInserted,
+    eventsSkipped: summary.eventsSkipped,
+    duplicateEventsSkipped: summary.duplicateEventsSkipped,
+    vehiclesCreated: summary.vehiclesCreated,
+    vehiclesUpdated: summary.vehiclesUpdated,
     warnings,
     errors: [],
+    mode: "commit",
   });
 
   await appendImportHistory({
     filename,
-    rowsProcessed: report.rowsProcessed,
-    imported: report.imported,
-    skipped: report.skipped,
-    warnings: report.warnings.length,
+    rowsProcessed: commitReport.rowsProcessed,
+    imported: commitReport.imported,
+    skipped: commitReport.skipped,
+    warnings: commitReport.warnings.length,
     qualityScore: quality.score,
+    eventsInserted: commitReport.eventsInserted,
+    eventsSkipped: commitReport.eventsSkipped,
+    duplicateEventsSkipped: commitReport.duplicateEventsSkipped,
   });
 
-  return { ok: true, summary, report, quality };
+  return { ok: true, summary, report: commitReport, quality };
 }

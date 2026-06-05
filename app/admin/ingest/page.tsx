@@ -25,7 +25,10 @@ export default async function AdminIngestPage() {
 
       <section className="hero">
         <h1>CSV ingestion</h1>
-        <p>Import vehicle and event records from CSV. Requires an admin session — public lookup is unchanged.</p>
+        <p>
+          Import vehicle and event records from CSV with preview-first workflow. Requires an admin session — public
+          lookup is unchanged.
+        </p>
       </section>
 
       <CsvUploadForm />
