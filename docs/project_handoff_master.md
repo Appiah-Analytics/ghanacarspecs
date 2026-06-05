@@ -461,6 +461,9 @@ npm run db:seed:postgres
 | `docs/evidence_lifecycle_management.md` | Moderation lifecycle, soft delete rules, audit logging |
 | `docs/public_trust_and_transparency.md` | Public trust UX, transparency principles, verification limits |
 | `docs/data_acquisition_and_import_quality.md` | CSV ingest, shared event write path, import quality principles |
+| `docs/architecture_decisions.md` | ADRs — why key design choices were made (shared write path, lifecycle, trust score, duplicates, import history) |
+
+For decision context beyond current system diagrams, start with [`architecture_decisions.md`](architecture_decisions.md) (ADR-001 through ADR-007 cover Phases 16–20 foundations).
 
 ---
 

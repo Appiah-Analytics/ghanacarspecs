@@ -327,6 +327,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/roadmap.md`](docs/roadmap.md) | Phases 1–7 (delivery order) |
 | [`docs/build_log.md`](docs/build_log.md) | Engineering history per phase |
 | [`docs/architecture.md`](docs/architecture.md) | Current system design |
+| [`docs/architecture_decisions.md`](docs/architecture_decisions.md) | Architecture Decision Records (why key designs were chosen) |
 | [`docs/deployment_plan.md`](docs/deployment_plan.md) | Production readiness (not deployed yet) |
 | [`docs/postgresql.md`](docs/postgresql.md) | SQLite → PostgreSQL dual-schema guide (Phase 9) |
 | [`docs/debugging_neon_seed_photos.md`](docs/debugging_neon_seed_photos.md) | Neon production seed & VehiclePhoto runbook |
