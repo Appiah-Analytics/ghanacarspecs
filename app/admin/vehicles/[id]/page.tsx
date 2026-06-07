@@ -10,12 +10,13 @@ import { AdminSignOut } from "@/components/AdminSignOut";
 import { EventTimeline } from "@/components/EventTimeline";
 import { EvidenceBadges } from "@/components/EvidenceBadges";
 import { EvidenceStatusBadge } from "@/components/EvidenceStatusBadge";
+import { VehicleExecutiveSummaryPanel } from "@/components/VehicleExecutiveSummary";
 import { VehicleRiskProfilePanel } from "@/components/VehicleRiskProfile";
 import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
 import { formatPhotoSource } from "@/lib/photo-source";
 import { getAdminVehicleManage } from "@/lib/admin-vehicle-manage";
-import { calculateVehicleTrustScore } from "@/lib/vehicle-trust-score";
-import { calculateVehicleRiskProfile } from "@/lib/vehicle-risk-profile";
+import { buildVehicleExecutiveSummary } from "@/lib/vehicle-executive-summary";
+import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
 
 export const dynamic = "force-dynamic";
 
@@ -36,31 +37,9 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
 
   if (!vehicle) notFound();
 
-  const trustScore = calculateVehicleTrustScore({
-    vin: vehicle.vin,
-    plateNumber: vehicle.plateNumber,
-    chassisNumber: vehicle.chassisNumber,
-    make: vehicle.make,
-    model: vehicle.model,
-    year: vehicle.year,
-    countryOfOrigin: vehicle.countryOfOrigin,
-    importDate: vehicle.importDate,
-    events: vehicle.events,
-    photos: vehicle.photos,
-  });
-
-  const riskProfile = calculateVehicleRiskProfile({
-    vin: vehicle.vin,
-    plateNumber: vehicle.plateNumber,
-    chassisNumber: vehicle.chassisNumber,
-    make: vehicle.make,
-    model: vehicle.model,
-    year: vehicle.year,
-    countryOfOrigin: vehicle.countryOfOrigin,
-    importDate: vehicle.importDate,
-    events: vehicle.events,
-    photos: vehicle.photos,
-  });
+  const reportBundle = buildVehicleReportBundle(vehicle);
+  const { trustScore, riskProfile } = reportBundle;
+  const executiveSummary = buildVehicleExecutiveSummary(reportBundle);
 
   const photoAdded = query.photo === "added";
   const photoUpdated = query.photo === "updated";
@@ -148,6 +127,8 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
           Timeline event archived (soft deleted).
         </p>
       ) : null}
+
+      <VehicleExecutiveSummaryPanel summary={executiveSummary} variant="admin" />
 
       <VehicleTrustScorePanel trustScore={trustScore} variant="admin" />
 

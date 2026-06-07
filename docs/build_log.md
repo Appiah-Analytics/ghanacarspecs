@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 21 vehicle risk profile)  
+**Last updated:** 2026-05-29 (phase 22 report presentation and comparison foundation)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,51 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 22 — Report presentation and comparison foundation
+
+### Goal
+
+Improve report readability with an executive summary and reusable comparison/export structures without PDF or comparison UI.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Report bundle | `lib/vehicle-report-bundle.ts` |
+| Executive summary | `lib/vehicle-executive-summary.ts`, `components/VehicleExecutiveSummary.tsx` |
+| Comparison foundation | `lib/vehicle-comparison.ts` |
+| Export readiness | `lib/report-export-summary.ts` |
+| Public report | `components/VehicleReport.tsx` (section order) |
+| Admin manage | `app/admin/vehicles/[id]/page.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/report_presentation_and_comparison_foundation.md`, `docs/architecture_decisions.md` (ADR-009), `README.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md` |
+
+### Behavior implemented
+
+- Executive summary near top of public and admin reports.
+- Reordered public report sections (summary → trust → risk → specs → intelligence → evidence → timeline → trust blocks).
+- `buildVehicleComparisonSnapshot()` and `buildReportExportSummary()` for future Phase 23+ features.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Seeded Toyota/VW executive summary spot checks
+
+### Known limitations
+
+- No PDF export, share links, or comparison UI.
+- Executive summary uses published evidence only (matches public visibility).
+
+### Next recommended step
+
+- Phase 23 vehicle comparison UI using comparison snapshots.
+
+---
+
+Phase 22 Report Presentation and Comparison Foundation implemented.
 
 ---
 

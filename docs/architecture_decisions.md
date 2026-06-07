@@ -134,9 +134,25 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-009 — Report Presentation Before Export
+
+**Date:** 2026-05-29
+
+**Decision:** Phase 22 improves report structure and comparison/export foundations before adding PDF generation or public share links.
+
+**Reason:** A clear, reusable report structure should exist before export formats are added.
+
+**Alternatives Considered:** Add PDF export immediately.
+
+**Tradeoffs:** Less flashy short-term, but safer and more maintainable.
+
+**Verification:** Phase 22 report rendering and build checks.
+
+---
+
 ## How to add a new ADR
 
-1. Copy the template below the next sequential number (`ADR-009`, etc.).
+1. Copy the template below the next sequential number (`ADR-010`, etc.).
 2. Link the verification field to a phase in [`build_log.md`](build_log.md) or a specific test run.
 3. Cross-reference affected runbooks if the decision changes operator workflow.
 

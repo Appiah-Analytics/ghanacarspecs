@@ -890,6 +890,79 @@ main.page {
   background: #fef2f2;
 }
 
+.vehicle-executive-summary {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.35rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+}
+
+.executive-summary-assessment {
+  margin-bottom: 0.85rem;
+}
+
+.executive-summary-lead {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.executive-summary-subtitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.executive-summary-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 0.85rem 0 0;
+}
+
+.executive-summary-status-grid dt {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.executive-summary-status-grid dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.executive-summary-block {
+  margin-top: 0.85rem;
+}
+
+.executive-summary-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.executive-summary-next-step {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.executive-summary-note {
+  margin: 1rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .trust-center-block {
   margin-bottom: 1.25rem;
 }

@@ -123,6 +123,8 @@ Admin login (/admin/login)
 
 **Vehicle Risk Profile (Phase 21):** `calculateVehicleRiskProfile()` in `lib/vehicle-risk-profile.ts` produces a separate 0–100 concern score (higher = more risk) with risk factors, positive signals, and recommendations. Trust Score and Risk Profile are intentionally separate. See [`docs/vehicle_risk_profile.md`](vehicle_risk_profile.md).
 
+**Report presentation (Phase 22):** `buildVehicleExecutiveSummary()` and `VehicleExecutiveSummaryPanel` provide a one-glance report summary; `buildVehicleComparisonSnapshot()` and `buildReportExportSummary()` prepare future comparison/export features. See [`docs/report_presentation_and_comparison_foundation.md`](report_presentation_and_comparison_foundation.md).
+
 ### Upload flow
 
 ```text
@@ -463,7 +465,8 @@ npm run db:seed:postgres
 | `docs/evidence_lifecycle_management.md` | Moderation lifecycle, soft delete rules, audit logging |
 | `docs/public_trust_and_transparency.md` | Public trust UX, transparency principles, verification limits |
 | `docs/data_acquisition_and_import_quality.md` | CSV ingest, shared event write path, import quality principles |
-| `docs/architecture_decisions.md` | ADRs — why key design choices were made (shared write path, lifecycle, trust score, duplicates, import history, risk profile) |
+| `docs/report_presentation_and_comparison_foundation.md` | Executive summary, report order, comparison/export foundation |
+| `docs/architecture_decisions.md` | ADRs — why key design choices were made |
 
 For decision context beyond current system diagrams, start with [`architecture_decisions.md`](architecture_decisions.md) (ADR-001 through ADR-007 cover Phases 16–20 foundations).
 

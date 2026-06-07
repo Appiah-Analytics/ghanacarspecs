@@ -66,7 +66,7 @@ Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](d
 
 Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case ignored for plate and chassis).
 
-**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Trust score**, **Vehicle risk profile**, full specs, **Vehicle intelligence**, visual evidence, and event timeline.
+**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Executive summary**, **Trust score**, **Vehicle risk profile**, full specs, **Vehicle intelligence**, visual evidence, and event timeline.
 
 ### B. External VIN decoded record (NHTSA vPIC)
 
@@ -269,8 +269,13 @@ It returns deployment environment, database status, blob configuration status, t
 - `lib/vehicle-intelligence.ts` — Risk/intelligence signals from local events  
 - `lib/vehicle-trust-score.ts` — Explainable 0–100 vehicle trust score (published evidence only)
 - `lib/vehicle-risk-profile.ts` — Explainable 0–100 vehicle risk profile (higher = more concern)
+- `lib/vehicle-report-bundle.ts` — Shared trust/risk/intelligence derivations for reports
+- `lib/vehicle-executive-summary.ts` — One-glance executive summary builder
+- `lib/vehicle-comparison.ts` — Comparison snapshot for future Phase 23 UI
+- `lib/report-export-summary.ts` — Plain export summary object (no PDF yet)
 - `components/VehicleTrustScore.tsx` — Trust score panel on public reports and admin manage page
 - `components/VehicleRiskProfile.tsx` — Risk profile panel on public reports and admin manage page
+- `components/VehicleExecutiveSummary.tsx` — Executive summary panel on public reports and admin manage page
 - `lib/lookup.ts` — Local VIN/plate resolution + orchestration with external fallback  
 - `lib/nhtsa-vin.ts` — NHTSA vPIC client  
 - `lib/record-source.ts` — Human-readable source labels  
@@ -338,6 +343,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/public_trust_and_transparency.md`](docs/public_trust_and_transparency.md) | Public trust UX, confidence/provenance help, verification limits |
 | [`docs/vehicle_trust_score.md`](docs/vehicle_trust_score.md) | Vehicle Trust Score formula, bands, limitations |
 | [`docs/vehicle_risk_profile.md`](docs/vehicle_risk_profile.md) | Vehicle Risk Profile, trust vs risk separation, limitations |
+| [`docs/report_presentation_and_comparison_foundation.md`](docs/report_presentation_and_comparison_foundation.md) | Executive summary, report order, comparison/export foundation |
 | [`docs/data_acquisition_and_import_quality.md`](docs/data_acquisition_and_import_quality.md) | CSV ingest, shared event write path, import quality |
 | [`docs/event_idempotency_and_import_preview.md`](docs/event_idempotency_and_import_preview.md) | Event fingerprint, preview/commit, idempotent re-import |
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |

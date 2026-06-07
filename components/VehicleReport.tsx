@@ -3,14 +3,14 @@ import { SourceBanner } from "@/components/SourceBanner";
 import { TransparencyStatement } from "@/components/TransparencyStatement";
 import { TrustCenter } from "@/components/TrustCenter";
 import { VerificationStatus } from "@/components/VerificationStatus";
+import { VehicleExecutiveSummaryPanel } from "@/components/VehicleExecutiveSummary";
 import { VehicleIntelligencePanel } from "@/components/VehicleIntelligence";
 import { VehiclePhotos } from "@/components/VehiclePhotos";
 import { VehicleRiskProfilePanel } from "@/components/VehicleRiskProfile";
 import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
 import type { VehicleReportData } from "@/lib/vehicle-report";
-import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
-import { calculateVehicleTrustScore } from "@/lib/vehicle-trust-score";
-import { calculateVehicleRiskProfile } from "@/lib/vehicle-risk-profile";
+import { buildVehicleExecutiveSummary } from "@/lib/vehicle-executive-summary";
+import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -19,38 +19,9 @@ function formatDate(d: Date | string | null | undefined): string {
 }
 
 export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
-  const intelligence = analyzeVehicleIntelligence({
-    year: vehicle.year,
-    countryOfOrigin: vehicle.countryOfOrigin,
-    importDate: vehicle.importDate,
-    events: vehicle.events,
-  });
-
-  const trustScore = calculateVehicleTrustScore({
-    vin: vehicle.vin,
-    plateNumber: vehicle.plateNumber,
-    chassisNumber: vehicle.chassisNumber,
-    make: vehicle.make,
-    model: vehicle.model,
-    year: vehicle.year,
-    countryOfOrigin: vehicle.countryOfOrigin,
-    importDate: vehicle.importDate,
-    events: vehicle.events,
-    photos: vehicle.photos,
-  });
-
-  const riskProfile = calculateVehicleRiskProfile({
-    vin: vehicle.vin,
-    plateNumber: vehicle.plateNumber,
-    chassisNumber: vehicle.chassisNumber,
-    make: vehicle.make,
-    model: vehicle.model,
-    year: vehicle.year,
-    countryOfOrigin: vehicle.countryOfOrigin,
-    importDate: vehicle.importDate,
-    events: vehicle.events,
-    photos: vehicle.photos,
-  });
+  const reportBundle = buildVehicleReportBundle(vehicle);
+  const { trustScore, riskProfile, intelligence } = reportBundle;
+  const executiveSummary = buildVehicleExecutiveSummary(reportBundle);
 
   const lastMileage = vehicle.events.reduce<number | null>((max, ev) => {
     if (ev.mileage == null) return max;
@@ -84,6 +55,8 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
           )}
         </p>
       </header>
+
+      <VehicleExecutiveSummaryPanel summary={executiveSummary} />
 
       <VehicleTrustScorePanel trustScore={trustScore} />
 
