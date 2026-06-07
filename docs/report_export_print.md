@@ -8,7 +8,7 @@ Related: [`report_presentation_and_comparison_foundation.md`](./report_presentat
 
 ## Purpose
 
-Give buyers and operators a clean, printable document from existing report data. Users can print to paper or save as PDF via the browser print dialog. No server-side PDF libraries in this phase.
+Give buyers and operators a clean, printable document from existing report data. Users can print to paper or save as PDF via the browser print dialog. Server-side PDF download was added in Phase 25 — see [`pdf_export.md`](./pdf_export.md).
 
 ## Route
 
@@ -68,5 +68,4 @@ On screen, the print route hides site header and footer. `@media print` rules hi
 
 ## Next step
 
-- PDF export endpoint reusing `buildReportExportSummary()` structure
-- Optional print stylesheet for comparison export bundle
+- Comparison print/PDF export bundle

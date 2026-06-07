@@ -182,6 +182,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-012 — PDFKit Server Export Reusing Export Summary
+
+**Date:** 2026-06-07
+
+**Decision:** Phase 25 adds `GET /api/vehicles/[id]/export/pdf` using `pdfkit` on the Node.js runtime. PDF content is built from `buildVehicleReportBundle()` and `buildReportExportSummary()` — same pipeline as the print view.
+
+**Reason:** Deliver downloadable PDFs without React-PDF complexity or client-side generation; keep export logic aligned with print and future formats.
+
+**Alternatives Considered:** `@react-pdf/renderer`, browser-only save-as-PDF, Puppeteer HTML-to-PDF.
+
+**Tradeoffs:** `pdfkit` is marked `serverExternalPackages`; layout is code-driven rather than HTML/CSS. No embedded photos in v1.
+
+**Verification:** Phase 25 PDF export checks (`npm run lint`, `npm run build`, seeded vehicle PDF download).
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

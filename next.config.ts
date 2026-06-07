@@ -12,6 +12,7 @@ const adminPassword = process.env.ADMIN_PASSWORD?.trim() ?? "";
  * inlined here at dev/build time via `env`. Server routes (API, RSC) also read `.env`.
  */
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["pdfkit"],
   env: {
     ADMIN_API_KEY: adminApiKey,
     ADMIN_PASSWORD: adminPassword,

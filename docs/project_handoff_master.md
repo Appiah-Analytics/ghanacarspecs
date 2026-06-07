@@ -127,7 +127,9 @@ Admin login (/admin/login)
 
 **Vehicle comparison (Phase 23):** `/compare?a=…&b=…` resolves two local records via `resolveComparisonSnapshot()` and renders `VehicleComparison` using report-derived snapshots (ADR-010). Entry points on public report, admin manage, and homepage. See [`docs/vehicle_comparison_ui.md`](vehicle_comparison_ui.md).
 
-**Print-friendly report (Phase 24):** `/vehicles/[id]/print` renders `PrintableVehicleReport` from `buildReportExportSummary()` with browser print actions (ADR-011). Entry points on public report and admin manage. No server-side PDF yet. See [`docs/report_export_print.md`](report_export_print.md).
+**Print-friendly report (Phase 24):** `/vehicles/[id]/print` renders `PrintableVehicleReport` from `buildReportExportSummary()` with browser print actions (ADR-011). Entry points on public report and admin manage. See [`docs/report_export_print.md`](report_export_print.md).
+
+**PDF export (Phase 25):** `GET /api/vehicles/[id]/export/pdf` generates a downloadable PDF via `generateVehicleReportPdf()` (pdfkit) from the same export summary pipeline (ADR-012). Download links on public report, print view, and admin manage. See [`docs/pdf_export.md`](pdf_export.md).
 
 ### Upload flow
 

@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-06-07 (phase 24 print-friendly report)  
+**Last updated:** 2026-06-07 (phase 25 server-side PDF export)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,51 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Phase 25 — Server-side PDF export
+
+### Goal
+
+Add downloadable PDF export for local vehicle reports using the Phase 22 export summary pipeline — narrow scope, no schema changes.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| API route | `app/api/vehicles/[id]/export/pdf/route.ts` |
+| PDF builder | `lib/generate-vehicle-report-pdf.ts` |
+| URL helper | `lib/vehicle-pdf-export-url.ts` |
+| Entry points | `components/VehicleReport.tsx`, `components/PrintReportActions.tsx`, `app/admin/vehicles/[id]/page.tsx` |
+| Config | `next.config.ts` (`serverExternalPackages: ["pdfkit"]`) |
+| Dependency | `pdfkit`, `@types/pdfkit` |
+| Docs | `docs/pdf_export.md`, ADR-012, `README.md`, handoff, roadmap |
+
+### Behavior
+
+- `GET /api/vehicles/[id]/export/pdf` returns attachment PDF (`ghanacarspecs-{VIN}.pdf`).
+- Content mirrors Phase 24 print sections: executive summary, scores, specs, events table, disclaimer.
+- 404 for unknown vehicle; 500 on generation failure.
+- Download PDF links on public report, print view, and admin manage.
+
+### Testing
+
+- `npm run lint`, `npm run build`
+- Seeded Toyota: PDF downloads with identity, scores, event table.
+- Invalid vehicle id: 404 JSON.
+
+### Limitations
+
+- Local records only (no NHTSA-only PDF).
+- No embedded photo thumbnails.
+- No public share links or payments.
+
+### Next step
+
+- Comparison PDF export bundle.
+
+Phase 25 server-side PDF export implemented.
 
 ---
 

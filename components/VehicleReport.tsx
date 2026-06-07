@@ -12,6 +12,7 @@ import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
 import type { VehicleReportData } from "@/lib/vehicle-report";
 import { buildVehicleExecutiveSummary } from "@/lib/vehicle-executive-summary";
 import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
+import { vehiclePdfExportUrl } from "@/lib/vehicle-pdf-export-url";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -61,6 +62,10 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
             ·
           </span>
           <Link href={`/vehicles/${vehicle.id}/print`}>Print report</Link>
+          <span className="report-action-sep" aria-hidden="true">
+            ·
+          </span>
+          <a href={vehiclePdfExportUrl(vehicle.id)}>Download PDF</a>
         </p>
       </header>
 

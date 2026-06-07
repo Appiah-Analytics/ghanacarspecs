@@ -17,6 +17,7 @@ import { formatPhotoSource } from "@/lib/photo-source";
 import { getAdminVehicleManage } from "@/lib/admin-vehicle-manage";
 import { buildVehicleExecutiveSummary } from "@/lib/vehicle-executive-summary";
 import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
+import { vehiclePdfExportUrl } from "@/lib/vehicle-pdf-export-url";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +88,10 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
           ·
         </span>
         <Link href={`/vehicles/${vehicle.id}/print`}>Print report</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
+        <a href={vehiclePdfExportUrl(vehicle.id)}>Download PDF</a>
         <span className="back-row-sep" aria-hidden="true">
           ·
         </span>

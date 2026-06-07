@@ -29,6 +29,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 22 | Report presentation and comparison foundation | Done |
 | 23 | Vehicle comparison UI | Done |
 | 24 | Report export readiness / print-friendly report | Done |
+| 25 | Server-side PDF export | Done |
 
 ---
 
@@ -186,4 +187,13 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] `@media print` styles (hide site chrome, compact tables)
 - [x] Entry points on public report and admin manage
 - [x] `docs/report_export_print.md`, ADR-011
-- [ ] Server-side PDF generation (future)
+- [x] Server-side PDF generation (`GET /api/vehicles/[id]/export/pdf`)
+
+## Phase 25 — Server-side PDF export
+
+- [x] `GET /api/vehicles/[id]/export/pdf` Node.js route
+- [x] `generateVehicleReportPdf()` using `pdfkit`
+- [x] Reuses `buildVehicleReportBundle()` + `buildReportExportSummary()`
+- [x] Download PDF links on public report, print view, admin manage
+- [x] `docs/pdf_export.md`, ADR-012
+- [ ] Comparison PDF / embedded photos (future)

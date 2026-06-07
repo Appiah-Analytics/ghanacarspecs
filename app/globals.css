@@ -1992,6 +1992,10 @@ main.page {
   font-weight: 600;
 }
 
+.back-row a[href*="/export/pdf"] {
+  font-weight: 600;
+}
+
 .report-action-sep {
   margin: 0 0.35rem;
   color: var(--muted);
