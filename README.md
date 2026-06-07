@@ -66,7 +66,13 @@ Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](d
 
 Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case ignored for plate and chassis).
 
-**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Executive summary**, **Trust score**, **Vehicle risk profile**, full specs, **Vehicle intelligence**, visual evidence, event timeline, and a **Compare this vehicle** link.
+**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Executive summary**, **Trust score**, **Vehicle risk profile**, full specs, **Vehicle intelligence**, visual evidence, event timeline, and **Compare this vehicle** / **Print report** links.
+
+### A1b. Print a local vehicle report
+
+From any public report, open **Print report** or go directly to `/vehicles/{id}/print`.
+
+**Expected:** Document-style layout with executive summary, trust/risk scores, specs, event table, and disclaimer. **Print report** opens the browser print dialog (save as PDF supported). Site header/footer hidden on the print route.
 
 ### A2. Compare two local vehicles
 

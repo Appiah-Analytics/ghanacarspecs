@@ -1983,13 +1983,262 @@ main.page {
   font-weight: 600;
 }
 
-.report-compare-link {
+.report-action-links {
   margin: 0.65rem 0 0;
   font-size: 0.9rem;
 }
 
-.report-compare-link a {
+.report-action-links a {
   font-weight: 600;
+}
+
+.report-action-sep {
+  margin: 0 0.35rem;
+  color: var(--muted);
+}
+
+/* Print-friendly report (Phase 24) */
+body:has(.print-page) .site-header,
+body:has(.print-page) .site-footer {
+  display: none;
+}
+
+.print-page {
+  max-width: 52rem;
+}
+
+.print-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.print-actions-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.print-actions-btn:hover {
+  background: #f8fafc;
+}
+
+.print-actions-link {
+  font-weight: 600;
+}
+
+.print-report {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  color: #111827;
+}
+
+.print-report-doc-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #111827;
+}
+
+.print-report-brand-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.print-report-brand-tag {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.print-report-generated {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+  align-self: flex-end;
+}
+
+.print-report-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.print-report-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.print-report-section:last-of-type {
+  border-bottom: none;
+}
+
+.print-report-section-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.print-report-subtitle {
+  margin: 0.85rem 0 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.print-report-lead {
+  margin: 0 0 0.75rem;
+  line-height: 1.55;
+}
+
+.print-report-text,
+.print-report-note {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.print-report-note {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.print-report-identity-grid,
+.print-report-status-grid,
+.print-report-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+}
+
+.print-report-identity-grid dt,
+.print-report-status-grid dt,
+.print-report-spec-grid dt,
+.print-report-score-row dt {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+
+.print-report-identity-grid dd,
+.print-report-status-grid dd,
+.print-report-spec-grid dd,
+.print-report-score-row dd {
+  margin: 0.1rem 0 0;
+  line-height: 1.45;
+}
+
+.print-report-score-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.print-report-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.55;
+}
+
+.print-report-list li + li {
+  margin-top: 0.25rem;
+}
+
+.print-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.print-report-table th,
+.print-report-table td {
+  border: 1px solid #d1d5db;
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.print-report-table th {
+  background: #f3f4f6;
+  font-weight: 700;
+}
+
+.print-report-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.print-report-disclaimer {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.print-report-disclaimer + .print-report-disclaimer {
+  margin-top: 0.35rem;
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .site-header,
+  .site-footer,
+  .back-row,
+  .print-actions,
+  .no-print {
+    display: none !important;
+  }
+
+  .page,
+  .print-page {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-report {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .print-report-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-report-table {
+    font-size: 0.82rem;
+  }
+
+  .print-report-table th {
+    background: #eee !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 
 .compare-form {

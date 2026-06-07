@@ -86,6 +86,10 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
         <span className="back-row-sep" aria-hidden="true">
           ·
         </span>
+        <Link href={`/vehicles/${vehicle.id}/print`}>Print report</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
         <AdminSignOut />
       </div>
 

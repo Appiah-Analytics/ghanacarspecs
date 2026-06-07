@@ -166,6 +166,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-011 — Print View Before PDF Export
+
+**Date:** 2026-06-07
+
+**Decision:** Phase 24 adds a dedicated print-friendly report page (`/vehicles/[id]/print`) that reuses `buildReportExportSummary()` and browser print — no PDF library yet.
+
+**Reason:** Validate report layout and content for export on paper/PDF before committing to server-side PDF generation.
+
+**Alternatives Considered:** Add `@react-pdf/renderer` or similar immediately; print styles on the existing report page only.
+
+**Tradeoffs:** Users must use browser print/save-as-PDF; no branded PDF download button yet. Separate route keeps the interactive report UX unchanged.
+
+**Verification:** Phase 24 print page checks (`npm run lint`, `npm run build`, seeded vehicle print preview).
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

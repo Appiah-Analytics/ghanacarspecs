@@ -28,6 +28,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 21 | Vehicle risk profile (explainable concern signals) | Done |
 | 22 | Report presentation and comparison foundation | Done |
 | 23 | Vehicle comparison UI | Done |
+| 24 | Report export readiness / print-friendly report | Done |
 
 ---
 
@@ -176,3 +177,13 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Mobile-responsive stacked layout
 - [x] `docs/vehicle_comparison_ui.md`, ADR-010
 - [ ] PDF export / saved comparisons (future)
+
+## Phase 24 — Report export readiness / print-friendly report
+
+- [x] `/vehicles/[id]/print` print-friendly page
+- [x] `PrintableVehicleReport` using `buildReportExportSummary()`
+- [x] `PrintReportActions` with browser print trigger
+- [x] `@media print` styles (hide site chrome, compact tables)
+- [x] Entry points on public report and admin manage
+- [x] `docs/report_export_print.md`, ADR-011
+- [ ] Server-side PDF generation (future)

@@ -55,8 +55,12 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
             <> &middot; No plate on file</>
           )}
         </p>
-        <p className="report-compare-link">
+        <p className="report-action-links">
           <Link href={`/compare?a=${encodeURIComponent(vehicle.vin)}`}>Compare this vehicle</Link>
+          <span className="report-action-sep" aria-hidden="true">
+            ·
+          </span>
+          <Link href={`/vehicles/${vehicle.id}/print`}>Print report</Link>
         </p>
       </header>
 

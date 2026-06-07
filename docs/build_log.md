@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 23 vehicle comparison UI)  
+**Last updated:** 2026-06-07 (phase 24 print-friendly report)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,50 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Phase 24 — Report export readiness / print-friendly report
+
+### Goal
+
+Add a clean printable report page reusing Phase 22 export summary data — browser print/save-as-PDF before server-side PDF generation.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Print page | `app/vehicles/[id]/print/page.tsx` |
+| UI | `components/PrintableVehicleReport.tsx`, `components/PrintReportActions.tsx` |
+| Entry points | `components/VehicleReport.tsx`, `app/admin/vehicles/[id]/page.tsx` |
+| Styles | `app/globals.css` (print route, `@media print`) |
+| Docs | `docs/report_export_print.md`, ADR-011, `README.md`, handoff, roadmap |
+
+### Behavior
+
+- `/vehicles/[id]/print` renders a document-style report from `buildReportExportSummary()`.
+- Print button triggers browser print; site header/footer hidden on print route and in print media.
+- Compact event table; photo count note (no embedded images).
+- `robots: noindex` on print page metadata.
+
+### Testing
+
+- `npm run lint`, `npm run build`
+- Seeded Toyota report: print preview shows executive summary, scores, specs, events.
+- Print media hides actions and site chrome.
+
+### Limitations
+
+- No server-side PDF download.
+- No embedded photos in print output.
+- Local records only (same scope as public report).
+- NHTSA-only decodes have no print route.
+
+### Next step
+
+- Server-side PDF export reusing `ReportExportSummary` structure.
+
+Phase 24 print-friendly report implemented.
 
 ---
 
