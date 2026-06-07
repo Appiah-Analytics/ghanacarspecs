@@ -5,10 +5,12 @@ import { TrustCenter } from "@/components/TrustCenter";
 import { VerificationStatus } from "@/components/VerificationStatus";
 import { VehicleIntelligencePanel } from "@/components/VehicleIntelligence";
 import { VehiclePhotos } from "@/components/VehiclePhotos";
+import { VehicleRiskProfilePanel } from "@/components/VehicleRiskProfile";
 import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
 import type { VehicleReportData } from "@/lib/vehicle-report";
 import { analyzeVehicleIntelligence } from "@/lib/vehicle-intelligence";
 import { calculateVehicleTrustScore } from "@/lib/vehicle-trust-score";
+import { calculateVehicleRiskProfile } from "@/lib/vehicle-risk-profile";
 
 function formatDate(d: Date | string | null | undefined): string {
   if (!d) return "-";
@@ -25,6 +27,19 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
   });
 
   const trustScore = calculateVehicleTrustScore({
+    vin: vehicle.vin,
+    plateNumber: vehicle.plateNumber,
+    chassisNumber: vehicle.chassisNumber,
+    make: vehicle.make,
+    model: vehicle.model,
+    year: vehicle.year,
+    countryOfOrigin: vehicle.countryOfOrigin,
+    importDate: vehicle.importDate,
+    events: vehicle.events,
+    photos: vehicle.photos,
+  });
+
+  const riskProfile = calculateVehicleRiskProfile({
     vin: vehicle.vin,
     plateNumber: vehicle.plateNumber,
     chassisNumber: vehicle.chassisNumber,
@@ -71,6 +86,8 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
       </header>
 
       <VehicleTrustScorePanel trustScore={trustScore} />
+
+      <VehicleRiskProfilePanel riskProfile={riskProfile} />
 
       <section className="report-section" aria-labelledby="specs-heading">
         <h3 id="specs-heading" className="report-section-title">

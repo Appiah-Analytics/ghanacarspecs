@@ -121,6 +121,8 @@ Admin login (/admin/login)
 
 **Vehicle Trust Score (Phase 20):** `calculateVehicleTrustScore()` in `lib/vehicle-trust-score.ts` produces an explainable 0–100 score from published evidence completeness, confidence/provenance, and risk signals. Shown on public reports and admin manage pages. See [`docs/vehicle_trust_score.md`](vehicle_trust_score.md).
 
+**Vehicle Risk Profile (Phase 21):** `calculateVehicleRiskProfile()` in `lib/vehicle-risk-profile.ts` produces a separate 0–100 concern score (higher = more risk) with risk factors, positive signals, and recommendations. Trust Score and Risk Profile are intentionally separate. See [`docs/vehicle_risk_profile.md`](vehicle_risk_profile.md).
+
 ### Upload flow
 
 ```text
@@ -461,7 +463,7 @@ npm run db:seed:postgres
 | `docs/evidence_lifecycle_management.md` | Moderation lifecycle, soft delete rules, audit logging |
 | `docs/public_trust_and_transparency.md` | Public trust UX, transparency principles, verification limits |
 | `docs/data_acquisition_and_import_quality.md` | CSV ingest, shared event write path, import quality principles |
-| `docs/architecture_decisions.md` | ADRs — why key design choices were made (shared write path, lifecycle, trust score, duplicates, import history) |
+| `docs/architecture_decisions.md` | ADRs — why key design choices were made (shared write path, lifecycle, trust score, duplicates, import history, risk profile) |
 
 For decision context beyond current system diagrams, start with [`architecture_decisions.md`](architecture_decisions.md) (ADR-001 through ADR-007 cover Phases 16–20 foundations).
 

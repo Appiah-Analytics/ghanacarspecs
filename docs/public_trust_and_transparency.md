@@ -25,6 +25,16 @@ Public reports and admin vehicle pages show a **0–100 Trust Score** with band,
 
 ---
 
+## Vehicle Risk Profile (Phase 21)
+
+Public reports and admin vehicle pages show a **0–100 Risk Profile** (higher = more concern) separate from Trust Score.
+
+- Rule-based; see [`vehicle_risk_profile.md`](./vehicle_risk_profile.md).
+- Highlights possible accident/claim/theft/mileage/completeness concerns with cautious wording.
+- **Trust Score ≠ Risk Profile** — well-documented records can still show elevated risk.
+
+---
+
 ## Confidence model
 
 | Level | Meaning |

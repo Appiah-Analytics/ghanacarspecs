@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 20 vehicle trust score)  
+**Last updated:** 2026-05-29 (phase 21 vehicle risk profile)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,49 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+## Phase 21 — Vehicle risk profile
+
+### Goal
+
+Add an explainable Vehicle Risk Profile (0–100, higher = more concern) separate from Trust Score to help buyers understand possible worry areas.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Risk engine | `lib/vehicle-risk-profile.ts` |
+| UI | `components/VehicleRiskProfile.tsx` |
+| Public report | `components/VehicleReport.tsx` |
+| Admin manage | `app/admin/vehicles/[id]/page.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/vehicle_risk_profile.md`, `docs/architecture_decisions.md` (ADR-008), `README.md`, `docs/project_handoff_master.md`, `docs/build_log.md`, `docs/roadmap.md`, `docs/public_trust_and_transparency.md` |
+
+### Behavior implemented
+
+- Rule-based risk factors (accident/claim/theft, mileage gaps, completeness, import context).
+- Positive signals and recommendations with non-accusatory language.
+- Trust vs risk separation copy on every panel.
+
+### How it was tested
+
+- `npm run lint`, `npm run build`
+- Seeded Toyota/VW/Honda risk profile spot checks
+
+### Known limitations
+
+- No external verification integrations; sparse records may under-signal risk.
+- Admin dashboard risk filtering not implemented.
+
+### Next recommended step
+
+- Admin dashboard sort/filter by risk level.
+
+---
+
+Phase 21 Vehicle Risk Profile implemented.
 
 ---
 

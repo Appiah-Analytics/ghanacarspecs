@@ -118,9 +118,25 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-008 — Vehicle Risk Profile
+
+**Date:** 2026-05-29
+
+**Decision:** Risk Profile is rule-based, explainable, and separate from Trust Score.
+
+**Reason:** Trust Score measures evidence completeness; Risk Profile highlights concern areas. Keeping them separate prevents confusing “well documented” with “safe.”
+
+**Alternatives Considered:** Single combined trust/risk score.
+
+**Tradeoffs:** More UI explanation required, but clearer product semantics.
+
+**Verification:** Phase 21 implementation and seeded vehicle report checks.
+
+---
+
 ## How to add a new ADR
 
-1. Copy the template below the next sequential number (`ADR-008`, etc.).
+1. Copy the template below the next sequential number (`ADR-009`, etc.).
 2. Link the verification field to a phase in [`build_log.md`](build_log.md) or a specific test run.
 3. Cross-reference affected runbooks if the decision changes operator workflow.
 
