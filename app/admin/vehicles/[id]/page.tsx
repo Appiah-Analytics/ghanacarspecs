@@ -82,6 +82,10 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
         <span className="back-row-sep" aria-hidden="true">
           ·
         </span>
+        <Link href={`/compare?a=${encodeURIComponent(vehicle.vin)}`}>Compare vehicle</Link>
+        <span className="back-row-sep" aria-hidden="true">
+          ·
+        </span>
         <AdminSignOut />
       </div>
 

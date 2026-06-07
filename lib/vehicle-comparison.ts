@@ -23,7 +23,7 @@ export type VehicleComparisonSnapshot = {
   historyConfidenceScore: number;
 };
 
-/** Structured comparison row for future Phase 23 UI — no comparison UI in Phase 22. */
+/** Structured comparison snapshot for Phase 23 side-by-side UI and export readiness. */
 export function buildVehicleComparisonSnapshot(report: VehicleReportBundle): VehicleComparisonSnapshot {
   const { vehicle, trustScore, riskProfile, intelligence } = report;
   const publishedEvents = vehicle.events.filter(

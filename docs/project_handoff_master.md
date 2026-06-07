@@ -123,7 +123,9 @@ Admin login (/admin/login)
 
 **Vehicle Risk Profile (Phase 21):** `calculateVehicleRiskProfile()` in `lib/vehicle-risk-profile.ts` produces a separate 0–100 concern score (higher = more risk) with risk factors, positive signals, and recommendations. Trust Score and Risk Profile are intentionally separate. See [`docs/vehicle_risk_profile.md`](vehicle_risk_profile.md).
 
-**Report presentation (Phase 22):** `buildVehicleExecutiveSummary()` and `VehicleExecutiveSummaryPanel` provide a one-glance report summary; `buildVehicleComparisonSnapshot()` and `buildReportExportSummary()` prepare future comparison/export features. See [`docs/report_presentation_and_comparison_foundation.md`](report_presentation_and_comparison_foundation.md).
+**Report presentation (Phase 22):** `buildVehicleExecutiveSummary()` and `VehicleExecutiveSummaryPanel` provide a one-glance report summary; `buildVehicleComparisonSnapshot()` and `buildReportExportSummary()` prepare comparison/export features. See [`docs/report_presentation_and_comparison_foundation.md`](report_presentation_and_comparison_foundation.md).
+
+**Vehicle comparison (Phase 23):** `/compare?a=…&b=…` resolves two local records via `resolveComparisonSnapshot()` and renders `VehicleComparison` using report-derived snapshots (ADR-010). Entry points on public report, admin manage, and homepage. See [`docs/vehicle_comparison_ui.md`](vehicle_comparison_ui.md).
 
 ### Upload flow
 

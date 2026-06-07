@@ -27,6 +27,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 20 | Vehicle trust score (explainable completeness signal) | Done |
 | 21 | Vehicle risk profile (explainable concern signals) | Done |
 | 22 | Report presentation and comparison foundation | Done |
+| 23 | Vehicle comparison UI | Done |
 
 ---
 
@@ -164,3 +165,14 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Ingest API passes admin identifier into CSV pipeline
 - [x] `docs/data_acquisition_and_import_quality.md`
 - [ ] Import preview / duplicate detection (Phase 19+)
+
+## Phase 23 — Vehicle comparison UI
+
+- [x] `/compare` page with `?a=` and `?b=` query params
+- [x] `VehicleComparisonForm` and `VehicleComparison` components
+- [x] `resolveComparisonSnapshot()` via existing lookup + report bundle
+- [x] Cautious interpretation summary
+- [x] Entry points: public report, admin manage, homepage
+- [x] Mobile-responsive stacked layout
+- [x] `docs/vehicle_comparison_ui.md`, ADR-010
+- [ ] PDF export / saved comparisons (future)

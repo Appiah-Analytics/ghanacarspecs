@@ -150,6 +150,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-010 — Comparison UI Uses Existing Report Snapshots
+
+**Date:** 2026-05-29
+
+**Decision:** Vehicle comparison uses report-derived snapshot objects instead of querying independent comparison-specific models.
+
+**Reason:** Keeps comparison consistent with public reports, trust score, risk profile, and evidence visibility rules.
+
+**Alternatives Considered:** Build a separate comparison query/data model.
+
+**Tradeoffs:** Slightly more dependency on report structure, but avoids duplicate scoring logic.
+
+**Verification:** Phase 23 comparison checks.
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

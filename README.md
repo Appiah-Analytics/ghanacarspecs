@@ -66,7 +66,15 @@ Use any seeded **VIN**, **plate**, or **chassis** from [`docs/sample_data.md`](d
 
 Look up any seeded vehicle by **VIN**, **plate**, or **chassis** (spacing/case ignored for plate and chassis).
 
-**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Executive summary**, **Trust score**, **Vehicle risk profile**, full specs, **Vehicle intelligence**, visual evidence, and event timeline.
+**Expected:** Redirect to `/vehicles/{id}` with a green banner **Local GhanaCarSpecs record**, **Executive summary**, **Trust score**, **Vehicle risk profile**, full specs, **Vehicle intelligence**, visual evidence, event timeline, and a **Compare this vehicle** link.
+
+### A2. Compare two local vehicles
+
+Open [`/compare`](http://localhost:3000/compare) or use query params:
+
+`/compare?a=4T1BE46K37U123456&b=WVWZZZ3CZWE123456`
+
+**Expected:** Side-by-side columns with trust/risk scores, evidence counts, and a cautious comparison summary. Toyota (A) should show higher trust and lower risk than VW (B); VW accident count visible.
 
 ### B. External VIN decoded record (NHTSA vPIC)
 
@@ -271,8 +279,13 @@ It returns deployment environment, database status, blob configuration status, t
 - `lib/vehicle-risk-profile.ts` — Explainable 0–100 vehicle risk profile (higher = more concern)
 - `lib/vehicle-report-bundle.ts` — Shared trust/risk/intelligence derivations for reports
 - `lib/vehicle-executive-summary.ts` — One-glance executive summary builder
-- `lib/vehicle-comparison.ts` — Comparison snapshot for future Phase 23 UI
+- `lib/vehicle-comparison.ts` — Comparison snapshot builder
+- `lib/resolve-vehicle-comparison.ts` — Resolve identifier to comparison snapshot
+- `lib/vehicle-comparison-interpret.ts` — Cautious comparison summary lines
 - `lib/report-export-summary.ts` — Plain export summary object (no PDF yet)
+- `app/compare/page.tsx` — Side-by-side vehicle comparison page
+- `components/VehicleComparison.tsx` — Comparison columns and interpretation
+- `components/VehicleComparisonForm.tsx` — Compare form (Vehicle A / B)
 - `components/VehicleTrustScore.tsx` — Trust score panel on public reports and admin manage page
 - `components/VehicleRiskProfile.tsx` — Risk profile panel on public reports and admin manage page
 - `components/VehicleExecutiveSummary.tsx` — Executive summary panel on public reports and admin manage page
@@ -344,6 +357,7 @@ See [`docs/postgresql.md`](docs/postgresql.md) for the full dual-schema workflow
 | [`docs/vehicle_trust_score.md`](docs/vehicle_trust_score.md) | Vehicle Trust Score formula, bands, limitations |
 | [`docs/vehicle_risk_profile.md`](docs/vehicle_risk_profile.md) | Vehicle Risk Profile, trust vs risk separation, limitations |
 | [`docs/report_presentation_and_comparison_foundation.md`](docs/report_presentation_and_comparison_foundation.md) | Executive summary, report order, comparison/export foundation |
+| [`docs/vehicle_comparison_ui.md`](docs/vehicle_comparison_ui.md) | Side-by-side comparison page, fields, limitations |
 | [`docs/data_acquisition_and_import_quality.md`](docs/data_acquisition_and_import_quality.md) | CSV ingest, shared event write path, import quality |
 | [`docs/event_idempotency_and_import_preview.md`](docs/event_idempotency_and_import_preview.md) | Event fingerprint, preview/commit, idempotent re-import |
 | [`docs/vercel_blob_setup.md`](docs/vercel_blob_setup.md) | Blob store + `BLOB_READ_WRITE_TOKEN` for admin uploads |

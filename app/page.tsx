@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { DemoExamples } from "@/components/DemoExamples";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LookupForm } from "@/components/LookupForm";
@@ -16,6 +17,9 @@ export default function HomePage() {
           Ghana plate number, or chassis number to see what the platform can surface today.
         </p>
         <LookupForm />
+        <p className="hero-compare-link">
+          <Link href="/compare">Compare two vehicles side by side</Link>
+        </p>
       </section>
 
       <VinChassisGuidance />

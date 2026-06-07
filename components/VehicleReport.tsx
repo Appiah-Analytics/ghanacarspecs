@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { EventTimeline } from "@/components/EventTimeline";
 import { SourceBanner } from "@/components/SourceBanner";
 import { TransparencyStatement } from "@/components/TransparencyStatement";
@@ -53,6 +54,9 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
           ) : (
             <> &middot; No plate on file</>
           )}
+        </p>
+        <p className="report-compare-link">
+          <Link href={`/compare?a=${encodeURIComponent(vehicle.vin)}`}>Compare this vehicle</Link>
         </p>
       </header>
 

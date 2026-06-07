@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-05-29 (phase 22 report presentation and comparison foundation)  
+**Last updated:** 2026-05-29 (phase 23 vehicle comparison UI)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -18,6 +18,55 @@ When you ship a meaningful feature:
 2. Fill in all six subsections: goal, files, behavior, testing, limitations, next step.
 3. Bump **Last updated** at the top.
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
+
+---
+
+---
+
+## Phase 23 — Vehicle comparison UI
+
+### Goal
+
+Add a buyer-friendly side-by-side comparison page using Phase 22 comparison snapshots — no duplicate scoring or lookup changes.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Compare page | `app/compare/page.tsx` |
+| UI | `components/VehicleComparison.tsx`, `components/VehicleComparisonForm.tsx` |
+| Resolution | `lib/resolve-vehicle-comparison.ts`, `lib/vehicle-comparison-interpret.ts` |
+| Entry points | `components/VehicleReport.tsx`, `app/admin/vehicles/[id]/page.tsx`, `app/page.tsx` |
+| Styles | `app/globals.css` (compare grid, mobile stack) |
+| Docs | `docs/vehicle_comparison_ui.md`, ADR-010, `README.md`, handoff, roadmap |
+
+### Behavior
+
+- `/compare?a=IDENTIFIER&b=IDENTIFIER` resolves both vehicles via existing lookup + report bundle.
+- Side-by-side identity, scores, evidence counts, and intelligence signals.
+- Missing vehicle messages when one or both identifiers fail lookup.
+- Cautious interpretation summary when both vehicles are found.
+- Mobile: columns stack at ≤720px.
+
+### Testing
+
+- `npm run lint`, `npm run build`
+- Toyota vs VW: higher trust on Toyota, higher risk on VW, accident count visible on VW.
+- Toyota vs Honda: identity/evidence differences visible.
+- Valid + invalid identifier: not-found messages.
+- Compare link from public report pre-fills Vehicle A.
+
+### Limitations
+
+- Local records only (no NHTSA-only decode comparison).
+- No PDF, share links, or payment.
+- Report “Compare this vehicle” pre-fills only Vehicle A.
+
+### Next step
+
+- Row-level delta highlighting or export bundle including comparison.
+
+Phase 23 Vehicle Comparison UI implemented.
 
 ---
 
