@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-06-07 (phase 25 server-side PDF export)  
+**Last updated:** 2026-06-07 (post-phase 25 stabilization)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,17 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Post-Phase 25 stabilization
+
+Small hardening before Phase 26:
+
+- **Public lookup API:** Removed `rawPayload` from `POST /api/v1/lookup` event objects. Response now returns only `id`, `eventType`, `eventDate`, `mileage`, and `sourceSystem`. Public report pages unchanged (`/vehicles/[id]` still loads via `getVehicleForReport`).
+- **PDF export:** `generateVehicleReportPdf()` builds `buildVehicleReportBundle()` once and passes the bundle into `renderPdfContent()` (no duplicate scoring work).
+
+Verified: `npm run lint`, `npm run build`.
 
 ---
 

@@ -84,7 +84,6 @@ export async function POST(request: Request) {
           eventDate: e.eventDate.toISOString(),
           mileage: e.mileage,
           sourceSystem: e.sourceSystem,
-          rawPayload: e.rawPayload,
         })),
         intelligence: analyzeVehicleIntelligence({
           year: vehicle.year,

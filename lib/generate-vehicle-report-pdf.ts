@@ -2,7 +2,7 @@ import PDFDocument from "pdfkit";
 import type { VehicleReportData } from "@/lib/vehicle-report";
 import type { ReportExportSummary } from "@/lib/report-export-summary";
 import { buildReportExportSummary } from "@/lib/report-export-summary";
-import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
+import { buildVehicleReportBundle, type VehicleReportBundle } from "@/lib/vehicle-report-bundle";
 
 const PAGE_BOTTOM_MARGIN = 72;
 
@@ -163,8 +163,12 @@ function drawEventTable(doc: PdfDoc, vehicle: VehicleReportData): void {
   doc.moveDown(0.25);
 }
 
-function renderPdfContent(doc: PdfDoc, vehicle: VehicleReportData, exportSummary: ReportExportSummary): void {
-  const reportBundle = buildVehicleReportBundle(vehicle);
+function renderPdfContent(
+  doc: PdfDoc,
+  vehicle: VehicleReportData,
+  reportBundle: VehicleReportBundle,
+  exportSummary: ReportExportSummary,
+): void {
   const { trustScore, riskProfile, intelligence } = reportBundle;
   const snapshot = exportSummary.comparisonSnapshot;
   const summary = exportSummary.executiveSummary;
@@ -308,7 +312,7 @@ export async function generateVehicleReportPdf(vehicle: VehicleReportData): Prom
     doc.on("error", reject);
 
     try {
-      renderPdfContent(doc, vehicle, exportSummary);
+      renderPdfContent(doc, vehicle, reportBundle, exportSummary);
       doc.end();
     } catch (error) {
       reject(error);
