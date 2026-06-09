@@ -198,6 +198,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-013 — Report Reference and Sharing Foundation
+
+**Date:** 2026-06-07
+
+**Decision:** Phase 26 adds a deterministic `GCS-` report reference derived from vehicle identity (VIN → chassis → plate → id) at render time, plus a client-side copy-link button. No schema changes or share tokens.
+
+**Reason:** Make reports identifiable and shareable across online, print, and PDF surfaces before adding short URLs or tokenized sharing.
+
+**Alternatives Considered:** Database-stored share codes, QR codes, email share, public short-link service.
+
+**Tradeoffs:** Reference is not yet a lookup key; copy link shares the full page URL only. Simple and auditable.
+
+**Verification:** Phase 26 reference and copy-link checks (`npm run lint`, `npm run build`, seeded Toyota reference consistency).
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

@@ -1,5 +1,7 @@
 import type { VehicleReportData } from "@/lib/vehicle-report";
+import { ReportReferenceBlock } from "@/components/ReportReferenceBlock";
 import { buildReportExportSummary } from "@/lib/report-export-summary";
+import { buildReportReference } from "@/lib/report-reference";
 import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
 
 function formatDate(d: Date | string | null | undefined): string {
@@ -26,6 +28,7 @@ export function PrintableVehicleReport({ vehicle }: { vehicle: VehicleReportData
   const reportBundle = buildVehicleReportBundle(vehicle);
   const { trustScore, riskProfile, intelligence } = reportBundle;
   const exportSummary = buildReportExportSummary(reportBundle);
+  const reportReference = buildReportReference(vehicle);
   const snapshot = exportSummary.comparisonSnapshot;
   const summary = exportSummary.executiveSummary;
 
@@ -56,6 +59,10 @@ export function PrintableVehicleReport({ vehicle }: { vehicle: VehicleReportData
           {vehicle.trim ? ` ${vehicle.trim}` : ""}
         </h1>
         <dl className="print-report-identity-grid">
+          <div>
+            <dt>Report Reference</dt>
+            <dd className="mono">{reportReference}</dd>
+          </div>
           <div>
             <dt>VIN</dt>
             <dd className="mono">{vehicle.vin}</dd>

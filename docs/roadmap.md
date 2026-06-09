@@ -30,6 +30,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 23 | Vehicle comparison UI | Done |
 | 24 | Report export readiness / print-friendly report | Done |
 | 25 | Server-side PDF export | Done |
+| 26 | Share & reference foundation | Done |
 
 ---
 
@@ -197,3 +198,12 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] Download PDF links on public report, print view, admin manage
 - [x] `docs/pdf_export.md`, ADR-012
 - [ ] Comparison PDF / embedded photos (future)
+
+## Phase 26 — Share & reference foundation
+
+- [x] `buildReportReference()` in `lib/report-reference.ts`
+- [x] Report Reference on public report, print view, PDF, admin manage
+- [x] `CopyReportLinkButton` on public report and print actions
+- [x] `lib/report-url.ts` path helpers
+- [x] `docs/phase_26_share_and_reference_foundation.md`, ADR-013
+- [ ] GCS reference lookup route / short links (future)

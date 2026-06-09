@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { CopyReportLinkButton } from "@/components/CopyReportLinkButton";
+import { ReportReferenceBlock } from "@/components/ReportReferenceBlock";
 import { EventTimeline } from "@/components/EventTimeline";
 import { SourceBanner } from "@/components/SourceBanner";
 import { TransparencyStatement } from "@/components/TransparencyStatement";
@@ -12,6 +14,7 @@ import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
 import type { VehicleReportData } from "@/lib/vehicle-report";
 import { buildVehicleExecutiveSummary } from "@/lib/vehicle-executive-summary";
 import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
+import { buildReportReference } from "@/lib/report-reference";
 import { vehiclePdfExportUrl } from "@/lib/vehicle-pdf-export-url";
 
 function formatDate(d: Date | string | null | undefined): string {
@@ -24,6 +27,7 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
   const reportBundle = buildVehicleReportBundle(vehicle);
   const { trustScore, riskProfile, intelligence } = reportBundle;
   const executiveSummary = buildVehicleExecutiveSummary(reportBundle);
+  const reportReference = buildReportReference(vehicle);
 
   const lastMileage = vehicle.events.reduce<number | null>((max, ev) => {
     if (ev.mileage == null) return max;
@@ -56,6 +60,7 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
             <> &middot; No plate on file</>
           )}
         </p>
+        <ReportReferenceBlock reference={reportReference} />
         <p className="report-action-links">
           <Link href={`/compare?a=${encodeURIComponent(vehicle.vin)}`}>Compare this vehicle</Link>
           <span className="report-action-sep" aria-hidden="true">
@@ -66,6 +71,10 @@ export function VehicleReport({ vehicle }: { vehicle: VehicleReportData }) {
             ·
           </span>
           <a href={vehiclePdfExportUrl(vehicle.id)}>Download PDF</a>
+          <span className="report-action-sep" aria-hidden="true">
+            ·
+          </span>
+          <CopyReportLinkButton className="copy-report-link-inline" />
         </p>
       </header>
 

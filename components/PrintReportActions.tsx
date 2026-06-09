@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CopyReportLinkButton } from "@/components/CopyReportLinkButton";
 import { vehiclePdfExportUrl } from "@/lib/vehicle-pdf-export-url";
 
 type PrintReportActionsProps = {
@@ -19,6 +20,7 @@ export function PrintReportActions({ vehicleId }: PrintReportActionsProps) {
       <Link href={`/vehicles/${vehicleId}`} className="print-actions-link">
         View full report
       </Link>
+      <CopyReportLinkButton className="print-actions-btn" />
     </div>
   );
 }

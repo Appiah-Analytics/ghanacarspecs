@@ -131,6 +131,8 @@ Admin login (/admin/login)
 
 **PDF export (Phase 25):** `GET /api/vehicles/[id]/export/pdf` generates a downloadable PDF via `generateVehicleReportPdf()` (pdfkit) from the same export summary pipeline (ADR-012). Download links on public report, print view, and admin manage. See [`docs/pdf_export.md`](pdf_export.md).
 
+**Share & reference (Phase 26):** `buildReportReference()` derives a deterministic `GCS-` code (VIN → chassis → plate → id) shown on public report, print, PDF, and admin manage. `CopyReportLinkButton` copies the current page URL (ADR-013). See [`docs/phase_26_share_and_reference_foundation.md`](phase_26_share_and_reference_foundation.md).
+
 ### Upload flow
 
 ```text

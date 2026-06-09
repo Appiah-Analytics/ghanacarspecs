@@ -2,6 +2,7 @@ import PDFDocument from "pdfkit";
 import type { VehicleReportData } from "@/lib/vehicle-report";
 import type { ReportExportSummary } from "@/lib/report-export-summary";
 import { buildReportExportSummary } from "@/lib/report-export-summary";
+import { buildReportReference } from "@/lib/report-reference";
 import { buildVehicleReportBundle, type VehicleReportBundle } from "@/lib/vehicle-report-bundle";
 
 const PAGE_BOTTOM_MARGIN = 72;
@@ -170,6 +171,7 @@ function renderPdfContent(
   exportSummary: ReportExportSummary,
 ): void {
   const { trustScore, riskProfile, intelligence } = reportBundle;
+  const reportReference = buildReportReference(vehicle);
   const snapshot = exportSummary.comparisonSnapshot;
   const summary = exportSummary.executiveSummary;
   const trustReasons = trustScore.reasons.slice(1);
@@ -195,6 +197,7 @@ function renderPdfContent(
   doc.moveDown(0.35);
 
   keyValueGrid(doc, [
+    { label: "Report Reference", value: reportReference },
     { label: "VIN", value: vehicle.vin },
     { label: "Plate", value: vehicle.plateNumber ?? "—" },
     { label: "Chassis", value: vehicle.chassisNumber ?? "—" },

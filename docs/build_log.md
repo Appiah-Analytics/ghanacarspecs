@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-06-07 (post-phase 25 stabilization)  
+**Last updated:** 2026-06-07 (phase 26 share and reference foundation)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,49 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Phase 26 — Share & reference foundation
+
+### Goal
+
+Add deterministic report references and copy-link sharing across public report, print, PDF, and admin surfaces — no schema changes.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Reference helper | `lib/report-reference.ts` |
+| URL helpers | `lib/report-url.ts` |
+| UI | `components/ReportReferenceBlock.tsx`, `components/CopyReportLinkButton.tsx` |
+| Surfaces | `components/VehicleReport.tsx`, `components/PrintableVehicleReport.tsx`, `components/PrintReportActions.tsx`, `lib/generate-vehicle-report-pdf.ts`, `app/admin/vehicles/[id]/page.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/phase_26_share_and_reference_foundation.md`, ADR-013, roadmap, README, handoff |
+
+### Behavior
+
+- `buildReportReference()` returns `GCS-{normalized}` using VIN → chassis → plate → id priority.
+- Same reference on public report, print view, PDF identity section, and admin manage hero.
+- **Copy report link** copies `window.location.href` with copied/unavailable feedback.
+
+### Testing
+
+- `npm run lint`, `npm run build`
+- Toyota seed: reference `GCS-4T1BE46K37U123456` on report, print, PDF, admin.
+- Honda (no plate): reference uses VIN.
+
+### Limitations
+
+- No share tokens, short links, QR, or email share.
+- Copy link shares full URL only (not reference lookup).
+- Local records only.
+
+### Next step
+
+- Optional GCS reference lookup route.
+
+Phase 26 share and reference foundation implemented.
 
 ---
 

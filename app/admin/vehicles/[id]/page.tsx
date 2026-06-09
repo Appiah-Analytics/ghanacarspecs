@@ -13,9 +13,11 @@ import { EvidenceStatusBadge } from "@/components/EvidenceStatusBadge";
 import { VehicleExecutiveSummaryPanel } from "@/components/VehicleExecutiveSummary";
 import { VehicleRiskProfilePanel } from "@/components/VehicleRiskProfile";
 import { VehicleTrustScorePanel } from "@/components/VehicleTrustScore";
+import { ReportReferenceBlock } from "@/components/ReportReferenceBlock";
 import { formatPhotoSource } from "@/lib/photo-source";
 import { getAdminVehicleManage } from "@/lib/admin-vehicle-manage";
 import { buildVehicleExecutiveSummary } from "@/lib/vehicle-executive-summary";
+import { buildReportReference } from "@/lib/report-reference";
 import { buildVehicleReportBundle } from "@/lib/vehicle-report-bundle";
 import { vehiclePdfExportUrl } from "@/lib/vehicle-pdf-export-url";
 
@@ -41,6 +43,7 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
   const reportBundle = buildVehicleReportBundle(vehicle);
   const { trustScore, riskProfile } = reportBundle;
   const executiveSummary = buildVehicleExecutiveSummary(reportBundle);
+  const reportReference = buildReportReference(vehicle);
 
   const photoAdded = query.photo === "added";
   const photoUpdated = query.photo === "updated";
@@ -103,6 +106,7 @@ export default async function AdminVehicleManagePage({ params, searchParams }: P
           Manage vehicle — {vehicle.year} {vehicle.make} {vehicle.model}
         </h1>
         <p>Add timeline events and visual evidence URLs for this local GhanaCarSpecs record.</p>
+        <ReportReferenceBlock reference={reportReference} className="report-reference admin-report-reference" />
       </section>
 
       <p className="admin-provenance-note" role="note">
