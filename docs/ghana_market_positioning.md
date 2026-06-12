@@ -48,12 +48,12 @@ Dealer and garage cards link to `/partners`.
 
 Explains future participation for garages, dealers/importers, and fleet operators, plus a future ecosystem section (insurers, lenders, fleet, service providers).
 
-**CTA:** “Partnership program coming soon” — no forms or lead capture.
+**CTA:** Links to `/partners/apply` for partner interest capture (Phase 28).
 
 ## Intentionally not implemented
 
 - Database schema changes
-- Partner intake forms or lead capture
+- Partner accounts or onboarding workflows (interest form only — see Phase 28)
 - Admin workflow changes
 - Payments or partner dashboards
 

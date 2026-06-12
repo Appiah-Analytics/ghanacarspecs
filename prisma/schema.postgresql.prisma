@@ -58,6 +58,17 @@ enum EvidenceStatus {
   ARCHIVED
 }
 
+enum PartnerType {
+  GARAGE
+  DEALER
+  IMPORTER
+  FLEET_OPERATOR
+  INSURER
+  LENDER
+  SERVICE_PROVIDER
+  OTHER
+}
+
 model Vehicle {
   id               String          @id @default(cuid())
   vin              String          @unique
@@ -118,4 +129,21 @@ model VehicleEvent {
 
   @@index([vehicleId])
   @@map("vehicle_events")
+}
+
+model PartnerInterest {
+  id                   String      @id @default(cuid())
+  partnerType          PartnerType
+  businessName         String
+  contactPerson        String
+  whatsappNumber       String
+  email                String?
+  city                 String
+  monthlyVehicleVolume String?
+  notes                String?
+  createdAt            DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([partnerType])
+  @@map("partner_interests")
 }

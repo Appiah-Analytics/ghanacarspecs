@@ -230,6 +230,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-015 — Partner Interest Stored in Database
+
+**Date:** 2026-06-07
+
+**Decision:** Phase 28 adds a `PartnerInterest` Prisma model and public `POST /api/partners/interest` endpoint. Admins review submissions at `/admin/partner-interest` — no accounts, notifications, or workflows.
+
+**Reason:** Capture ecosystem interest with minimal scope after positioning work; avoid JSON files or external CRM for v1 intake.
+
+**Alternatives Considered:** Google Forms, email-only contact, full partner portal with accounts.
+
+**Tradeoffs:** Public endpoint needs validation and future rate limiting; no automated follow-up yet.
+
+**Verification:** Phase 28 partner interest checks (`npm run lint`, `npm run build`, form submit + admin table).
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

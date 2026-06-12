@@ -32,6 +32,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 25 | Server-side PDF export | Done |
 | 26 | Share & reference foundation | Done |
 | 27 | Ghana market positioning | Done |
+| 28 | Partner interest foundation | Done |
 
 ---
 
@@ -218,4 +219,14 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] `/partners` page (informational, no forms)
 - [x] Technical sections moved below value/trust content
 - [x] `docs/ghana_market_positioning.md`, ADR-014
-- [ ] Partner intake / lead capture (future)
+- [x] Partner interest form and admin review table (Phase 28)
+- [ ] Full partner onboarding / workflows (future)
+
+## Phase 28 — Partner interest foundation
+
+- [x] `PartnerInterest` model + PostgreSQL migration
+- [x] `/partners/apply` + `POST /api/partners/interest`
+- [x] `/admin/partner-interest` read-only table
+- [x] CTA from `/partners`
+- [x] `docs/partner_interest_foundation.md`, ADR-015
+- [ ] Notifications / partner accounts (future)

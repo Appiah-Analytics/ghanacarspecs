@@ -281,6 +281,116 @@ main.page {
   border-color: #bbf7d0;
 }
 
+.partners-cta-action {
+  margin: 1rem 0 0;
+}
+
+.partners-apply-link {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: #047857;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.partners-apply-link:hover {
+  background: #065f46;
+  text-decoration: none;
+}
+
+.partner-interest-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.partner-interest-success {
+  margin-top: 1rem;
+}
+
+.partner-interest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.partner-interest-grid {
+  display: grid;
+  gap: 0.85rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .partner-interest-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.partner-interest-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.partner-interest-form input,
+.partner-interest-form select,
+.partner-interest-form textarea {
+  font: inherit;
+  font-weight: 400;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.partner-interest-notes {
+  grid-column: 1 / -1;
+}
+
+.partner-interest-submit-row {
+  margin: 0;
+}
+
+.partner-interest-submit-row button {
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.partner-interest-submit-row button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.partner-interest-footnote {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.partner-interest-table th,
+.partner-interest-table td {
+  font-size: 0.85rem;
+  vertical-align: top;
+}
+
+.partner-interest-notes-cell {
+  max-width: 16rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .how-it-works,
 .demo-section,
 .public-disclaimer,

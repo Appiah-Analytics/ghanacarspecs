@@ -91,10 +91,15 @@ export default function PartnersPage() {
       </section>
 
       <section className="partners-cta" aria-labelledby="partners-cta-heading">
-        <h2 id="partners-cta-heading">Partnership program coming soon</h2>
+        <h2 id="partners-cta-heading">Register your interest</h2>
         <p>
-          Interested in future participation? Contact GhanaCarSpecs when partnership intake opens. There is no sign-up
-          form on this demonstration build — we are focused on trustworthy reports and transparent messaging first.
+          Partnership onboarding is not live yet, but you can share basic business details so GhanaCarSpecs can follow
+          up when intake opens.
+        </p>
+        <p className="partners-cta-action">
+          <Link href="/partners/apply" className="partners-apply-link">
+            Submit partner interest
+          </Link>
         </p>
       </section>
     </main>

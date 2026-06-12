@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-06-07 (phase 27 ghana market positioning)  
+**Last updated:** 2026-06-07 (phase 28 partner interest foundation)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,48 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Phase 28 — Partner interest foundation
+
+### Goal
+
+Capture partner interest from garages, dealers, importers, fleet operators, insurers, and ecosystem participants — database storage and admin table only.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Schema | `prisma/schema.prisma`, `prisma/schema.postgresql.prisma`, migration `20260607120000_partner_interest` |
+| Logic | `lib/partner-interest.ts`, `lib/partner-interest-options.ts` |
+| Public | `app/partners/apply/page.tsx`, `components/PartnerInterestForm.tsx`, `app/api/partners/interest/route.ts` |
+| Admin | `app/admin/partner-interest/page.tsx`, `components/AdminNav.tsx` |
+| Partners CTA | `app/partners/page.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/partner_interest_foundation.md`, ADR-015, roadmap, README, handoff |
+
+### Behavior
+
+- Public form at `/partners/apply` with partner type, business, contact, WhatsApp, email, city, volume, notes.
+- `POST /api/partners/interest` validates and persists to `PartnerInterest`.
+- Admin `/admin/partner-interest` shows newest-first table.
+- `/partners` CTA links to apply form.
+
+### Testing
+
+- `npm run db:push` (local SQLite), `npm run lint`, `npm run build`
+- Submit test interest → appears in admin table.
+
+### Limitations
+
+- No accounts, notifications, workflows, or payments.
+
+### Next step
+
+- Rate limiting on public POST; partner onboarding when ready.
+
+Phase 28 partner interest foundation implemented.
 
 ---
 

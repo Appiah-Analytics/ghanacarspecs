@@ -133,7 +133,9 @@ Admin login (/admin/login)
 
 **Share & reference (Phase 26):** `buildReportReference()` derives a deterministic `GCS-` code (VIN → chassis → plate → id) shown on public report, print, PDF, and admin manage. `CopyReportLinkButton` copies the current page URL (ADR-013). See [`docs/phase_26_share_and_reference_foundation.md`](phase_26_share_and_reference_foundation.md).
 
-**Ghana market positioning (Phase 27):** Homepage repositioned for buyers, dealers, and garages; `/partners` describes future participation (no forms). Chassis/Japanese import guidance strengthened (ADR-014). See [`docs/ghana_market_positioning.md`](ghana_market_positioning.md).
+**Ghana market positioning (Phase 27):** Homepage repositioned for buyers, dealers, and garages; `/partners` describes future participation. Chassis/Japanese import guidance strengthened (ADR-014). See [`docs/ghana_market_positioning.md`](ghana_market_positioning.md).
+
+**Partner interest (Phase 28):** `PartnerInterest` model, `/partners/apply`, `POST /api/partners/interest`, admin review at `/admin/partner-interest` (ADR-015). No accounts or notifications. See [`docs/partner_interest_foundation.md`](partner_interest_foundation.md).
 
 ### Upload flow
 
