@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-06-07 (phase 26 share and reference foundation)  
+**Last updated:** 2026-06-07 (phase 27 ghana market positioning)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,52 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Phase 27 — Ghana market positioning
+
+### Goal
+
+Reposition GhanaCarSpecs as a Ghana vehicle trust and verification platform through homepage, audience, and partners messaging — content/UX only.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Homepage | `app/page.tsx` |
+| Audience cards | `components/AudiencePaths.tsx` |
+| Trust summary | `components/HomeTrustSection.tsx` |
+| Chassis guidance | `components/VinChassisGuidance.tsx` |
+| Partners page | `app/partners/page.tsx` |
+| Chrome | `components/SiteHeader.tsx`, `components/SiteFooter.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/ghana_market_positioning.md`, ADR-014, roadmap, README, handoff |
+
+### Behavior
+
+- New headline/subheadline on homepage; lookup unchanged.
+- Three audience path cards (buyers, dealers/importers, garages).
+- Trust/transparency section before technical blocks.
+- `/partners` explains future garage, dealer, and fleet participation — no forms.
+- Public demo disclaimer retained at page bottom.
+
+### Testing
+
+- `npm run lint`, `npm run build`
+- Homepage order: value → audience → trust → guidance → how-it-works → demo → disclaimer.
+- `/partners` renders all sections and CTA without forms.
+
+### Limitations
+
+- No partner intake, payments, or lead capture.
+- No schema or admin workflow changes.
+
+### Next step
+
+- Partner intake when partnerships are ready.
+
+Phase 27 Ghana market positioning implemented.
 
 ---
 

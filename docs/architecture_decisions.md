@@ -214,6 +214,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-014 — Ghana Market Positioning
+
+**Date:** 2026-06-07
+
+**Decision:** Phase 27 repositions public messaging (homepage, partners page, chassis guidance) as a Ghana vehicle trust and verification platform. Content and UX only — no schema, forms, or admin workflow changes.
+
+**Reason:** The product had strong technical foundations but read like a VIN lookup demo; buyers, dealers, and garages need audience-first value messaging before technical detail.
+
+**Alternatives Considered:** Separate marketing site, partner intake forms now, dealer portal landing pages.
+
+**Tradeoffs:** Partnership page is informational only; no lead capture yet. Technical sections remain but are deprioritized in page order.
+
+**Verification:** Phase 27 positioning checks (`npm run lint`, `npm run build`, homepage and `/partners` review).
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

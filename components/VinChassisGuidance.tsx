@@ -3,9 +3,14 @@ export function VinChassisGuidance() {
     <section className="lookup-guidance" aria-labelledby="vin-chassis-guidance-heading">
       <h2 id="vin-chassis-guidance-heading">Where do I find my VIN or chassis number?</h2>
       <p className="lookup-guidance-intro">
-        Most vehicles in Ghana have a <strong>VIN</strong> (Vehicle Identification Number) and/or a{" "}
-        <strong>chassis number</strong> printed on the car or shown on paperwork. You can also search by your{" "}
-        <strong>Ghana plate number</strong> if you have it.
+        Many vehicles in Ghana, especially Japanese imports, may be identified by <strong>chassis or frame number</strong>{" "}
+        rather than a U.S.-style 17-character VIN. GhanaCarSpecs supports <strong>VIN</strong>,{" "}
+        <strong>plate number</strong>, and <strong>chassis</strong> lookup — a vehicle without a 17-character VIN is
+        not invalid; it may simply use a different identifier on file.
+      </p>
+      <p className="lookup-guidance-intro">
+        Check the car itself or your paperwork for whichever identifier you have. Plate numbers are also supported when
+        registration details are available.
       </p>
 
       <div className="lookup-guidance-grid">

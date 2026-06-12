@@ -124,6 +124,163 @@ main.page {
   line-height: 1.5;
 }
 
+.site-footer-links {
+  margin-top: 0.65rem;
+}
+
+.site-footer-links a {
+  font-weight: 600;
+}
+
+.audience-paths,
+.home-trust,
+.partners-card,
+.partners-ecosystem,
+.partners-cta {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.audience-paths h2,
+.home-trust h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.audience-paths-intro,
+.home-trust-lead {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 68ch;
+}
+
+.audience-paths-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .audience-paths-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.audience-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.audience-card-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.audience-card h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.audience-card-list {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.audience-card-list li + li {
+  margin-top: 0.35rem;
+}
+
+.audience-card-link {
+  margin: 0.85rem 0 0;
+  font-size: 0.9rem;
+}
+
+.audience-card-link a {
+  font-weight: 600;
+}
+
+.home-trust-list {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.home-trust-list li + li {
+  margin-top: 0.5rem;
+}
+
+.partners-hero-lead {
+  max-width: 68ch;
+}
+
+.partners-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .partners-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.partners-card h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+}
+
+.partners-card-list {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.partners-card-list li + li {
+  margin-top: 0.35rem;
+}
+
+.partners-ecosystem h2,
+.partners-cta h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+}
+
+.partners-ecosystem p,
+.partners-cta p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 68ch;
+}
+
+.partners-ecosystem-list {
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.partners-cta {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
 .how-it-works,
 .demo-section,
 .public-disclaimer,

@@ -31,6 +31,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 24 | Report export readiness / print-friendly report | Done |
 | 25 | Server-side PDF export | Done |
 | 26 | Share & reference foundation | Done |
+| 27 | Ghana market positioning | Done |
 
 ---
 
@@ -207,3 +208,14 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] `lib/report-url.ts` path helpers
 - [x] `docs/phase_26_share_and_reference_foundation.md`, ADR-013
 - [ ] GCS reference lookup route / short links (future)
+
+## Phase 27 — Ghana market positioning
+
+- [x] Homepage headline and subheadline repositioning
+- [x] `AudiencePaths` — buyers, dealers/importers, garages
+- [x] `HomeTrustSection` — transparency messaging on homepage
+- [x] Strengthened chassis / Japanese import guidance
+- [x] `/partners` page (informational, no forms)
+- [x] Technical sections moved below value/trust content
+- [x] `docs/ghana_market_positioning.md`, ADR-014
+- [ ] Partner intake / lead capture (future)

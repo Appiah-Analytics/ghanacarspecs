@@ -1,6 +1,6 @@
 # GhanaCarSpecs (local MVP + VIN decode fallback + CSV ingestion)
 
-Next.js app with **Prisma** and **SQLite** for vehicle lookup by **VIN**, **plate number**, or **chassis number**. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Local admins can import vehicle/event rows from CSV, **manage individual vehicles** (add events and visual evidence URLs), and view records on an **admin dashboard**.
+Ghana vehicle **trust and verification** platform built with Next.js, **Prisma**, and **SQLite**. Search by **plate number**, **chassis number**, or **VIN** to view available specifications, history signals, risk indicators, and evidence on local records. **Local database is always tried first.** If there is no local row and the input is a **17-character VIN**, the app calls the free **NHTSA vPIC** API (US DOT) and shows decoded specifications on a separate page, clearly labeled as an **external** decode. Public pages include audience messaging and a future-focused [`/partners`](http://localhost:3000/partners) page (no intake forms). Local admins can import vehicle/event rows from CSV, **manage individual vehicles** (add events and visual evidence URLs), and view records on an **admin dashboard**.
 
 Canonical test values: [`docs/sample_data.md`](docs/sample_data.md).
 
