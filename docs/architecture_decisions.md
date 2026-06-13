@@ -246,6 +246,22 @@ Related: [`architecture.md`](architecture.md), [`build_log.md`](build_log.md), [
 
 ---
 
+## ADR-016 — Market Discovery Before Partner Platform Expansion
+
+**Date:** 2026-06-07
+
+**Decision:** Phase 29 (planned) adds lightweight partner pipeline tracking and market discovery on top of `PartnerInterest` before building partner accounts, subscriptions, dashboards, or payment systems.
+
+**Reason:** Reduce product risk and avoid building partner-platform features based on assumptions; learn from dealers, importers, garages, fleet operators, insurers, and buyer-adjacent signals first.
+
+**Alternatives Considered:** Build dealer portal immediately after Phase 28; adopt external CRM; skip structured discovery and rely on ad-hoc spreadsheets only.
+
+**Tradeoffs:** Slower path to monetization; admin-only workflow adds schema and UI scope but remains far smaller than a full partner product.
+
+**Verification:** Phase 29 pipeline checks (`npm run lint`, `npm run build`, admin status filter + detail update).
+
+---
+
 ## How to add a new ADR
 
 1. Copy the template below the next sequential number (`ADR-010`, etc.).

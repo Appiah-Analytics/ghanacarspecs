@@ -1,4 +1,5 @@
 import { PartnerType, type PartnerInterest } from "@prisma/client";
+import { listPartnerInterestsFiltered } from "@/lib/partner-interest-pipeline";
 import { prisma } from "@/lib/prisma";
 
 export type PartnerInterestInput = {
@@ -80,8 +81,7 @@ export async function createPartnerInterest(input: PartnerInterestInput): Promis
 }
 
 export async function listPartnerInterests(limit = 200): Promise<PartnerInterest[]> {
-  return prisma.partnerInterest.findMany({
-    orderBy: { createdAt: "desc" },
-    take: limit,
-  });
+  return listPartnerInterestsFiltered({}, limit);
 }
+
+export { listPartnerInterestsFiltered } from "@/lib/partner-interest-pipeline";

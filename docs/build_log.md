@@ -3,7 +3,7 @@
 Living record of major engineering work on [GhanaCarSpecs.com](https://github.com/Appiah-Analytics/ghanacarspecs).  
 Update this file after every major feature or phase.
 
-**Last updated:** 2026-06-07 (phase 28 partner interest foundation)  
+**Last updated:** 2026-06-07 (phase 29 partner pipeline & market discovery)  
 **Current stack:** Next.js 15 (App Router), TypeScript, Prisma, SQLite (local default) / PostgreSQL (production-ready), NHTSA vPIC
 
 **Phase numbering:** Matches [`roadmap.md`](roadmap.md) Phases 1–10. Sample VINs, plates, and chassis numbers are centralized in [`sample_data.md`](sample_data.md).
@@ -20,6 +20,48 @@ When you ship a meaningful feature:
 4. Cross-check `docs/roadmap.md`, `README.md`, and `docs/sample_data.md` if test values changed.
 
 ---
+
+---
+
+## Phase 29 — Partner pipeline & market discovery
+
+### Goal
+
+Extend Phase 28 partner interest with lightweight admin pipeline tracking for outreach and market discovery — not a CRM or partner portal.
+
+### Files added / changed
+
+| Area | Paths |
+|------|--------|
+| Schema | `PartnerInterestStatus`, pipeline fields on `PartnerInterest`, migration `20260607140000_partner_interest_pipeline` |
+| Logic | `lib/partner-interest-pipeline.ts`, `lib/partner-interest-options.ts` |
+| API | `app/api/admin/partner-interest/[id]/route.ts` |
+| Admin UI | `app/admin/partner-interest/page.tsx`, `app/admin/partner-interest/[id]/page.tsx`, `components/AdminEditPartnerInterestForm.tsx`, `components/PartnerInterestStatusBadge.tsx` |
+| Styles | `app/globals.css` |
+| Docs | `docs/phase_29_partner_pipeline_market_discovery.md`, roadmap, handoff, `partner_interest_foundation.md` |
+
+### Behavior
+
+- `PartnerInterest` gains `status`, `internalNotes`, `lastContactedAt`, `nextFollowUpAt`, `updatedAt`.
+- List page: summary cards, status filter, status column, link to detail.
+- Detail page: full submission + editable pipeline form.
+- `PATCH /api/admin/partner-interest/[id]` (admin auth).
+
+### Testing
+
+- `npm run db:push`, `npm run lint`, `npm run build`
+- Submit partner interest → update status/notes on detail page → filter list by status.
+
+### Limitations
+
+- No discovery tags, messaging, notifications, or partner accounts.
+- City/type filters deferred.
+
+### Next step
+
+- Manual market discovery synthesis from pipeline notes.
+
+Phase 29 partner pipeline & market discovery implemented.
 
 ---
 

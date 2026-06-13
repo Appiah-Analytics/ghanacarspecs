@@ -33,6 +33,7 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 | 26 | Share & reference foundation | Done |
 | 27 | Ghana market positioning | Done |
 | 28 | Partner interest foundation | Done |
+| 29 | Partner pipeline & market discovery | Done |
 
 ---
 
@@ -230,3 +231,14 @@ Phases are numbered in **delivery order** (1 → 10). The engineering detail for
 - [x] CTA from `/partners`
 - [x] `docs/partner_interest_foundation.md`, ADR-015
 - [ ] Notifications / partner accounts (future)
+
+## Phase 29 — Partner pipeline & market discovery
+
+- [x] `PartnerInterestStatus` enum + pipeline fields on `PartnerInterest`
+- [x] Pipeline status, internal notes, last contacted, next follow-up
+- [x] `/admin/partner-interest` status filter + summary cards
+- [x] `/admin/partner-interest/[id]` detail + pipeline edit form
+- [x] `PATCH /api/admin/partner-interest/[id]`
+- [x] `docs/phase_29_partner_pipeline_market_discovery.md`, ADR-016
+- [ ] Discovery tags, city filters (future)
+- [ ] Partner accounts, dashboards, subscriptions (deferred)

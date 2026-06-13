@@ -67,6 +67,14 @@ enum PartnerType {
   OTHER
 }
 
+enum PartnerInterestStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  NOT_A_FIT
+  DEFERRED
+}
+
 model Vehicle {
   id               String          @id @default(cuid())
   vin              String          @unique
@@ -130,7 +138,7 @@ model VehicleEvent {
 }
 
 model PartnerInterest {
-  id                   String      @id @default(cuid())
+  id                   String                @id @default(cuid())
   partnerType          PartnerType
   businessName         String
   contactPerson        String
@@ -139,9 +147,15 @@ model PartnerInterest {
   city                 String
   monthlyVehicleVolume String?
   notes                String?
-  createdAt            DateTime    @default(now())
+  status               PartnerInterestStatus @default(NEW)
+  internalNotes        String?
+  lastContactedAt      DateTime?
+  nextFollowUpAt       DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 
   @@index([createdAt])
   @@index([partnerType])
+  @@index([status])
   @@map("partner_interests")
 }

@@ -137,6 +137,8 @@ Admin login (/admin/login)
 
 **Partner interest (Phase 28):** `PartnerInterest` model, `/partners/apply`, `POST /api/partners/interest`, admin review at `/admin/partner-interest` (ADR-015). No accounts or notifications. See [`docs/partner_interest_foundation.md`](partner_interest_foundation.md).
 
+**Partner pipeline (Phase 29):** `PartnerInterestStatus` + pipeline fields on `PartnerInterest`; admin list with summary cards and status filter; detail at `/admin/partner-interest/[id]` with internal notes and follow-up dates (ADR-016). See [`docs/phase_29_partner_pipeline_market_discovery.md`](phase_29_partner_pipeline_market_discovery.md).
+
 ### Upload flow
 
 ```text

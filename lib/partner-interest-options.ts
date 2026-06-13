@@ -1,4 +1,35 @@
-import { PartnerType } from "@prisma/client";
+import { PartnerInterestStatus, PartnerType } from "@prisma/client";
+
+export const PARTNER_INTEREST_STATUS_OPTIONS: { value: PartnerInterestStatus; label: string }[] = [
+  { value: PartnerInterestStatus.NEW, label: "New" },
+  { value: PartnerInterestStatus.CONTACTED, label: "Contacted" },
+  { value: PartnerInterestStatus.QUALIFIED, label: "Qualified" },
+  { value: PartnerInterestStatus.NOT_A_FIT, label: "Not a fit" },
+  { value: PartnerInterestStatus.DEFERRED, label: "Deferred" },
+];
+
+const PARTNER_INTEREST_STATUS_LABELS = Object.fromEntries(
+  PARTNER_INTEREST_STATUS_OPTIONS.map((option) => [option.value, option.label]),
+) as Record<PartnerInterestStatus, string>;
+
+export function formatPartnerInterestStatusLabel(status: PartnerInterestStatus): string {
+  return PARTNER_INTEREST_STATUS_LABELS[status] ?? status;
+}
+
+export function partnerInterestStatusClass(status: PartnerInterestStatus): string {
+  switch (status) {
+    case PartnerInterestStatus.NEW:
+      return "partner-status-new";
+    case PartnerInterestStatus.CONTACTED:
+      return "partner-status-contacted";
+    case PartnerInterestStatus.QUALIFIED:
+      return "partner-status-qualified";
+    case PartnerInterestStatus.NOT_A_FIT:
+      return "partner-status-not-a-fit";
+    default:
+      return "partner-status-deferred";
+  }
+}
 
 export const PARTNER_TYPE_OPTIONS: { value: PartnerType; label: string }[] = [
   { value: PartnerType.GARAGE, label: "Garage / workshop" },
